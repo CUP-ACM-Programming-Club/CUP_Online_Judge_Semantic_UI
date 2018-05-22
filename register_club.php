@@ -1,0 +1,70 @@
+<?php
+    require_once('./include/db_info.inc.php');
+        require_once('./include/setlang.php');
+require_once("./include/db_info.inc.php");
+if (!isset($_SESSION['user_id'])) {
+
+    $view_errors = "<a href=newloginpage.php>$MSG_Login</a>";
+    require("template/" . $OJ_TEMPLATE . "/error.php");
+    exit(0);
+//	$_SESSION['user_id']="Guest";
+}
+$name="";
+$class="";
+$sex="";
+$club="";
+$qq="";
+$phone="";
+$wechat="";
+$email="";
+$submit=isset($_POST['name']);
+$sucess=0;
+if($submit)
+{
+    $name=$_POST['name'];
+    $class=$_POST['class'];
+    $sex=$_POST['sex'];
+    $club=$_POST['club'];
+    $qq=$_POST['qq'];
+    $phone=$_POST['mobile_phone'];
+    $wechat=$_POST['wechat'];
+    $email=$_POST['email'];
+    $cnt=$database->count("club_register",["user_id"=>$_SESSION['user_id']]);
+    $data=["user_id"=>$_SESSION['user_id'],
+            "name"=>$name,
+            "sex"=>$sex,
+            "class"=>$class,
+            "mobile_phone"=>$phone,
+            "qq"=>$qq,
+            "wechat"=>$wechat,
+            "email"=>$email,
+            "club"=>$club
+            ];
+    if($cnt>0)
+    {
+        $database->update("club_register",$data,["user_id"=>$_SESSION['user_id']]);
+    }
+    else
+    {
+        $database->insert("club_register",$data);
+    }
+    $sucess=1;
+}
+else
+{
+    $result=$database->select("club_register","*",["user_id"=>$_SESSION['user_id']]);
+    if(count($result)>0)
+    {
+        $result=$result[0];
+        $name=$result['name'];
+        $class=$result['class'];
+        $sex=$result['sex'];
+        $qq=$result['qq'];
+        $phone=$result['mobile_phone'];
+        $wechat=$result['wechat'];
+        $club=$result['club'];
+        $email=$result['email'];
+    }
+}
+require("template/".$OJ_TEMPLATE."/register_club.php");
+?>

@@ -1,0 +1,28 @@
+<?php
+if((($OJ_CONTEST_MODE&&!isset($CONTEST_PAGE))||$OJ_SYSTEM_CLOSED)&&!isset($_SESSION['administrator']))
+{
+    if(isset($HOMEPAGE))
+    {
+        require("template/semantic-ui/contest_index.php");
+        exit(0);
+    }
+    else
+    {
+        $ERROR_MESSAGE_HEADER="";
+    $ERROR_MESSAGE_CONTENT="";
+    if($OJ_CONTEST_MODE)
+    {
+    $ERROR_MESSAGE_HEADER=$MSG_CONTEST_CLOSED;
+    $ERROR_MESSAGE_CONTENT=$MSG_CONTEST_CLOSED_MESSAGE;
+    }
+    else
+    {
+        $ERROR_MESSAGE_HEADER=$OJ_SYSTEM_CLOSED;
+        $ERROR_MESSAGE_CONTENT=$OJ_SYSTEM_CLOSED_MESSAGE;
+    }
+    require("template/semantic-ui/closed.php");
+    exit(0);
+    }
+}
+
+?>

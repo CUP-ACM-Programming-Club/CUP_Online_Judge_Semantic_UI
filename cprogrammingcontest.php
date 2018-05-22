@@ -1,0 +1,171 @@
+<?php
+    require_once('./include/db_info.inc.php');
+        require_once('./include/setlang.php');
+    require_once("./include/db_info.inc.php");
+if (!isset($_SESSION['user_id'])) {
+    $view_errors="<center>";
+    $view_errors.="<h2>请先登录，再访问该页面。若未注册账号，请注册账号再访问</h2>";
+    $view_errors.= "<a href=newloginpage.php>$MSG_Login</a>";
+    $view_errors.="</center>";
+    require("template/" . $OJ_TEMPLATE . "/error.php");
+    exit(0);
+//	$_SESSION['user_id']="Guest";
+}
+$name="";
+$class="";
+$sex="";
+$year="";
+$month="";
+$scholar="";
+$subject="";
+$qq="";
+$phone="";
+$wechat="";
+$email="";
+$group="";
+$teacher="";
+$submit=isset($_POST['name']);
+$sucess=2;
+$errmsg="";
+$hassubmit=false;
+if(false&&$submit)
+{
+    $sucess=1;
+    $name=$_POST['name'];
+    $class=$_POST['class'];
+    $sex=$_POST['sex'];
+    $year=$_POST['year'];
+    $month=$_POST['month'];
+    $group=$_POST['group'];
+    $scholar=$_POST['scholar'];
+    $subject=$_POST['subject'];
+    $teacher=$_POST['teacher'];
+    $qq=$_POST['qq'];
+    $phone=$_POST['mobile_phone'];
+    $wechat=$_POST['wechat'];
+    $email=$_POST['email'];
+    if(strlen($name)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写姓名\\n";
+    }
+    if(strlen($class)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写班级\\n";
+    }
+    if(strlen($year)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写出生年\\n";
+    }
+    if(strlen($month)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写出生月\\n";
+    }
+    if(!is_numeric($year))
+    {
+        $sucess=0;
+        $errmsg.="请填写数字格式的年份\\n";
+    }
+    if(!is_numeric($month))
+    {
+        $sucess=0;
+        $errmsg.="请填写数字格式的月份\\n";
+    }
+    if(strlen($group)==0||$group=="")
+    {
+        $sucess=0;
+        $errmsg.="请填写组别\\n";
+    }
+    if(strlen($scholar)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写学院\\n";
+    }
+    if(strlen($subject)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写专业\\n";
+    }
+    if(strlen($class)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写班级\\n";
+    }
+    if(strlen($qq)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写QQ\\n";
+    }
+    if(strlen($wechat)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写微信号\\n";
+    }
+    if(strlen($email)==0)
+    {
+        $sucess=0;
+        $errmsg.="请填写邮箱\\n";
+    }
+    if(strlen($phone)==0||strlen($phone)!=11)
+    {
+        $sucess=0;
+        $errmsg.="请正确填写手机号\\n";
+    }
+    if($sucess)
+    {
+    $cnt=$database->count("cprogram",["user_id"=>$_SESSION['user_id']]);
+    $data=["user_id"=>$_SESSION['user_id'],
+            "name"=>$name,
+            "sex"=>$sex,
+            "scholar"=>$scholar,
+            "subject"=>$subject,
+            "teacher"=>$teacher,
+            "class"=>$class,
+            "bornday"=>$year."-".$month,
+            "mobile_phone"=>$phone,
+            "qq"=>$qq,
+            "wechat"=>$wechat,
+            "email"=>$email,
+            "group"=>$group
+            ];
+    if($cnt>0)
+    {
+        $database->update("cprogram",$data,["user_id"=>$_SESSION['user_id']]);
+    }
+    else
+    {
+        $database->insert("cprogram",$data);
+    }
+    }
+    //echo var_dump($database->error());
+    //$sucess=1;
+}
+else
+{
+    $result=$database->select("cprogram","*",["user_id"=>$_SESSION['user_id']]);
+    if(count($result)>0)
+    {
+        $hassubmit=true;
+        $result=$result[0];
+        $name=$result['name'];
+        $class=$result['class'];
+        $sex=$result['sex'];
+        $qq=$result['qq'];
+        $phone=$result['mobile_phone'];
+        $wechat=$result['wechat'];
+        $scholar=$result['scholar'];
+        $subject=$result['subject'];
+        $email=$result['email'];
+        $group=$result['group'];
+        $res=explode("-",$result['bornday']);
+        $year=$res[0];
+        $month=$res[1];
+        $teacher=$result['teacher'];
+    }
+}
+if(file_exists("template/".$OJ_TEMPLATE."/cprogrammingcontest.php"))
+require("template/".$OJ_TEMPLATE."/cprogrammingcontest.php");
+?>
