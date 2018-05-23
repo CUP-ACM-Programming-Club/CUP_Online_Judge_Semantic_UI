@@ -1,133 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title><?php echo $OJ_NAME?></title>  
+    <?php include("template/$OJ_TEMPLATE/css.php");?>	    
+<?php include("template/$OJ_TEMPLATE/js.php");?>
+<script type="text/javascript" src="include/jquery.tablesorter.js"></script>
+<script>
+	    $(document).ready(function()
+    {
+    $("#result-tab").tablesorter();
+}
+);
+	</script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+<?php include("template/$OJ_TEMPLATE/nav.php");?>	    
+    <div class="ui container padding">
+    
+      <!-- Main component for a primary marketing message or call to action -->
+      <div>
+<div align=center class="input-append">
+</div>
+          <br>
+<div id=center>
+<table id=result-tab class="ui padded celled selectable table" align=center width=80%>
+<thead>
+<tr class='toprow' >
+<th ><?php echo "运行编号"?>
+<th ><?php echo "题号"?>
+<th ><?php echo "用户"?>
+<th ><?php echo "被抄袭用户"?>
+</tr>
+</thead>
+<tbody>
 <?php
-header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-
-////////////////////////////Common head
-	$cache_time=2;
-	$OJ_CACHE_SHARE=false;
-	require_once('./include/cache_start.php');
-    require_once('./include/db_info.inc.php');
-	require_once('./include/setlang.php');
-	$view_title= "$MSG_STATUS";
-	$user="";
-if(isset($_GET['user']))
-$user=$_GET['user'];
-        
-require_once("./include/my_func.inc.php");
-if(isset($OJ_LANG)){
-                require_once("./lang/$OJ_LANG.php");
-        }
-require_once("./include/const.inc.php");
- if (!isset($_SESSION['user_id'])){
-
-	$view_errors= "<a href=newloginpage.php>$MSG_Login</a>";
-	require("template/".$OJ_TEMPLATE."/error.php");
-	exit(0);
-//	$_SESSION['user_id']="Guest";
-}
-if($OJ_TEMPLATE!="classic") 
-	$judge_color=Array("btn btn-default","btn btn-info","btn btn-warning","btn btn-warning","btn btn-success","btn btn-danger","btn btn-danger","btn btn-warning","btn btn-warning","btn btn-warning","btn btn-warning","btn btn-warning","btn btn-warning","btn btn-info");
-
-$str2="";
-$lock=false;
-$lock_time=date("Y-m-d H:i:s",time());
-if(isset($_GET['cid']))
-{
-    $sql="SELECT msg.num as pid,msg.solution_id as msid,solution.solution_id as csid,msg.user_id as muid,solution.user_id as cuid,msg.sim as msim FROM (SELECT * FROM (SELECT user_id,solution_id,num FROM solution WHERE contest_id =".intval($_GET['cid'])." ) solution left join `sim` on sim.s_id=solution.solution_id WHERE sim.s_id=solution.solution_id) msg left join `solution` on msg.sim_s_id=solution.solution_id WHERE msg.sim_s_id=solution.solution_id and msg.user_id<>solution.user_id ";
-}
-else{
-$sql="SELECT prev.solution_id as prevsid,solution.solution_id as resid,prev.problem_id,prev.user_id as uid,solution.user_id as cid FROM (SELECT * FROM (SELECT * FROM solution WHERE user_id='".$user."') solution left join `sim` on solution.solution_id=sim.s_id WHERE solution.solution_id=sim.s_id ) prev left join `solution` on prev.sim_s_id=solution.solution_id and prev.user_id<>solution.user_id WHERE solution.user_id is not null";
-}
-$result=$database->query($sql)->fetchAll();
-$contest_id="";
-$user_array=[];
-$user_id=[];
 $cnt=0;
-$sim_arr=[];
-$num_cnt=0;
-$re="";
-if(isset($_GET['cid']))
-{
-    $re=$database->query("SELECT DISTINCT user_id FROM solution where contest_id = '".intval($_GET['cid'])."' and result=4 order by user_id")->fetchAll();
-    $contest_id=intval($_GET['cid']);
-foreach($re as $row)
-{
-    $user_id[$cnt++]=$row[0];
-//    echo "<br>";
-}
-$user_id=array_unique($user_id);
-$user_problem=[];
-foreach($user_id as $value)
-{
-    $sqle=$database->select("solution","num",[
-        "user_id"=>$value,
-        "contest_id"=>$contest_id,
-        "result"=>4,
-        "ORDER"=>[
-            "num"=>"ASC"
-            ]
-        ]);
-        $user_problem[$value]=$sqle;
-        foreach($sqle as $pnum)
-        {
-            $uid=$database->select("solution","solution_id",[
-        "user_id"=>$value,
-        "contest_id"=>$contest_id,
-        "result"=>4,
-        "num"=>$pnum,
-        "ORDER"=>[
-            "solution_id"=>"DESC"
-            ]
-        ]);
-        $user_array[$value][$pnum]=$uid[0];
-        //$user_problem[$value][$pnum]=$uid[0];
-        }
-        //$user_array[$value]=$sqle;
-}
-
-
-
-
-foreach($user_id as $id)
-{
-    foreach($user_problem[$id] as $num){
-      //  echo $user_array[$id][$num]."<br>";
-        //echo $id."     ".$num."       <br>";
-      //  echo var_dump($user_array[$id])."<br>";
-    $sim_ans=$database->select("sim","s_id",[
-        "s_id"=>$user_array[$id][$num]
-        ]);
-        if(count($sim_ans)!=0)
-        {
-            $sim_arr[$id]->id=$id;
-            if(isset($sim_arr[$id]->problem))
-            {
-                array_push($sim_arr[$id]->problem,$num);
-                $sim_arr[$id]->problem=array_unique($sim_arr[$id]->problem);
-            }
-            else
-            {
-                $sim_arr[$id]->problem=[];
-                array_push($sim_arr[$id]->problem,$num);
-            }
-        }
-       // echo var_dump($sim_ans);
-    }
-}
-
-
-
-
-}
-
-//echo var_dump($result);
-if(isset($_GET['cid']))
-{
-    if(file_exists("template/".$OJ_TEMPLATE."/copyconteststatus.php"))
-    require("template/".$OJ_TEMPLATE."/copyconteststatus.php");
-}
+foreach($result as $row){
+if ($cnt)
+echo "<tr class='oddrow'>";
 else
-if(file_exists("template/".$OJ_TEMPLATE."/copystatus.php"))
-    require("template/".$OJ_TEMPLATE."/copystatus.php");
-
+echo "<tr class='evenrow'>";
+$i=0;
+$cnt=count($row);
+for($a=0;$a<$cnt/2;$a++){
+	if($i>3&&$i!=8)
+		echo "<td class='hidden-xs'>";
+	else
+		echo "<td>";
+		if($a==2)
+		echo "<a href='newsubmitpage.php?id=".$row[$a]."'>";
+		else if($a>=3)
+		echo "<a href='userinfo.php?user=".$row[$a]."'>";
+		else if($a==0)
+		echo "<a class='ui button blue' href='comparesource.php?left=".$row[$a]."&right=".$row[$a+1]."'>";
+	if($a==0)
+	echo "代码对比(".$row[0].",".$row[1].")";
+	else
+	echo $row[$a];
+	echo "</a>";
+	if($a==0)$a=1;
+	echo "</td>";
+	$i++;
+}
+echo "</tr>";
+$cnt=1-$cnt;
+}
 ?>
+</tbody>
+</table>
+</div>
+<div id=center>
+<?php echo "[<a href=status.php?".$str2.">Top</a>]&nbsp;&nbsp;";
+if (isset($_GET['prevtop']))
+echo "[<a href=status.php?".$str2."&top=".intval($_GET['prevtop']).">Previous Page</a>]&nbsp;&nbsp;";
+else
+echo "[<a href=status.php?".$str2."&top=".($top+20).">Previous Page</a>]&nbsp;&nbsp;";
+echo "[<a href=status.php?".$str2."&top=".$bottom."&prevtop=$top>Next Page</a>]";
+?>
+</div>
+
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script>
+
+	    $('.toggle.checkbox')
+  .checkbox()
+  .first().checkbox({
+    onChecked: function() {
+      timeago(null, 'zh_CN').render($('.need_to_be_rendered'));
+    },
+     onUnchecked: function() {
+         timeago.cancel();
+      var render=document.querySelectorAll(".need_to_be_rendered");
+      render.forEach(function(e){
+          e.innerHTML=e.getAttribute("datetime");
+      });
+    }
+  })
+;
+		var judge_result=[<?php
+		foreach($judge_result as $result){
+		echo "'$result',";
+		}
+		?>''];
+
+		var judge_color=[<?php
+		 foreach($judge_color as $result){
+		 echo "'$result',";
+		 }
+		?>''];
+	</script>
+	<script src="template/<?php echo $OJ_TEMPLATE?>/auto_refresh.js" ></script>
+	<?php include("template/$OJ_TEMPLATE/bottom.php");?>
+  </body>
+</html>

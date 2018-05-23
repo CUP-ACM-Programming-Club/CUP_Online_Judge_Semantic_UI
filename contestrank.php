@@ -1,239 +1,219 @@
+<!DOCTYPE html>
+<html lang="en"  style="overflow: auto;">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title><?php echo $OJ_NAME?></title>  
+    <?php include("template/$OJ_TEMPLATE/css.php");?>	    
+
+ <?php include("template/$OJ_TEMPLATE/js.php");?>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+    .ui.grey{
+        background-color:#A0A0A0;
+    }
+    .ui.yellow{
+        background-color:#FFD700;
+    }
+    .ui.orange{
+        background-color:#FE9A76;
+    }
+    </style>
+  </head>
+
+  <body>
+<?php include("template/$OJ_TEMPLATE/nav.php");?>	   
+    <div class=" padding">
+     
+      <!-- Main component for a primary marketing message or call to action -->
+      <div>
 <?php
-        $OJ_CACHE_SHARE=true;
-        $cache_time=10;
-        require_once('./closed.php');
-    require_once('./include/db_info.inc.php');
-        require_once('./include/setlang.php');
-        $view_title= $MSG_CONTEST.$MSG_RANKLIST;
-        $title="";
-        require_once("./include/const.inc.php");
-        require_once('./include/cache_start.php');
-        require_once("./include/my_func.inc.php");
-class TM{
-        var $solved=0;
-        var $time=0;
-        var $p_wa_num;
-        var $p_ac_sec;
-        var $user_id;
-        var $nick;
-        function TM(){
-                $this->solved=0;
-                $this->time=0;
-                $this->p_wa_num=array(0);
-                $this->p_ac_sec=array(0);
-        }
-        function Add($pid,$sec,$res){
-//              echo "Add $pid $sec $res<br>";
-                if (isset($this->p_ac_sec[$pid])&&$this->p_ac_sec[$pid]>0)
-                        return;
-                if ($res!=4){
-                        if(isset($this->p_wa_num[$pid])){
-                                $this->p_wa_num[$pid]++;
-                        }else{
-                                $this->p_wa_num[$pid]=1;
-                        }
-                }else{
-                        $this->p_ac_sec[$pid]=$sec;
-                        $this->solved++;
-                        if(!isset($this->p_wa_num[$pid])) $this->p_wa_num[$pid]=0;
-                        $this->time+=$sec+$this->p_wa_num[$pid]*1200;
-//                      echo "Time:".$this->time."<br>";
-//                      echo "Solved:".$this->solved."<br>";
-                }
-        }
-}
-
-function s_cmp($A,$B){
-//      echo "Cmp....<br>";
-        if ($A->solved!=$B->solved) return $A->solved<$B->solved;
-        else return $A->time>$B->time;
-}
-
-// contest start time
-if (!isset($_GET['cid'])) die("No Such Contest!");
-$cid=intval($_GET['cid']);
-
-$sql="SELECT `start_time`,`title`,`end_time`,`cmod_visible` FROM `contest` WHERE `contest_id`=$cid";
-$result = $database->select("contest_problem","*",["contest_id"=>$cid]);
-$problem_source=[];
-foreach($result as $row)
-{
-    $problem_source[intval($row["num"])]=$row["oj_name"]?strtolower($row["oj_name"]):"new";
-}
-//$result=mysqli_query($mysqli,$sql) or die(mysqli_error($mysqli));
-//$rows_cnt=mysqli_num_rows($result);
-if($OJ_MEMCACHE){
-        require("./include/memcache.php");
-        $result = mysql_query_cache($sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=count($result);
-        else $rows_cnt=0;
-}else{
-
-        $result = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=mysqli_num_rows($result);
-        else $rows_cnt=0;
-}
-
-$start_time=0;
-$end_time=0;
-$cmod=0;
-if ($rows_cnt>0){
-//      $row=mysqli_fetch_array($result);
-
-        if($OJ_MEMCACHE)
-                $row=$result[0];
-        else
-                $row=mysqli_fetch_array($result);
-        $start_time=strtotime($row['start_time']);
-        $end_time=strtotime($row['end_time']);
-        $title=$row['title'];
-        $cmod=intval($row['cmod_visible']);
-}
-if(!$OJ_MEMCACHE)mysqli_free_result($result);
-if ($start_time==0){
-        $view_errors= "No Such Contest";
-        require("template/".$OJ_TEMPLATE."/error.php");
-        exit(0);
-}
-
-if ($start_time>time()){
-        $view_errors= "Contest Not Started!";
-        require("template/".$OJ_TEMPLATE."/error.php");
-        exit(0);
-}
-if ($start_time>time()){
-        $view_errors= "Contest Not Started!";
-        require("template/".$OJ_TEMPLATE."/error.php");
-        exit(0);
-}
-if((!isset($_SESSION['administrator']))&&((!$OJ_CONTEST_MODE&&$cmod)||($OJ_CONTEST_MODE&&!$cmod)))
-{
-    $ERROR_MESSAGE_HEADER="无权访问";
-    $ERROR_MESSAGE_CONTENT="";
-    require("template/$OJ_TEMPLATE/closed.php");
-    exit(0);
-}
-if(!isset($OJ_RANK_LOCK_PERCENT)) $OJ_RANK_LOCK_PERCENT=0;
-$lock=$end_time-($end_time-$start_time)*$OJ_RANK_LOCK_PERCENT;
-
-//echo $lock.'-'.date("Y-m-d H:i:s",$lock);
-
-
-$sql="SELECT count(1) as pbc FROM `contest_problem` WHERE `contest_id`='$cid'";
-//$result=mysqli_query($mysqli,$sql);
-if($OJ_MEMCACHE){
-//        require("./include/memcache.php");
-        $result = mysql_query_cache($sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=count($result);
-        else $rows_cnt=0;
-}else{
-
-        $result = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=mysqli_num_rows($result);
-        else $rows_cnt=0;
-}
-
-if($OJ_MEMCACHE)
-        $row=$result[0];
-else
-        $row=mysqli_fetch_array($result);
-
-//$row=mysqli_fetch_array($result);
-$pid_cnt=intval($row['pbc']);
-if(!$OJ_MEMCACHE)mysqli_free_result($result);
-
-$sql="SELECT
-        users.user_id,users.nick,solution.result,solution.num,solution.in_date
-                FROM
-                        (select * from solution where solution.contest_id=$cid and num>=0 and problem_id>0) solution
-                left join users
-                on users.user_id=solution.user_id 
-union all 
-select users.user_id,users.nick,vsol.result,vsol.num,vsol.in_date
-from
-(select * from vjudge_solution where vjudge_solution.contest_id=$cid and num>=0 and problem_id>0)vsol
-left join users on users.user_id=vsol.user_id
-        ORDER BY user_id,in_date";
-//echo $sql;
-//$result=mysqli_query($mysqli,$sql);
-if($OJ_MEMCACHE){
-   //     require("./include/memcache.php");
-        $result = mysql_query_cache($sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=count($result);
-        else $rows_cnt=0;
-}else{
-
-        $result = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=mysqli_num_rows($result);
-        else $rows_cnt=0;
-}
-
-$user_cnt=0;
-$user_name='';
-$U=array();
-//$U[$user_cnt]=new TM();
-for ($i=0;$i<$rows_cnt;$i++){
-        if($OJ_MEMCACHE)
-                $row=$result[$i];
-        else
-                $row=mysqli_fetch_array($result);
-
-        $n_user=$row['user_id'];
-        if (strcmp($user_name,$n_user)){
-                $user_cnt++;
-                $U[$user_cnt]=new TM();
-
-                $U[$user_cnt]->user_id=$row['user_id'];
-                $U[$user_cnt]->nick=$row['nick'];
-
-                $user_name=$n_user;
-        }
-        if(time()<$end_time&&$lock<strtotime($row['in_date']))
-        	   $U[$user_cnt]->Add($row['num'],strtotime($row['in_date'])-$start_time,0);
-        else
-        	   $U[$user_cnt]->Add($row['num'],strtotime($row['in_date'])-$start_time,intval($row['result']));
-       
-}
-if(!$OJ_MEMCACHE) mysqli_free_result($result);
-usort($U,"s_cmp");
-
-////firstblood
-$first_blood=array();
-for($i=0;$i<$pid_cnt;$i++){
-      $first_blood[$i]="";
-}
-
-$sql="select * from (select num,user_id from
-        (select num,user_id from solution where contest_id=$cid and result=4 order by solution_id ) contest
-union all
-select num,user_id from
-(select num,user_id from vjudge_solution where contest_id=$cid and result=4 order by solution_id ) contest2 )cts
-        group by num";
-if($OJ_MEMCACHE){
-//        require("./include/memcache.php");
-        $fb = mysql_query_cache($sql);// or die("Error! ".mysqli_error($mysqli));
-        if($fb) $rows_cnt=count($fb);
-        else $rows_cnt=0;
-}else{
-
-        $fb = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        if($fb) $rows_cnt=mysqli_num_rows($fb);
-        else $rows_cnt=0;
-}
-
-for ($i=0;$i<$rows_cnt;$i++){
-        if($OJ_MEMCACHE)
-                $row=$fb[$i];
-        else
-                $row=mysqli_fetch_array($fb);
-         $first_blood[$row['num']]=$row['user_id'];
-}
-
-
-
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/contestrank.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-        require_once('./include/cache_end.php');
+$rank=1;
 ?>
+<center>
+    <h3 class="ui top attached header">Contest RankList -- <?php echo $title?>&nbsp;&nbsp;<button class="ui primary button" onclick="location.href='contestrank.xls.php?cid=<?php echo $cid?>'">Save to XLS</button></h3>
+
+<?php
+if($OJ_MEMCACHE){
+  ?>
+<a href="contestrank2.php?cid=<?php echo $cid?>" >Replay</a>
+
+<?php
+}
+ ?>
+</center>
+<div style="width:100%;height:100%;overflow-x: scroll" class="ranking">
+<table id='rank' class="ui small celled table"><thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=10%>User</th><th width=10%>Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
+<?php
+for ($i=0;$i<$pid_cnt;$i++)
+echo "<th><a href=".$problem_source[$i]."submitpage.php?cid=$cid&pid=$i>$PID[$i]</a></th>";
+echo "</tr></thead>\n<tbody>";
+for ($i=0;$i<$user_cnt;$i++){
+if ($i&1) echo "<tr class=oddrow align=center>\n";
+else echo "<tr class=evenrow align=center>\n";
+echo "<td>";
+$uuid=$U[$i]->user_id;
+$nick=$U[$i]->nick;
+if($nick[0]!="*")
+echo $rank++;
+else
+echo "*";
+$usolved=$U[$i]->solved;
+if(isset($_GET['user_id'])&&$uuid==$_GET['user_id']) echo "<td bgcolor=#ffff77>";
+else echo"<td>";
+echo "<a name=\"$uuid\" href=userinfo.php?user=$uuid>$uuid</a>";
+echo "<td><a href=userinfo.php?user=$uuid>".htmlspecialchars_decode(htmlentities($U[$i]->nick,ENT_QUOTES,"UTF-8"))."</a>";
+echo "<td><a href=status.php?user_id=$uuid&cid=$cid>$usolved</a>";
+echo "<td>".sec2str($U[$i]->time);
+for ($j=0;$j<$pid_cnt;$j++){
+$bg_color="eeeeee";
+if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j]>0){
+$aa=0x33+$U[$i]->p_wa_num[$j]*32;
+$aa=$aa>0xaa?0xaa:$aa;
+$aa=dechex($aa);
+$bg_color="$aa"."ff"."$aa";
+//$bg_color="aaffaa";
+if($uuid==$first_blood[$j]){
+$bg_color="aaaaff";
+}
+}else if(isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0) {
+$aa=0xaa-$U[$i]->p_wa_num[$j]*10;
+$aa=$aa>16?$aa:16;
+$aa=dechex($aa);
+$bg_color="ff$aa$aa";
+}
+echo "<td style='background-color:#$bg_color'>";
+if(isset($U[$i])){
+if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j]>0)
+echo sec2str($U[$i]->p_ac_sec[$j]);
+if (isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0)
+echo "(-".$U[$i]->p_wa_num[$j].")";
+}
+}
+echo "</tr>\n";
+}
+echo "</tbody></table>";
+?>
+</div>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   	    
+<script type="text/javascript" src="include/jquery.tablesorter.js"></script>
+<script type="text/javascript">
+$(document).ready(function()
+{
+        $.tablesorter.addParser({
+              // set a unique id
+              id: 'punish',
+              is: function(s) {
+              // return false so this parser is not auto detected
+              return false;
+              },
+              format: function(s) {
+              // format your data for normalization
+              var v=s.toLowerCase().replace(/\:/,'').replace(/\:/,'').replace(/\(-/,'.').replace(/\)/,'');
+              //alert(v);
+              v=parseFloat('0'+v);
+              return v>1?v:v+Number.MAX_VALUE-1;
+              },
+              // set type, either numeric or text
+              type: 'numeric'
+              });
+              $("#rank").tablesorter({
+              headers: {
+              4: {
+              sorter:'punish'
+              }
+              <?php
+              for ($i=0;$i<$pid_cnt;$i++){
+              echo ",".($i+5).": { ";
+              echo " sorter:'punish' ";
+              echo "}";
+              }
+              ?>
+              }
+        });
+  metal();
+}
+);
+</script>
+<script>
+function getTotal(rows){
+var total=0;
+for(var i=0;i<rows.length&&total==0;i++){
+try{
+total=parseInt(rows[rows.length-i].cells[0].innerHTML);
+if(isNaN(total)) total=0;
+}catch(e){
+}
+}
+return total;
+}
+function metal(){
+var tb=window.document.getElementById('rank');
+var rows=tb.rows;
+try{
+var total=getTotal(rows);
+//alert(total);
+for(var i=1;i<rows.length;i++){
+var cell=rows[i].cells[0];
+var acc=rows[i].cells[3];
+var ac=parseInt(acc.innerText);
+if (isNaN(ac)) ac=parseInt(acc.textContent);
+if(cell.innerHTML!="*"&&ac>0){
+var r=parseInt(cell.innerHTML);
+if(r==1){
+cell.innerHTML="Winner";
+//cell.style.cssText="background-color:gold;color:red";
+cell.className="ui yellow";
+}
+if(r>1&&r<=total*.10+1)
+cell.className="ui yellow";
+if(r>total*.10+1&&r<=total*.30+1)
+cell.className="ui grey";
+if(r>total*.30+1&&r<=total*.60+1)
+cell.className="ui orange";
+/*
+if(r>total*.45+1&&ac>0)
+cell.className="ui grey";
+*/
+}
+}
+}catch(e){
+//alert(e);
+}
+}
+<?php if($pid_cnt>=10){ ?>
+$(".ui.small.table").css({fontSize:12})
+<?php } ?>
+</script>
+<style>
+.well{
+   background-image:none;
+   padding:1px;
+}
+td{
+   white-space:nowrap;
+
+}
+</style>
+<script>
+    $(".ranking").height(window.screen.availHeight-($(".ui.vertical.center").outerHeight()+$("center").outerHeight())-105);
+</script>
+  </body>
+</html>

@@ -1,237 +1,113 @@
-<?php
-$cache_time=30;
-$OJ_CACHE_SHARE=false;
-        require_once('./include/cache_start.php');
-    require_once('./include/db_info.inc.php');
-        require_once('./include/setlang.php');
-        $now=strftime("%Y-%m-%d %H:%M",time());
-if (isset($_GET['cid'])) $ucid="&cid=".intval($_GET['cid']);
-else $ucid="";
-require_once("./include/db_info.inc.php");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
-        if(isset($OJ_LANG)){
-                require_once("./lang/$OJ_LANG.php");
+    <title><?php echo $OJ_NAME?></title>
+    <?php include("template/$OJ_TEMPLATE/css.php");?>
+    <?php include("template/$OJ_TEMPLATE/extra_css.php") ?>
+    <?php include("template/$OJ_TEMPLATE/js.php");?>
+    <?php include("template/$OJ_TEMPLATE/extra_js.php") ?>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<?php include("template/$OJ_TEMPLATE/nav.php");?>
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="ui container padding">
+    <center><h2>
+        <?php
+        $sinput=str_replace("<","&lt;",$row['sample_input']);
+        $sinput=str_replace(">","&gt;",$sinput);
+        $soutput=str_replace("<","&lt;",$row['sample_output']);
+        $soutput=str_replace(">","&gt;",$soutput);
+        if ($pr_flag){
+            echo "$id: ".$row['title'];
+        }else{
+            $PID="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            $id=$row['problem_id'];
+            echo "$MSG_PROBLEM $PID[$pid]: ".$row['title'];
         }
-
-$pr_flag=false;
-$co_flag=false;
-$condition=[];
-$target=[];
-$table_name="";
-$langmask=$OJ_LANGMASK;
-if (isset($_GET['id'])){
-        // practice
-        $id=intval($_GET['id']);
-  //require("oj-header.php");
-        if (!isset($_SESSION['administrator']) && $id!=1000&&!isset($_SESSION['contest_creator']))
+        ?>
+        </h2>
+        <div class='ui labels'>
+        <li class='ui label red'><?=$MSG_Time_Limit?>:<?=$row['time_limit']?> 秒 </li>
+        <li class='ui label red'><?=$MSG_Memory_Limit?>: <?=$row['memory_limit']?> MB</li>
+        <?php
+        if ($row['spj']){ ?>
+        <li class='ui label orange'>Special Judge</li>
+        <?php } ?>
+        <li class='ui label grey'><?=$MSG_SUBMIT?>: <?=$row['submit']?></li>
+        <li class='ui label green'><?=$MSG_SOVLED?>:"<?=$row['accepted']?></li>
+        </div>
+        <div class='ui buttons'>
+        <?php
+        if ($pr_flag){
+            ?>
+            <a href='newsubmitpage.php?id=<?=$id?>' class='ui button blue'><?=$MSG_SUBMIT?></a>&nbsp;
+            <?php
+        }else if(isset($_GET['tid']))
         {
-                $sql="SELECT * FROM `problem` WHERE `problem_id`=$id AND `defunct`='N' AND `problem_id` NOT IN (
-                                SELECT `problem_id` FROM `contest_problem` WHERE `contest_id` IN(
-                                                SELECT `contest_id` FROM `contest` WHERE `end_time`>'$now' or `private`='1'))
-                                ";
-                                $table_name="problem";
-                                $condition["problem_id"]=$id;
-                                $condition["defunct"]="N";
-                                $condition["problem_id[!]"]=$database->select("contest_problem","problem_id",[
-                                    "contest_id"=>$database->select("contest","contest_id",[
-                                        "OR"=>[
-                                        "end_time[>]"=>$now,
-                                        "private"=>"1"
-                                        ]
-                                        ])
-                                    ]);
+            ?>
+            <a class='ui button blue' href='newsubmitpage.php?tid=<?=$tid?>&pid=<?=$pid?>&langmask=<?=$langmask?>&js'><?=$MSG_SUBMIT?></a>&nbsp;
+            <?php
         }
         else{
-                $sql="SELECT * FROM `problem` WHERE `problem_id`=$id";
-                $table_name="problem";
-                $target="*";
-                $condition["problem_id"]=$id;
+            ?>
+            <a class='ui button blue' href='newsubmitpage.php?cid=<?=$cid?>&pid=<?=$pid?>&langmask=<?=$langmask?>&js'><?=$MSG_SUBMIT?></a>&nbsp;
+            <?php
         }
-
-        $pr_flag=true;
-}else if (isset($_GET['cid']) && isset($_GET['pid'])){
-        // contest
-        $cid=intval($_GET['cid']);
-        $pid=intval($_GET['pid']);
-        
-        if (!isset($_SESSION['administrator'])){
-                $sql="SELECT langmask,private,defunct FROM `contest` WHERE `defunct`='N' AND `contest_id`=$cid AND `start_time`<='$now'";
-                $target=["langmask","private","defunct"];
-                $table_name="contest";
-                $condition["defunct"]="N";
-                $condition["contest_id"]=$cid;
-                $condition["start_time[<=]"]=$now;
+        ?>
+        <a href='problemstatus.php?id=<?=$row['problem_id']?>' class='ui button orange'><?=$MSG_STATUS?></a>&nbsp;
+        <a href='newsubmitpage.php?<?=$_SERVER['QUERY_STRING']?>' class='ui button black'>切换双屏</a>&nbsp;
+        <?php
+        if(isset($_SESSION['administrator'])){
+            require_once("include/set_get_key.php");
+            ?>
+            <?php
+            if(isset($_GET['cid']))
+            {
+                $PID="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                ?>
+                <a class="ui button green" href="status.php?problem_id=<?php echo $PID[$pid] ?>&cid=<?php echo $cid ?>&jresult=4">AC代码</a>
+            <?php }
+            else{
+                ?>
+                <a class="ui button green" href="status.php?problem_id=<?php echo $id ?>&jresult=4">AC代码</a>
+            <?php } ?>
+            <a class='ui button violet' href="admin/problem_edit.php?id=<?php echo $id?>&getkey=<?php echo $_SESSION['getkey']?>" >Edit</a>
+            <a class='ui button purple' href="admin/quixplorer/index.php?action=list&dir=<?php echo $row['problem_id']?>&order=name&srt=yes" >TestData</a>
+            <?php
         }
-        else{
-                //$sql="SELECT langmask,private,defunct FROM `contest` WHERE `defunct`='N' AND `contest_id`=$cid";
-                $target="contest";
-                $table_name="contest";
-                $condition["defunct"]="N";
-                $condition["contest_id"]=$cid;
-                $target=["langmask","private","defunct"];
-        }
-        $result=$database->select($table_name,$target,$condition);
-       //$result=mysqli_query($mysqli,$sql);
-        
-        $rows_cnt=count($result);
-        $row=$result[0];
-        $contest_ok=true;
-        if ($row[1] && !isset($_SESSION['c'.$cid])) $contest_ok=false;
-        if ($row[2]=='Y') $contest_ok=false;
-        if (isset($_SESSION['administrator'])) $contest_ok=true;
-                               
-       
-    $ok_cnt=$rows_cnt==1;              
-        $langmask=$row["langmask"];
-       // $langmask=$OJ_LANGMASK;
-        //mysqli_free_result($result);
-        if ($ok_cnt!=1){
-                // not started
-                $view_errors=  "No such Contest!";
-       
-                require("template/".$OJ_TEMPLATE."/error.php");
-                exit(0);
-        }else{
-                // started
-                $sql="SELECT * FROM `problem` WHERE `defunct`='N' AND `problem_id`=(
-                        SELECT `problem_id` FROM `contest_problem` WHERE `contest_id`=$cid AND `num`=$pid
-                        )";
-                        $target="*";
-                        $table_name="problem";
-                        $condition=[];
-                        $condition["defunct"]="N";
-                        $condition["problem_id"]=$database->select("contest_problem","problem_id",["contest_id"=>$cid,"num"=>$pid]);
-        }
-        // public
-        if (!$contest_ok){
-       
-                $view_errors= "Not Invited!";
-                require("template/".$OJ_TEMPLATE."/error.php");
-                exit(0);
-        }
-        $co_flag=true;
-}
-else if(isset($_GET['tid']) && isset($_GET['pid']))
-{
-    //special_subject
-    $tid=intval($_GET['tid']);
-        $pid=intval($_GET['pid']);
-        $sql="SELECT langmask,private,defunct FROM `special_subject` WHERE `defunct`='N' AND `topic_id`=$tid";
-        $target=["langmask","private","defunct"];
-        $table_name="special_subject";
-        $condition=[];
-        $condition["defunct"]="N";
-        $condition["topic_id"]=$tid;
-        //$result=mysqli_query($mysqli,$sql);
-        $result=$database->select($table_name,$target,$condition);
-        $rows_cnt=count($result);
-        $row=$result[0];
-        $contest_ok=true;
-       // if ($row[1] && !isset($_SESSION['s'.$sid])) $contest_ok=false;
-        //if ($row[2]=='Y') $contest_ok=false;
-      //  if (isset($_SESSION['administrator'])) $contest_ok=true;
-                               
-       
-    $ok_cnt=$rows_cnt==1;              
-        $langmask=$row[0];
-        mysqli_free_result($result);
-        if ($ok_cnt!=1){
-                // not started
-                $view_errors=  "No such Contest!";
-       
-                require("template/".$OJ_TEMPLATE."/error.php");
-                exit(0);
-        }else{
-                // started
-                if(isset($_SESSION['administrator']))
-                {
-                    $sql="SELECT * FROM `problem` WHERE  `problem_id`=(
-                        SELECT `problem_id` FROM `special_subject_problem` WHERE `topic_id`=$tid AND `num`=$pid
-                        )";
-                        $target="*";
-                        $table_name="problem";
-                        $condition=[];
-                        $condition["problem_id"]=$database->select("special_subject_problem","problem_id",[
-                            "topic_id"=>$tid,
-                            "num"=>$pid
-                            ]);
-                }
-                else
-                {
-                $sql="SELECT * FROM `problem` WHERE `defunct`='N' AND `problem_id`=(
-                        SELECT `problem_id` FROM `special_subject_problem` WHERE `topic_id`=$tid AND `num`=$pid
-                        )";
-                        $target="*";
-                        $table_name="problem_id";
-                        $condition=[];
-                        $condition["defunct"]="N";
-                        $condition["problem_id"]=$database->select("special_subject_problem","problem_id",[
-                            "topic_id"=>$tid,
-                            "num"=>$pid
-                            ]);
-                }
-        }
-        // public
-        if (!$contest_ok){
-       
-                $view_errors= "Not Invited!";
-                require("template/".$OJ_TEMPLATE."/error.php");
-                exit(0);
-        }
-        $co_flag=true;
-}
-else{
-    echo "test";
-        $view_errors=  "<title>$MSG_NO_SUCH_PROBLEM</title><h2>$MSG_NO_SUCH_PROBLEM</h2>";
-        require("template/".$OJ_TEMPLATE."/error.php");
-        exit(0);
-}
-//$result=mysqli_query($mysqli,$sql) or die(mysqli_error($mysqli));
-if(strlen($target)==0)$target="*";
-
-$result=$database->select($table_name,$target,$condition);
-       //echo var_dump($result);
-if (count($result)!=1){
-   $view_errors="";
-   if(isset($_GET['id'])){
-      $id=intval($_GET['id']);
-      
-           //mysqli_free_result($result);
-           $sql="SELECT  contest.`contest_id` , contest.`title`,contest_problem.num FROM `contest_problem`,`contest` WHERE contest.contest_id=contest_problem.contest_id and `problem_id`=$id and defunct='N'  ORDER BY `num`";
-           //echo $sql;
-           $result=mysqli_query($mysqli,$sql);
-          // $result=$database->query($sql)->fetchAll();
-           if($i=mysqli_num_rows($result)){
-              $view_errors.= "This problem is in Contest(s) below:<br>";
-                   for (;$i>0;$i--){
-                                $row=mysqli_fetch_row($result);
-                                $view_errors.= "<a href=problem.php?cid=$row[0]&pid=$row[2]>Contest $row[0]:$row[1]</a><br>";
-                               
-                        }
-                                 
-                               
-                }else{
-                        $view_title= "<title>$MSG_NO_SUCH_PROBLEM!</title>";
-                        $view_errors.= "<h2>$MSG_NO_SUCH_PROBLEM!</h2>";
-                }
-   }else{
-                $view_title= "<title>$MSG_NO_SUCH_PROBLEM!</title>";
-                $view_errors.= "<h2>$MSG_NO_SUCH_PROBLEM!</h2>";
-        }
-        require("template/".$OJ_TEMPLATE."/error.php");
-        exit(0);
-}else{
-       // $row=mysqli_fetch_object($result);
-       $row=$result[0];
-        $view_title= $row['title'];
-}
-//mysqli_free_result($result);
+        ?>
+        </div>
+        </center>
+        <h4 class='ui top attached block header hidden'><?=$MSG_Description?></h4><div class='ui bottom attached segment hidden'><?=$row['description']?></div>
+        <h4 class='ui top attached block header hidden'><?=$MSG_Input?></h4><div class='ui bottom attached segment hidden'><?=$row['input']?></div>
+        <h4 class='ui top attached block header hidden'><?=$MSG_Output?></h4><div class='ui bottom attached segment hidden'><?=$row['output']?></div>
+        <h4 class='ui top attached block header hidden'><?=$MSG_Sample_Input?></h4>
+<pre class='ui bottom attached segment hidden'><span class=sampledata><?=($sinput)?></span></pre>
+            <h4 class='ui top attached block header hidden'><?=$MSG_Sample_Output?></h4>
+<pre class='ui bottom attached segment hidden'><span class=sampledata><?=($soutput)?></span></pre>
+           <h4 class='ui top attached block header hidden'><?=$MSG_HINT?></h4>
+<div class='ui bottom attached segment hidden'><p><?=nl2br($row['hint'])?></p></div>
+            <h4 class='ui top attached block header hidden'><?=$MSG_Source?></h4>
+<div class='ui bottom attached segment hidden'><p><a href='problemset.php?search=<?=$row['source']?>'><?=nl2br($row['source'])?></a></p></div>
+</div>
 
 
-/////////////////////////Template
-require_once("template/".$OJ_TEMPLATE."/problem.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-   require_once('./include/cache_end.php');
-?>
-
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<?php include("template/$OJ_TEMPLATE/bottom.php");?>
+</body>
+</html>

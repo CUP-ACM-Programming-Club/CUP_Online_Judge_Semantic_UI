@@ -1,157 +1,182 @@
-<?php
-        $OJ_CACHE_SHARE=false;
-        $cache_time=1;
-require_once('./include/db_info.inc.php');
-require_once('./include/setlang.php');
-require_once('./closed.php');
-    require_once('./include/cache_start.php');
-        $view_title= $MSG_RANKLIST;
- if (!isset($_SESSION['user_id'])){
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
-	$view_errors= "<a href=newloginpage.php>$MSG_Login</a>";
-	require("template/".$OJ_TEMPLATE."/error.php");
-	exit(0);
-//	$_SESSION['user_id']="Guest";
-}
-if($OJ_TEMPLATE!="semantic-ui"){
-        $scope="";
-        if(isset($_GET['scope']))
-                $scope=$_GET['scope'];
-        if($scope!=""&&$scope!='d'&&$scope!='w'&&$scope!='m')
-                $scope='y';
+    <title><?php echo $OJ_NAME ?></title>
+    <?php include("template/$OJ_TEMPLATE/css.php"); ?>
+    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
 
-        $rank = 0;
-        $table_name="";
-        $target="";
-        $condition=[];
-        if(isset( $_GET ['start'] ))
-                $rank = intval ( $_GET ['start'] );
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="include/sortTable.js"></script>
+</head>
 
-                if(isset($OJ_LANG)){
-                        require_once("./lang/$OJ_LANG.php");
-                }
-                $page_size=50;
-                //$rank = intval ( $_GET ['start'] );
-                if ($rank < 0)
-                        $rank = 0;
+<body>
+<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<script type="text/x-template" id="ranklist_template">
+<div>
+    <table style="width:100%" class="ui padded celled selectable table">
+    <thead>
+        <tr>
+            <td colspan="2">
+                <div class="ui mini statistic">
+                    <div class="value">
+                        <i class="user icon"></i>{{registed_user}}
+                    </div>
+                    <div class="label">
+                        Registered
+                    </div>
+                </div>
+                <div class="ui mini statistic">
+                    <div class="value">
+                        <i class="user circle outline icon"></i>{{acm_user}}
+                    </div>
+                    <div class="label">
+                        ACMER
+                    </div>
+                </div>
+            </td>
+            <td colspan="1" align="left">
+                <div class="ui search">
+                    <label>{{_name.user}}</label>
+                    <div class="ui input">
+                        <input name="user" @keyup="search_user($event)">
+                    </div>
+                </div>
+            </td>
+            <td colspan="4" align="right">
+                <a :class="'ui blue mini button '+(time_stamp === 'D'?'disabled':'')" @click="timestamp('D',$event)">Day</a>
+                <a :class="'ui blue mini button '+(time_stamp === 'W'?'disabled':'')" @click="timestamp('W',$event)">Week</a>
+                <a :class="'ui blue mini button '+(time_stamp === 'M'?'disabled':'')" @click="timestamp('M',$event)">Month</a>
+                <a :class="'ui blue mini button '+(time_stamp === 'Y'?'disabled':'')" @click="timestamp('Y',$event)">Year</a>
+                <a :class="'ui blue mini button '+(time_stamp === ''?'disabled':'')" @click="timestamp('',$event)">Total</a>
+            </td>
+        </tr>
+        <tr>
+            <th width="5%"><b>{{_name.rank}}</b></th>
+            <th width="10%"><b>{{_name.user}}</b></th>
+            <th width="35%"><b>{{_name.nick}}</b></th>
+            <th width="7%"><b>{{_name.accept}}</b></th>
+            <th width="7%"><b>{{_name.vjudge_accept}}</b></th>
+            <th width="7%"><b>{{_name.submit}}</b></th>
+            <th width="7%"><b>{{_name.ratio}}</b></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="(row,key,index) in ranklist">
+            <td>{{page*50+key+1}}</td>
+            <td><a :href="'/userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
+            <td>{{row.nick}}</td>
+            <td><a :href="'status.php?user_id='+row.user_id+'&jresult=4'">{{row.solved||0}}</a></td>
+            <td><a :href="'hdu_status.php?user_id='+row.user_id+'&jresult=4'">{{row.vjudge_solved||0}}</a></td>
+            <td><a :href="'status.php?user_id='+row.user_id">{{row.submit||0}}</a></td>
+            <td><a>{{(((row.solved*100/(row.submit||0)||0)).toString().substring(0,5)+"%")}}</a></td>
+        </tr>
+    </tbody>
+</table>
+<a v-cloak :class="'ui button '+(page == 0?'disabled':'')" @click="page != 0 && _page(-page,$event)" class="ui button">
+    Top
+</a>
 
-                $sql = "SELECT `user_id`,`nick`,`solved`,`submit` FROM `users` ORDER BY `solved` DESC,submit,reg_time  LIMIT  " . strval ( $rank ) . ",$page_size";
-                $target=["user_id","nick","solved","submit"];
-                $table_name="users";
-                //$condition["ORDER"]=[""];
-                if($scope){
-                        $s="";
-                        switch ($scope){
-                                case 'd':
-                                        $s=date('Y').'-'.date('m').'-'.date('d');
-                                        break;
-                                case 'w':
-                                        $monday=mktime(0, 0, 0, date("m"),date("d")-(date("w")+7)%8+1, date("Y"))                                                            ;
-                                        //$monday->subDays(date('w'));
-                                        $s=strftime("%Y-%m-%d",$monday);
-                                        break;
-                                case 'm':
-                                        $s=date('Y').'-'.date('m').'-01';
-                                        ;break;
-                                default :
-                                        $s=date('Y').'-01-01';
-                        }
-                        //echo $s."<-------------------------";
-                        $sql="SELECT users.`user_id`,`nick`,s.`solved`,t.`submit` FROM `users`
-                                        right join
-                                        (select count(distinct problem_id) solved ,user_id from solution where in_date>str_to_date('$s','%Y-%m-%d') and result=4 group by user_id order by solved desc limit " . strval ( $rank ) . ",$page_size) s on users.user_id=s.user_id
-                                        left join
-                                        (select count( problem_id) submit ,user_id from solution where in_date>str_to_date('$s','%Y-%m-%d') group by user_id order by submit desc limit " . strval ( $rank ) . ",".($page_size*2).") t on users.user_id=t.user_id
-                                ORDER BY s.`solved` DESC,t.submit,reg_time  LIMIT  0,50
-                         ";
-//                      echo $sql;
-                }
+<a @click="page&&_page(-1,$event)" class="ui left labeled icon button" :class="'ui left labeled icon button '+(page > 0?'':'disabled')" >
+    <i class="left arrow icon"></i>
+    Prev
+</a>
+<a @click="page*50<registed_user&&_page(1,$event)" class="ui right labeled icon button" :class="'ui right labeled icon button '+((page+1)*50>=registed_user?'disabled':'')">
+     <i class="right arrow icon"></i>
+    Next
+</a>
+</div>
+</script>
+<div class="ui container padding">
+    <!-- Main component for a primary marketing message or call to action -->
+    <div>
+        <h2 class="ui dividing header">
+            Rank List
+        </h2>
+        <ranklist :data="ranklist"></ranklist>
 
-       //         $result = mysql_query ( $sql ); //mysqli_error($mysqli);
-        
-                $result=$database->query($sql)->fetchAll();
-                //$result = mysqli_query($mysqli,$sql) or die("Error! ".mysqli_error($mysqli));
-                if($result) $rows_cnt=count($result);
-                else $rows_cnt=0;
-        
-        if(isset($_GET['debug']))
-        {
-            echo $sql;
-            exit(0);
+    </div>
+
+</div> <!-- /container -->
+
+<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script>
+Vue.component("ranklist",{
+    template:"#ranklist_template",
+    props:{
+       data:Object 
+    },
+    data:function(){
+        return {
+            registed_user:0,
+            acm_user:0,
+            page:parseInt(getParameterByName("page"))||0,
+            search:getParameterByName("search")||"",
+            time_stamp:""
+        };
+    },
+    computed:{
+       _name:function(){
+           return this.data._name;
+       },
+       ranklist:function(){
+           return this.data.ranklist;
+       }
+    },
+    methods:{
+        search_user:function($event){
+            var that = this;
+            this.search = $event.target.value;
+            $.get("/api/ranklist?page="+this.page+"&search="+this.search+"&time_stamp="+this.time_stamp,function(data){
+                that.data = data;
+            })
+        },
+        timestamp:function(time,$event){
+            var that = this;
+            this.time_stamp = time;
+            $.get("/api/ranklist?page="+this.page+"&search="+this.search+"&time_stamp="+this.time_stamp,function(data){
+                that.data = data;
+            })
+        },
+        _page:function(diff,$event){
+            this.page += diff;
+            var that = this;
+            $.get("/api/ranklist?page="+this.page+"&search="+this.search+"&time_stamp="+this.time_stamp,function(data){
+                that.data = data;
+            })
         }
-                $view_rank=Array();
-                $i=0;
-                for ( $i=0;$i<$rows_cnt;$i++ ) {
-                        
-                                $row=$result[$i];
-                        $rank ++;
+    },
+    mounted:function(){
+        var that = this;
+        $.get("/api/ranklist/user",function(data){
+            that.registed_user = data[0].tot_user;
+            that.acm_user = data[0].acm_user;
+        })
+    }
+});
+$.get("/api/ranklist",function(data){
+    window.ranklist = new Vue({
+    el:".ui.container.padding",
+    data:{
+        ranklist:data
+    },
+    
+})
+})
 
-                        $view_rank[$i][0]= $rank;
-                        $view_rank[$i][1]=  "<div class=center><a href='userinfo.php?user=" . $row['user_id'] . "                                                            '>" . $row['user_id'] . "</a>" ."</div>";
-                        $view_rank[$i][2]=  "<div class=center>" . htmlentities ( $row['nick'] ,ENT_QUOTES,"UTF-8") ."</div>";
-                        //$cnt=$database->count("vjudge_record",["user_id"=>$row['user_id']]);
-                        $acres=$database->select("vjudge_record",["problem_id","oj_name"],["user_id"=>$row['user_id']]);
-                                $acproblem=[];
-                                foreach($acres as $v)
-                                {
-                                    $acproblem[$v['oj_name'].$v['problem_id']]=1;
-                                }
-                                $aclocal=$database->select("vjudge_solution",["problem_id","oj_name"],["user_id"=>$row['user_id']]);
-                              //  echo count($acproblem);
-                              //  echo print_r($acproblem);
-                                foreach($aclocal as $v)
-                                {
-                                    $acproblem[$v['oj_name'].$v['problem_id']]=1;
-                                }
-                                $cnt=count($acproblem);
-                                //$cnt=$result;
-                        $plus="";
-                        if($cnt>0)$plus="+".strval($cnt);
-                        //$view_rank[$i]["sum"]=intval($cnt)+intval($plus);
-                        $view_rank[$i][3]=  "<div class=center><a href='status.php?user_id=" . $row['user_id'] .                                                             "&jresult=4'>" . $row['solved'] .$plus. "</a>" ."</div>";
-                        $view_rank[$i][4]=  "<div class=center><a href='status.php?user_id=" . $row['user_id'] .                                                             "'>" . $row['submit'] . "</a>" ."</div>";
-
-                        if ($row['submit'] == 0)
-                                $view_rank[$i][5]= "0.000%";
-                        else
-                                $view_rank[$i][5]= sprintf ( "%.03lf%%", 100 * $row['solved'] / $row['submit'] );
-
-//                      $i++;
-                }
-function mysort($a,$b){
-    return $b["sum"]-$a["sum"];
-}
-
-/*
-uasort($view_rank,"mysort");
-foreach($view_rank as $key=>$v)
-{
-    unset($view_rank[$key]["sum"]);
-}
-*/
-if(!$OJ_MEMCACHE)mysqli_free_result($result);
-
-                $sql = "SELECT count(1) as `mycount` FROM `users`";
-        //        $result = mysql_query ( $sql );
-
-            $result=$database->count("users","*");
-               // $result = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-                if($result) $rows_cnt=count($result);
-                else $rows_cnt=0;
-
-                $row=$result;
-               // echo mysqli_error($mysqli);
-  //$row = mysql_fetch_object ( $result );
-                $view_total=$row;
-
-  //              mysql_free_result ( $result );
-
-if(!$OJ_MEMCACHE)  mysqli_free_result($result);
-
-}
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/ranklist.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-        require_once('./include/cache_end.php');
-?>
+</script>
+</body>
+</html>

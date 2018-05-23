@@ -1,123 +1,89 @@
-<?php
-	$cache_time=10;
-	$OJ_CACHE_SHARE=false;
-	require_once('./include/cache_start.php');
-	require_once('./include/db_info.inc.php');
-	require_once('./include/my_func.inc.php');
-	require_once('./include/setlang.php');
-	 
-	if(isset($OJ_EXAM_CONTEST_ID)&&$OJ_EXAM_CONTEST_ID>0){
-		header("Content-type: text/html; charset=utf-8");
-		echo $MSG_MAIL_NOT_ALLOWED_FOR_EXAM;
-		exit ();
-	}
-    if(!isset($_SESSION['administrator'])&&isset($OJ_EMAIL_MODE)&&!$OJ_EMAIL_MODE){
-        $ERROR_MESSAGE_HEADER="禁止访问";
-        $ERROR_MESSAGE_CONTENT="无权限";
-		//echo "Email has closed";
-		include("template/$OJ_TEMPLATE/closed.php");
-		exit (0);
-    }
-	$view_title=$MSG_MAIL;
- $to_user="";
-$title="";
-if (isset($_GET['to_user'])){
-	$to_user=htmlentities($_GET['to_user'],ENT_QUOTES,"UTF-8");
-}
-if (isset($_GET['title'])){
-	$title=htmlentities($_GET['title'],ENT_QUOTES,"UTF-8");
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
-if (!isset($_SESSION['user_id'])){
-	echo "<a href=loginpage.php>$MSG_Login</a>";
-	require_once("oj-footer.php");
-	exit(0);
-}
-require_once("./include/db_info.inc.php");
-require_once("./include/const.inc.php");
-if(isset($OJ_LANG)){
-		require_once("./lang/$OJ_LANG.php");
-		if(file_exists("./faqs.$OJ_LANG.php")){
-			$OJ_FAQ_LINK="faqs.$OJ_LANG.php";
-		}
-}
-echo "<title>$MSG_MAIL</title>";
+    <title><?php echo $OJ_NAME ?></title>
+    <?php include("template/$OJ_TEMPLATE/css.php"); ?>
+    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
 
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
 
+<body>
+<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<div class="pusher">
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="ui container padding">
+        <center>
+            <?php
+            if ($view_content)
+                echo "<center>
+<table>
+<tr>
+<td class=blue>$to_user:" . htmlentities(str_replace("\n\r", "\n", $view_title), ENT_QUOTES, "UTF-8") . " </td>
+</tr>
+<tr><td><pre>" . htmlentities(str_replace("\n\r", "\n", $view_content), ENT_QUOTES, "UTF-8") . "</pre>
+</td></tr>
+</table></center>";
+            ?>
+            <form method=post action=mail.php>
+                <table>
+                    <tr>
+                        <td> To:<input name=to_user size=10 value="<?php echo $to_user ?>">
+                            Title:<input name=title size=20 value="<?php echo $title ?>">
+                            <input type=submit value=<?php echo $MSG_SUBMIT ?>></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea name=content rows=10 cols=80 class="input input-xxlarge"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <table border=1>
+                <tr>
+                    <td>Mail ID
+                    <td>From:Title
+                    <td>Date
+                </tr>
+                <tbody>
+                <?php
+                $cnt = 0;
+                foreach ($view_mail as $row) {
+                    if ($cnt)
+                        echo "<tr class='oddrow'>";
+                    else
+                        echo "<tr class='evenrow'>";
+                    foreach ($row as $table_cell) {
+                        echo "<td>";
+                        echo "\t" . $table_cell;
+                        echo "</td>";
+                    }
+                    echo "</tr>";
+                    $cnt = 1 - $cnt;
+                }
+                ?>
+                </tbody>
+            </table>
+        </center>
+    </div>
 
-//view mail
-$view_content=false;
-if (isset($_GET['vid'])){
-	$vid=intval($_GET['vid']);
-	$sql="SELECT * FROM `mail` WHERE `mail_id`=".$vid."
-								and to_user='".$_SESSION['user_id']."'";
-	$result=mysqli_query($mysqli,$sql);
-	$row=mysqli_fetch_object($result);
-	$to_user=$row->from_user;
-	$view_title=$row->title;
-	$view_content=$row->content;
+</div> <!-- /container -->
+<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
 
-	mysqli_free_result($result);
-	$sql="update `mail` set new_mail=0 WHERE `mail_id`=".$vid;
-	mysqli_query($mysqli,$sql);
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
 
-}
-//send mail page
-//send mail
-if(isset($_POST['to_user'])){
-	$to_user = $_POST ['to_user'];
-	$title = $_POST ['title'];
-	$content = $_POST ['content'];
-	$from_user=$_SESSION['user_id'];
-	if (get_magic_quotes_gpc ()) {
-		$to_user = stripslashes ( $to_user);
-		$title = stripslashes ( $title);
-		$content = stripslashes ( $content );
-	}
-	$title = RemoveXSS( $title);
-	$to_user=mysqli_real_escape_string($mysqli,$to_user);
-	$title=mysqli_real_escape_string($mysqli,$title);
-	$content=mysqli_real_escape_string($mysqli,$content);
-	$from_user=mysqli_real_escape_string($mysqli,$from_user);
-	$sql="select 1 from users where user_id='$to_user' ";
-	$res=mysqli_query($mysqli,$sql);
-	if ($res&&mysqli_num_rows($res)<1){
-			mysqli_free_result($res);
-			$view_title= "No Such User!";
-
-	}else{
-		if($res)mysqli_free_result($res);
-		$sql="insert into mail(to_user,from_user,title,content,in_date)
-						values('$to_user','$from_user','$title','$content',now())";
-
-		if(!mysqli_query($mysqli,$sql)){
-			$view_title=  "Not Mailed!";
-		}else{
-			$view_title=  "Mailed!";
-		}
-	}
-}
-//list mail
-	$sql="SELECT * FROM `mail` WHERE to_user='".$_SESSION['user_id']."'
-					order by mail_id desc";
-	$result=mysqli_query($mysqli,$sql) or die(mysqli_error($mysqli));
-$view_mail=Array();
-$i=0;
-for (;$row=mysqli_fetch_object($result);){
-	$view_mail[$i][0]=$row->mail_id;
-	if ($row->new_mail) $view_mail[$i][0].= "<span class=red>New</span>";
-	$view_mail[$i][1]="<a href='mail.php?vid=$row->mail_id'>".
-			$row->from_user.":".$row->title."</a>";
-	$view_mail[$i][2]=$row->in_date;
-	$i++;
-}
-mysqli_free_result($result);
-
-
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/mail.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-	require_once('./include/cache_end.php');
-?>
-
+</body>
+</html>

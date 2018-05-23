@@ -1,44 +1,61 @@
-<?php
-////////////////////////////Common head
-	$cache_time=1200;
-	$OJ_CACHE_SHARE=false;
-  require_once('./include/db_info.inc.php');
-	require_once('./include/setlang.php');
-	require_once('./closed.php');
-	require_once('./include/cache_start.php');
-	$view_title= "Recent Contests from Naikai-contest-spider";
-$myfile = fopen("recent_contest.json", "r");
-$rows="";
-$json="";
-$aContext = array(
-    'http' => array(
-        'proxy' => 'tcp://127.0.0.1:8118',
-        'request_fulluri' => true,
-    ),
-);
-$cxContext = stream_context_create($aContext);
-if($myfile)
-{
-    //echo fread($myfile,filesize("recent_contest.json"));
-    $txt=file_get_contents("recent_contest.json");
-    $json=$txt;
-    $rows=json_decode($json, true);
-}
-else
-{
-$json = file_get_contents('http://contests.acmicpc.info/contests.json', False, $cxContext);
- // $json = @file_get_contents('http://contests.acmicpc.info/contests.json');
-  $rows = json_decode($json, true);
-  $myfile=fopen("recent_contest.json","w");
-  fwrite($myfile,$json);
-}
-fclose($myfile);
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/recent-contest.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-	require_once('./include/cache_end.php');
-?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title><?php echo $OJ_NAME?></title>
+    <?php include("template/$OJ_TEMPLATE/css.php");?>
+    <?php include("template/$OJ_TEMPLATE/js.php");?>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<?php include("template/$OJ_TEMPLATE/nav.php");?>
+<div class="ui padding container pusher">
+
+    <!-- Main component for a primary marketing message or call to action -->
+        <div id=main>
+            <table width=80% align=center class="ui padded celled selectable table hidden">
+                <thead class=toprow>
+                <tr>
+                    <th class="column-1">OJ</th><th class="column-2">Name</th><th class="column-3">Start Time</th><th class="column-4">Week</th><th class="column-5">Access</th>
+                </tr>
+                </thead>
+                <tbody class="row-hover">
+                <?php
+                $odd=true;
+                foreach($rows as $row) {
+                    $odd=!$odd;
+                    ?>
+                    <tr class="<?php echo $odd?"oddrow":"evenrow"  ?>">
+                        <td class="column-1"><?php echo$row['oj']?></td><td class="column-2"><a id="name_<?php echo$row['id']?>" href="<?php echo$row['link']?>" target="_blank"><?php echo$row['name']?></a></td><td class="column-3"><?php echo$row['start_time']?></td><td class="column-4"><?php echo$row['week']?></td><td class="column-5"><?php echo$row['access']?></td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+        </div>
+        <div align=center>DataSource:http://contests.acmicpc.info/contests.json  Spider Author:<a href="http://contests.acmicpc.info" >doraemonok</a></div>
 
 
+</div> <!-- /container -->
 
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<?php include("template/$OJ_TEMPLATE/bottom.php");?>
+</body>
+<script>
+    $.get("fresh_contest.php");
+</script>
+</html>

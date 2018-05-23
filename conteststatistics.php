@@ -1,101 +1,129 @@
-<?php
-	$OJ_CACHE_SHARE=true;
-	$cache_time=3;
-	require_once("./include/db_info.inc.php");
-	require_once("./include/const.inc.php");
-	require_once("./include/my_func.inc.php");
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
-// contest start time
-if (!isset($_GET['cid'])) die("No Such Contest!");
-$cid=intval($_GET['cid']);
+    <title><?php echo $OJ_NAME?></title>  
+    <?php include("template/$OJ_TEMPLATE/css.php");?>
+      <?php include("template/$OJ_TEMPLATE/js.php");?>
+      
+      <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
 
-$sql="SELECT * FROM `contest` WHERE `contest_id`='$cid' AND `start_time`<NOW()";
-$result=mysqli_query($mysqli,$sql);
-$num=mysqli_num_rows($result);
-if ($num==0){
-	$view_errors= "Not Started!";
-	require("template/".$OJ_TEMPLATE."/error.php");
-	exit(0);
-}
-mysqli_free_result($result);
-
-$view_title= "Contest Statistics";
-
-$sql="SELECT count(`num`) FROM `contest_problem` WHERE `contest_id`='$cid'";
-$result=mysqli_query($mysqli,$sql);
-$row=mysqli_fetch_array($result);
-$pid_cnt=intval($row[0]);
-mysqli_free_result($result);
-
-$sql="SELECT `result`,`num`,`language` FROM `solution` WHERE `contest_id`='$cid' and num>=0 union all SELECT `result`,`num`,`language` FROM `vjudge_solution` WHERE `contest_id`='$cid' and num>=0"; 
-$result=mysqli_query($mysqli,$sql);
-$R=array();
-while ($row=mysqli_fetch_object($result)){
-	$res=intval($row->result)-4;
-	if ($res<0) $res=8;
-	$num=intval($row->num);
-	$lag=intval($row->language);
-	if(!isset($R[$num][$res]))
-		$R[$num][$res]=1;
-	else
-		$R[$num][$res]++;
-	if(!isset($R[$num][$lag+11]))
-		$R[$num][$lag+11]=1;
-	else
-		$R[$num][$lag+11]++;
-	if(!isset($R[$pid_cnt][$res]))
-		$R[$pid_cnt][$res]=1;
-	else
-		$R[$pid_cnt][$res]++;
-	if(!isset($R[$pid_cnt][$lag+11]))
-		$R[$pid_cnt][$lag+11]=1;
-	else
-		$R[$pid_cnt][$lag+11]++;
-	if(!isset($R[$num][10]))
-		$R[$num][10]=1;
-	else
-		$R[$num][10]++;
-	if(!isset($R[$pid_cnt][10]))
-		$R[$pid_cnt][10]=1;
-	else
-		$R[$pid_cnt][10]++;
-}
-mysqli_free_result($result);
-
-$res=3600;
-
-$sql="SELECT (UNIX_TIMESTAMP(end_time)-UNIX_TIMESTAMP(start_time))/100 FROM contest WHERE contest_id=$cid ";
-        $result=mysqli_query($mysqli,$sql);
-        $view_userstat=array();
-        if($row=mysqli_fetch_array($result)){
-              $res=$row[0];
-        }
-        mysqli_free_result($result);
-
-$sql=   "SELECT floor(UNIX_TIMESTAMP((in_date))/$res)*$res*1000 md,count(1) c FROM `solution` where  `contest_id`='$cid'   union all SELECT floor(UNIX_TIMESTAMP((in_date))/$res)*$res*1000 md,count(1) c FROM `vjudge_solution` where  `contest_id`='$cid'   group by md order by md desc  ";
-        $result=mysqli_query($mysqli,$sql);//mysql_escape_string($sql));
-        $chart_data_all= array();
-//echo $sql;
+  <body>
+ <?php include("template/$OJ_TEMPLATE/nav.php");?>	    
+    <div class="container padding">
    
-        while ($row=mysqli_fetch_array($result)){
-                $chart_data_all[$row['md']]=$row['c'];
-    }
-   
-$sql=   "SELECT floor(UNIX_TIMESTAMP((in_date))/$res)*$res*1000 md,count(1) c FROM `solution` where  `contest_id`='$cid' and result=4 union all SELECT floor(UNIX_TIMESTAMP((in_date))/$res)*$res*1000 md,count(1) c FROM `vjudge_solution` where  `contest_id`='$cid' and result=4 group by md order by md desc ";
-        $result=mysqli_query($mysqli,$sql);//mysql_escape_string($sql));
-        $chart_data_ac= array();
-//echo $sql;
-   
-        while ($row=mysqli_fetch_array($result)){
-                $chart_data_ac[$row['md']]=$row['c'];
-    }
- 
-  mysqli_free_result($result);
+    <script type="text/javascript" src="include/jquery.tablesorter.js"></script>
+
+<script language="javascript" type="text/javascript" src="include/jquery.flot.js"></script>
+      <!-- Main component for a primary marketing message or call to action -->
+      <div>
+<center><h3>Contest Statistics</h3>
+<div style=" overflow-x: scroll;">
+<table id=cs width=90% class="ui padded celled selectable table" >
+<thead>
+<tr class=toprow><th><th>AC<th>PE<th>WA<th>TLE<th>MLE<th>OLE<th>RE<th>CE<th><th>TR<th>Total
+<?php 
+  $i=0;
+  foreach ($language_name as $lang){
+	if(isset($R[$pid_cnt][$i+11]))	
+		echo "<th class='ui header center aligned'>$language_name[$i]</th>";
+	else
+		echo "<th>";
+	$i++;
+  }
 
 
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/conteststatistics.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-	require_once('./include/cache_end.php');
 ?>
+
+</tr>
+</thead>
+<tbody>
+<?php
+for ($i=0;$i<$pid_cnt;$i++){
+if(!isset($PID[$i])) $PID[$i]="";
+if ($i&1)
+echo "<tr align=center class=oddrow><td>";
+else
+echo "<tr align=center class=evenrow><td>";
+echo "<a href='problem.php?cid=$cid&pid=$i'>$PID[$i]</a>";
+for ($j=0;$j<count($language_name)+11;$j++) {
+if(!isset($R[$i][$j])) $R[$i][$j]="";
+echo "<td>".$R[$i][$j];
+}
+echo "</tr>";
+}
+echo "<tr align=center class=evenrow><td>Total";
+for ($j=0;$j<count($language_name)+11;$j++) {
+if(!isset($R[$i][$j])) $R[$i][$j]="";
+echo "<td>".$R[$i][$j];
+}
+echo "</tr>";
+?>
+</tbody>
+</table>
+</div>
+<div id=submission style="width:600px;height:300px" ></div>
+</center>
+
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+<script type="text/javascript">
+$(document).ready(function()
+{
+$("#cs").tablesorter();
+}
+);
+</script>
+
+<script type="text/javascript">
+$(function () {
+var d1 = [];
+var d2 = [];
+<?php
+foreach($chart_data_all as $k=>$d){
+?>
+d1.push([<?php echo $k?>, <?php echo $d?>]);
+<?php }?>
+<?php
+foreach($chart_data_ac as $k=>$d){
+?>
+d2.push([<?php echo $k?>, <?php echo $d?>]);
+<?php }?>
+//var d2 = [[0, 3], [4, 8], [8, 5], [9, 13]];
+// a null signifies separate line segments
+var d3 = [[0, 12], [7, 12], null, [7, 2.5], [12, 2.5]];
+$.plot($("#submission"), [
+{label:"<?php echo $MSG_SUBMIT?>",data:d1,lines: { show: true }},
+{label:"<?php echo $MSG_AC?>",data:d2,bars:{show:true}} ],{
+xaxis: {
+mode: "time"
+//, max:(new Date()).getTime()
+//,min:(new Date()).getTime()-100*24*3600*1000
+},
+grid: {
+backgroundColor: { colors: ["#fff", "#333"] }
+}
+});
+});
+//alert((new Date()).getTime());
+</script>
+  </body>
+</html>

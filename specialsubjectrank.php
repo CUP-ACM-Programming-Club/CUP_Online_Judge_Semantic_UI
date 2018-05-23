@@ -1,210 +1,201 @@
-<?php
-        $OJ_CACHE_SHARE=true;
-        $cache_time=10;
-        require_once('./include/cache_start.php');
-    require_once('./include/db_info.inc.php');
-        require_once('./include/setlang.php');
-        $view_title= $MSG_CONTEST.$MSG_RANKLIST;
-        $title="";
-        require_once("./include/const.inc.php");
-        require_once("./include/my_func.inc.php");
-class TM{
-        var $solved=0;
-        var $time=0;
-        var $p_wa_num;
-        var $p_ac_sec;
-        var $user_id;
-        var $nick;
-        function TM(){
-                $this->solved=0;
-                $this->time=0;
-                $this->p_wa_num=array(0);
-                $this->p_ac_sec=array(0);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title><?php echo $OJ_NAME?></title>
+    <?php include("template/$OJ_TEMPLATE/css.php");?>
+
+    <?php include("template/$OJ_TEMPLATE/js.php");?>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+    .padding {
+            padding-left: 1em;
+            padding-right: 1em;
+            padding-top: 1em;
+            padding-bottom: 1em;
         }
-        function Add($pid,$sec,$res){
-//              echo "Add $pid $sec $res<br>";
-                if (isset($this->p_ac_sec[$pid])&&$this->p_ac_sec[$pid]>0)
-                        return;
-                if ($res!=4){
-                        if(isset($this->p_wa_num[$pid])){
-                                $this->p_wa_num[$pid]++;
-                        }else{
-                                $this->p_wa_num[$pid]=1;
+</style
+</head>
+
+<body>
+<?php include("template/$OJ_TEMPLATE/nav.php");?>
+<div class="pusher">
+    <!-- Main component for a primary marketing message or call to action -->
+    <div>
+        <?php
+        $rank=1;
+        ?>
+        <div class="padding">
+        <h2 class="ui top block attached header"><?php echo $title?></h2>
+        <div style="width:100%;height:100%;overflow-x: scroll" class="ranking ui bottom attached segment">
+        <table id='rank' class="ui small celled table"><thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=10%>User</th><th width=10%>Nick</th><th width=5%>Solved</th>
+                <?php
+                for ($i=0;$i<$pid_cnt;$i++)
+                    echo "<td>$PID[$i]</td>";
+                echo "</tr></thead>\n<tbody>";
+                for ($i=0;$i<$user_cnt;$i++){
+                    if ($i&1) echo "<tr class=oddrow align=center>\n";
+                    else echo "<tr class=evenrow align=center>\n";
+                    echo "<td>";
+                   // echo var_dump($U[$i]);
+                    $uuid=$U[$i]->user_id;
+                    $nick=$U[$i]->nick;
+                   // echo var_dump($U[$i]);
+                    if($nick[0]!="*")
+                        echo $rank++;
+                    else
+                        echo "*";
+                    $usolved=$U[$i]->solved;
+                    if(isset($_GET['user_id'])&&$uuid==$_GET['user_id']) echo "<td bgcolor=#ffff77>";
+                    else echo"<td>";
+                    echo "<a name=\"$uuid\" href=userinfo.php?user=$uuid>$uuid</a>";
+                    echo "<td><a href=userinfo.php?user=$uuid>".htmlentities($U[$i]->nick,ENT_QUOTES,"UTF-8")."</a>";
+                    echo "<td>$usolved";
+
+                    for ($j=0;$j<$pid_cnt;$j++){
+                        $bg_color="eeeeee";
+                        if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j]){
+                            $aa=0x33+$U[$i]->p_wa_num[$j]*32;
+                            $aa=$aa>0xaa?0xaa:$aa;
+                            $aa=dechex($aa);
+                            $bg_color="$aa"."ff"."$aa";
+//$bg_color="aaffaa";
+                        }else if(isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0) {
+                            $aa=0xaa-$U[$i]->p_wa_num[$j]*10;
+                            $aa=$aa>16?$aa:16;
+                            $aa=dechex($aa);
+                            $bg_color="ff$aa$aa";
                         }
-                }else{
-                        $this->p_ac_sec[$pid]=1;
-                        $this->solved++;
-                        if(!isset($this->p_wa_num[$pid])) $this->p_wa_num[$pid]=0;
-                        $this->time+=$sec+$this->p_wa_num[$pid]*1200;
-//                      echo "Time:".$this->time."<br>";
-//                      echo "Solved:".$this->solved."<br>";
+                        echo "<td style='background-color:#$bg_color'>";
+                        if(isset($U[$i])){
+                            if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j])
+//echo sec2str($U[$i]->p_ac_sec[$j]);
+                                echo "AC";
+                            //if (isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0)
+                            //    echo "(-".$U[$i]->p_wa_num[$j].")";
+                        }
+                    }
+                    echo "</tr>\n";
                 }
+                echo "</tbody></table>";
+                ?>
+    </div>
+    </div>
+
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+
+<script type="text/javascript" src="include/jquery.tablesorter.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+        {
+            $.tablesorter.addParser({
+                // set a unique id
+                id: 'punish',
+                is: function(s) {
+                    // return false so this parser is not auto detected
+                    return false;
+                },
+                format: function(s) {
+                    // format your data for normalization
+                    var v=s.toLowerCase().replace(/\:/,'').replace(/\:/,'').replace(/\(-/,'.').replace(/\)/,'');
+                    //alert(v);
+                    v=parseFloat('0'+v);
+                    return v>1?v:v+Number.MAX_VALUE-1;
+                },
+                // set type, either numeric or text
+                type: 'numeric'
+            });
+            $("#rank").tablesorter({
+                headers: {
+                    4: {
+                        sorter:'punish'
+                    }
+                    <?php
+                    for ($i=0;$i<$pid_cnt;$i++){
+                        echo ",".($i+5).": { ";
+                        echo " sorter:'punish' ";
+                        echo "}";
+                    }
+                    ?>
+                }
+            });
+            metal();
         }
-}
-
-function s_cmp($A,$B){
-//      echo "Cmp....<br>";
-        if ($A->solved!=$B->solved) return $A->solved<$B->solved;
-        else return $A->time>$B->time;
-}
-function n_cmp($A,$B)
-{
-    return strcmp($A['user_id'],$B['user_id']);
-}
-if (!isset($_GET['tid'])) die("No Such Contest!");
-$tid=intval($_GET['tid']);
-$is_vjudge=$database->select("special_subject","vjudge",["topic_id"=>$tid]);
-//echo var_dump($is_vjudge);
-$is_vjudge=intval($is_vjudge[0])==1;
-// contest start time
-
-
-$sql="SELECT `title` FROM `special_subject` WHERE `topic_id`=$tid";
-//$result=mysqli_query($mysqli,$sql) or die(mysqli_error($mysqli));
-//$rows_cnt=mysqli_num_rows($result);
-
-$result=$database->select("special_subject","title",[
-    "topic_id"=>$tid
-    ]);
-     //   $result = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=count($result);
-        else $rows_cnt=0;
-
-
-
-$start_time=0;
-$end_time=0;
-if ($rows_cnt>0){
-//      $row=mysqli_fetch_array($result);
-
-      //  if($OJ_MEMCACHE)
-              //  $row=$result[0];
-      //  else
-                //$row=mysqli_fetch_array($result);
-        $title=$result[0];
-}
-if(!$OJ_MEMCACHE)mysqli_free_result($result);
-//echo $lock.'-'.date("Y-m-d H:i:s",$lock);
-
-
-$sql="SELECT count(1) as pbc FROM `special_subject_problem` WHERE `topic_id`='$tid'";
-//$result=mysqli_query($mysqli,$sql);
-
-
-        $result = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        if($result) $rows_cnt=mysqli_num_rows($result);
-        else $rows_cnt=0;
-
-
-        $row=mysqli_fetch_array($result);
-
-//$row=mysqli_fetch_array($result);
-$pid_cnt=intval($row['pbc']);
-if(!$OJ_MEMCACHE)mysqli_free_result($result);
-$vjudge_record=[];
-if($is_vjudge)
-{
-    $sql="SELECT
-        users.user_id,users.nick,special_subject_problem.num,solution.result
-                FROM
-                        (SELECT * FROM `vjudge_solution` WHERE problem_id in(SELECT problem_id FROM special_subject_problem where topic_id=$tid) and result=4) solution
-                left join users
-                on users.user_id=solution.user_id 
-left join special_subject_problem on special_subject_problem.problem_id=solution.problem_id
-        ORDER BY users.user_id;";
-        $vjsql="SELECT
-        users.user_id,users.nick,special_subject_problem.num
-                FROM
-                        (SELECT * FROM `vjudge_record` WHERE problem_id in(SELECT problem_id FROM special_subject_problem where topic_id=$tid)
-                         and oj_name in(SELECT oj_name FROM special_subject_problem where topic_id=$tid) 
-) solution
-                left join users
-                on users.user_id=solution.user_id 
-left join special_subject_problem on special_subject_problem.problem_id=solution.problem_id
-        ORDER BY users.user_id;";
-        $vjudge_record=$database->query($vjsql)->fetchAll();
-}
-else
-$sql="SELECT
-users.user_id,users.nick,solution.result,solution.in_date,solution.problem_id,special_subject_problem.num
-FROM
-(SELECT * FROM `solution` WHERE problem_id in(SELECT problem_id FROM special_subject_problem where topic_id=$tid) and problem_id>0  and result=4) solution
-left join users
-on users.user_id=solution.user_id
-left join special_subject_problem on special_subject_problem.topic_id=$tid and special_subject_problem.problem_id=solution.problem_id
-ORDER BY users.user_id,in_date
-";
-//echo $sql;
-//$result=mysqli_query($mysqli,$sql);
-
-
-        $result = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        $result=$database->query($sql)->fetchAll();
-        $rows_cnt=count($result);
-     //   if($result) $rows_cnt=mysqli_num_rows($result);
-   //     else $rows_cnt=0;
-
-if($is_vjudge)
-{
-    foreach($vjudge_record as $row)
-    {
-        $row['result']="4";
-        array_push($result,$row);
+    );
+</script>
+<script>
+    function getTotal(rows){
+        var total=0;
+        for(var i=0;i<rows.length&&total==0;i++){
+            try{
+                total=parseInt(rows[rows.length-i].cells[0].innerHTML);
+                if(isNaN(total)) total=0;
+            }catch(e){
+            }
+        }
+        return total;
     }
-}
-//echo print_r($result);
-$user_cnt=0;
-$user_name='';
-uasort($result,"n_cmp");
-$U=array();
-//$U[$user_cnt]=new TM();
-foreach($result as $row)
-{
-   // echo $user_name."<br>";
-    $n_user=$row['user_id'];
-        if (strcmp($user_name,$n_user)){
-                $user_cnt++;
-                $U[$user_cnt]=new TM();
-
-                $U[$user_cnt]->user_id=$row['user_id'];
-                $U[$user_cnt]->nick=$row['nick'];
-
-                $user_name=$n_user;
+    function metal(){
+        var tb=window.document.getElementById('rank');
+        var rows=tb.rows;
+        try{
+            var total=getTotal(rows);
+//alert(total);
+            for(var i=1;i<rows.length;i++){
+                var cell=rows[i].cells[0];
+                var acc=rows[i].cells[3];
+                var ac=parseInt(acc.innerText);
+                if (isNaN(ac)) ac=parseInt(acc.textContent);
+                if(cell.innerHTML!="*"&&ac>0){
+                    var r=parseInt(cell.innerHTML);
+                    if(r==1){
+                       // cell.innerHTML="Winner";
+//cell.style.cssText="background-color:gold;color:red";
+                        cell.className="btn-warning";
+                    }
+                    if(r>1&&r<=total*.05+1)
+                        cell.className="btn-warning";
+                    if(r>total*.05+1&&r<=total*.20+1)
+                        cell.className="btn-warning";
+                    if(r>total*.20+1&&r<=total*.45+1)
+                        cell.className="btn-danger";
+                    if(r>total*.45+1&&ac>0)
+                        cell.className="btn-info";
+                }
+            }
+        }catch(e){
+//alert(e);
         }
-       // if($user_name=="2016011254")echo print_r($row);
-       // echo var_dump($row);
-        	   $U[$user_cnt]->Add($row['num'],0,intval($row['result']));
-}
-//if(!$OJ_MEMCACHE) mysqli_free_result($result);
-usort($U,"s_cmp");
+    }
 
-////firstblood
-$first_blood=array();
-for($i=0;$i<$pid_cnt;$i++){
-      $first_blood[$i]="";
-}
+</script>
+<style>
+    .well{
+        background-image:none;
+        padding:1px;
+    }
+    td{
+        white-space:nowrap;
 
-$sql="select num,user_id from
-        (select num,user_id from solution where topic_id=$tid and result=4 order by solution_id ) special_subject
-        group by num";
-
-
-        $fb = mysqli_query($mysqli,$sql);// or die("Error! ".mysqli_error($mysqli));
-        if($fb) $rows_cnt=mysqli_num_rows($fb);
-        else $rows_cnt=0;
-
-
-for ($i=0;$i<$rows_cnt;$i++){
-
-                $row=mysqli_fetch_array($fb);
-         $first_blood[$row['num']]=$row['user_id'];
-}
-
-
-
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/specialsubjectrank.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-        require_once('./include/cache_end.php');
-?>
+    }
+</style>
+    <script>
+        $(".ranking").height(window.screen.availHeight*0.67);
+    </script>
+</body>
+</html>

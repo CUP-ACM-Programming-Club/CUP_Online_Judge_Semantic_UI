@@ -1,39 +1,54 @@
-<?php
-        require_once('./include/db_info.inc.php');
-        require_once('./include/setlang.php');
-        $view_title= "Welcome To Online Judge";
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
-require_once("./include/const.inc.php");
-require_once("./include/my_func.inc.php");
-$lost_user_id=$_POST['user_id'];
-$lost_key=$_POST['lost_key'];
-    $vcode=trim($_POST['vcode']);
-    if($lost_user_id==$_SESSION['lost_user_id']&&($vcode!= $_SESSION["vcode"]||$vcode==""||$vcode==null) ){
-                echo "<script language='javascript'>\n";
-                echo "alert('Verify Code Wrong!');\n";
-                echo "history.go(-1);\n";
-                echo "</script>";
-                exit(0);
-    }
-  if(get_magic_quotes_gpc()){
-        $lost_user_id=stripslashes($lost_user_id);
-        $lost_key=stripslashes($lost_key);
-  }
-  $sql=" update `users` set password='".pwGen($lost_key)."'WHERE `user_id`='".mysqli_real_escape_string($mysqli,$lost_user_id)."'";
-  if(
-
-   $_SESSION['lost_user_id']==$lost_user_id &&
-   $_SESSION['lost_key']==$lost_key
-  ){
-         $result=mysqli_query($mysqli,$sql);
-    $view_errors="Password Reseted to the key you've just inputed.Click <a href=index.php>Here</a> to login!";
-  }else{
-         $view_errors="Password Reset Fail";
-  }
+    <title><?php echo $OJ_NAME?></title>  
+    <?php include("template/$OJ_TEMPLATE/css.php");?>	    
 
 
-  require("template/".$OJ_TEMPLATE."/error.php");
-/////////////////////////Template
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
 
-/////////////////////////Common foot
-?>
+  <body>
+
+    <div class="container">
+    <?php include("template/$OJ_TEMPLATE/nav.php");?>	    
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron">
+ <form action=lostpassword2.php method=post>
+<center>
+<table algin=center>
+<tr><td><?php echo $MSG_USER_ID?>:<td><input name="user_id" type="text" size=20></td></tr>
+<tr><td>Input the Code sended to your email:<td><input name="lost_key" type="text" size=20>* if it's correct, it will be the new password</td></tr>
+<?php if($OJ_VCODE){?>
+<tr><td><?php echo $MSG_VCODE?>:</td>
+<td><input name="vcode" size=4 type=text><img alt="click to change" src=vcode.php onclick="this.src='vcode.php#'+Math.random()">*</td>
+</tr>
+<?php }?>
+<tr><td><td><input name="submit" type="submit" size=10 value="Submit">
+</tr>
+</table>
+<center>
+</form>
+
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <?php include("template/$OJ_TEMPLATE/js.php");?>	    
+  </body>
+</html>

@@ -1,52 +1,78 @@
-<?php
- $cache_time=90;
-	$OJ_CACHE_SHARE=false;
-	require_once('./include/cache_start.php');
-    require_once('./include/db_info.inc.php');
-	require_once('./include/setlang.php');
-	$view_title= "Source Code";
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+	<link type="text/css" rel="stylesheet" href="mergely/codemirror.css" />
+	<link type="text/css" rel="stylesheet" href="mergely/mergely.css" />
+    <style>
+        .container.padding{
+            margin:auto;
+        }
+    </style>
+    <title><?php echo $OJ_NAME?></title>  
+    <?php include("template/$OJ_TEMPLATE/css.php");?>	    
+<?php include("template/$OJ_TEMPLATE/js.php");?>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+ <?php include("template/$OJ_TEMPLATE/nav.php");?>	    
+    <div class="container padding">
    
-require_once("./include/const.inc.php");
-if (!isset($_GET['left'])){
-	$view_errors= "No such code!\n";
-	require("template/".$OJ_TEMPLATE."/error.php");
-	exit(0);
-}
-$ok=false;
-$id=strval(intval($_GET['left']));
-$sql="SELECT * FROM `solution` WHERE `solution_id`='".$id."'";
-$result=mysqli_query($mysqli,$sql);
-$row=mysqli_fetch_object($result);
-$slanguage=$row->language;
-$sresult=$row->result;
-$stime=$row->time;
-$smemory=$row->memory;
-$sproblem_id=$row->problem_id;
-$view_user_id=$suser_id=$row->user_id;
-mysqli_free_result($result);
+      <!-- Main component for a primary marketing message or call to action -->
+<!-- Requires jQuery -->
+
+	  
+		<div id="compare" >
+		</div>
+
+    </div> <!-- /container -->
 
 
-if (isset($OJ_AUTO_SHARE)&&$OJ_AUTO_SHARE&&isset($_SESSION['user_id'])){
-	$sql="SELECT 1 FROM solution where 
-			result=4 and problem_id=$sproblem_id and user_id='".$_SESSION['user_id']."'";
-	$rrs=mysqli_query($mysqli,$sql);
-	$ok=(mysqli_num_rows($rrs)>0);
-	mysqli_free_result($rrs);
-}
-$view_source="No source code available!";
-if (isset($_SESSION['user_id'])&&$row && $row->user_id==$_SESSION['user_id']) $ok=true;
-if (isset($_SESSION['source_browser'])||isset($_SESSION['administrator'])) $ok=true;
-
-		$sql="SELECT `source` FROM `source_code` WHERE `solution_id`=".$id;
-		$result=mysqli_query($mysqli,$sql);
-		$row=mysqli_fetch_object($result);
-		if($row)
-			$view_source=$row->source;
-
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/comparesource.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-	require_once('./include/cache_end.php');
-?>
-
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    	    
+ <!-- <script language="javascript" type="text/javascript" src="include/jquery-latest.js"></script>-->
+ 	<!-- Requires CodeMirror 2.16 -->
+	<script type="text/javascript" src="mergely/codemirror.js"></script>
+	
+	<!-- Requires Mergely -->
+	<script type="text/javascript" src="mergely/mergely.js"></script>
+	
+	<script type="text/javascript">
+        $(document).ready(function () {
+			$('#compare').mergely({
+				cmsettings: { readOnly: false, lineWrapping: true }
+			});
+			$.ajax({
+				type: 'GET', async: true, dataType: 'text',
+				url: 'getsource.php?id=<?php echo intval($_GET['left'])?>',
+				success: function (response) {
+					$('#compare').mergely('lhs', response);
+					$('#compare').mergely('resize')
+				}
+			});
+			$.ajax({
+				type: 'GET', async: true, dataType: 'text',
+				url: 'getsource.php?id=<?php echo intval($_GET['right'])?>',
+				success: function (response) {
+					$('#compare').mergely('rhs', response);
+					$('#compare').mergely('resize')
+				}
+			});
+		});
+	</script>
+<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+ </body>
+</html>
