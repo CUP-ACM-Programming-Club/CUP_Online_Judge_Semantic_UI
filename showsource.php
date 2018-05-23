@@ -1,105 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+    <link href="/css/github-markdown.min.css" rel="stylesheet" type="text/css">
+    <link href="/js/styles/github.min.css" rel="stylesheet" type="text/css">
+    <link href="/template/semantic-ui/css/katex.min.css" rel="stylesheet">
+    <link href="/template/semantic-ui/css/judge.css?ver=1.1" rel="stylesheet">
+    <style>
+        .subscript{
+            font-size: 1rem;
+        }
+        .none-transform{
+            text-transform: none !important;
+        }
+    </style>
+    <title><?php echo $OJ_NAME?></title>  
+    <?php include("template/$OJ_TEMPLATE/css.php");?>	    
+<?php include("template/$OJ_TEMPLATE/js.php");?>	   
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+ <?php include("template/$OJ_TEMPLATE/nav.php");?>	 
+    <div class="ui container padding">
+      <h2 class="ui dividing header">
+            Source Code
+        </h2>
+      <!-- Main component for a primary marketing message or call to action -->
+
+<link href='highlight/styles/shCore.css' rel='stylesheet' type='text/css'/>
+<link href='highlight/styles/shThemeDefault.css' rel='stylesheet' type='text/css'/>
+<script src='highlight/scripts/shCore.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushCpp.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushCss.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushJava.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushDelphi.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushRuby.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushBash.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushPython.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushPhp.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushPerl.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushCSharp.js' type='text/javascript'></script>
+<script src='highlight/scripts/shBrushVb.js' type='text/javascript'></script>
+<script language='javascript'>
+SyntaxHighlighter.config.bloggerMode = false;
+SyntaxHighlighter.config.clipboardSwf = 'highlight/scripts/clipboard.swf';
+SyntaxHighlighter.all();
+</script>
+<div class="ui existing segment" v-cloak>
+    <div class="ui raised segment" v-cloak >
+    <div class="ui tiny statistics" v-if="code">
+        <div class="statistic">
+            <div class="value none-transform">
+                {{from+' '+problem_id}}
+                <span class="subscript">&nbsp;</span>
+            </div>
+            <div class="label none-transform">
+                Problem
+            </div>
+        </div>
+        <div class="statistic">
+            <div class="value none-transform">
+                {{user_id}}
+                <span class="subscript">&nbsp;</span>
+            </div>
+            <div class="label none-transform">
+                User
+            </div>
+        </div>
+        <div class="statistic">
+            <div class="value none-transform">
+                {{time}}
+                <span class="subscript">ms</span>
+            </div>
+            <div class="label none-transform">
+                Running Time
+            </div>
+        </div>
+        <div class="statistic">
+            <div class="value none-transform">
+                {{memory}}
+                <span class="subscript">KB</span>
+            </div>
+            <div class="label none-transform">
+                Used Memory
+            </div>
+        </div>
+        <div class="statistic">
+            <div class="value none-transform">
+                {{language}}
+                <span class="subscript">&nbsp;</span>
+            </div>
+            <div class="label none-transform">
+                Language
+            </div>
+        </div>
+        <div class="statistic">
+            <div  :class="'value none-transform '+judge_color">
+                <i :class="icon+' icon'"></i>
+                {{result}}
+             <span class="subscript">&nbsp;</span>
+            </div>
+            <div class="label none-transform">
+                Result
+            </div>
+        </div>
+    </div>
+    </div>
+    <div v-html="code" class="ui raised segment" v-if="code">
+        
+    </div>
+    <div class="ui existing segment" v-text="statement" v-if="statement">
+        
+    </div>
+</div>
+    <script>
+    var local;
+    var id;
+    if(getParameterByName("id")) {
+        local = "local";
+        id = getParameterByName("id");
+    }
+    else {
+        local = "vjudge"
+        id = getParameterByName("hid");
+    }
+        $.get("/api/source/" + local + "/"+ id,function(data){
+            if(data.status == "OK") {
+            window.showsource = new Vue({
+                el:".ui.container.padding",
+                data:function() {
+                    return {
+                        code:data.data.code,
+                        time:data.data.time,
+                        memory:data.data.memory,
+                        problem_id:Math.abs(data.data.problem),
+                        result:data.data.result,
+                        language:data.data.language,
+                        user_id:data.data.user_id,
+                        judge_color:data.data.judge_color,
+                        icon:data.data.icon,
+                        from:data.data.from||"",
+                        statement:false
+                    }
+                }
+            })
+            }
+            else {
+                window.showsource = new Vue({
+                    el:".ui.container.padding",
+                    data:function(){
+                        return {
+                            code:false,
+                            error:true,
+                            statement:data.statement
+                        }
+                    }
+                });
+            }
+        })
+    </script>
 <?php
- $cache_time=90;
-	$OJ_CACHE_SHARE=false;
-	require_once('./include/cache_start.php');
-    require_once('./include/db_info.inc.php');
-   // require_once('./closed.php');
-	require_once('./include/setlang.php');
-	$view_title= "Source Code";
-   
-require_once("./include/const.inc.php");
-if($OJ_TEMPLATE == "semantic-ui") {
-$hid="";
-$sid="";
-if(isset($_GET['hid']))
+/*
+if ($ok==true){
+if($view_user_id!=$_SESSION['user_id'])
+echo "<a href='mail.php?to_user=$view_user_id&title=$MSG_SUBMIT $id'>Mail the auther</a>";
+$hdulanguage_name=[];
+$hdulanguage_name[0]="cpp";
+$hdulanguage_name[1]="c";
+$hdulanguage_name[2]="cpp";
+$hdulanguage_name[3]="c";
+$hdulanguage_name[4]="pascal";
+$hdulanguage_name[5]="java";
+$hdulanguage_name[6]="csharp";
+$pojlanguage_name=[];
+$pojlanguage_name[0]="cpp";
+$pojlanguage_name[1]="c";
+$pojlanguage_name[2]="java";
+$pojlanguage_name[3]="pascal";
+$pojlanguage_name[4]=$pojlanguage_name[1];
+$pojlanguage_name[5]=$pojlanguage_name[0];
+$pojlanguage_name[6]="fortran";
+$uvalanguage_name=["","c","java","cpp","pascal","cpp",'python'];
+$vjudge_lang_name=["HDU"=>$hdulanguage_name,"POJ"=>$pojlanguage_name,"UVA"=>$uvalanguage_name];
+$hdu_pre_name=["G++","GCC","C++","C","Pascal","JAVA","C#"];
+$poj_pre_name=["G++","GCC","JAVA","Pascal","C++","C","Fortran"];
+$uva_pre_name=$vjudge_language_name["uva"];
+$vjudge_pre_name=["HDU"=>$hdu_pre_name,"POJ"=>$poj_pre_name,"UVA"=>$uva_pre_name];
+$brush="";
+if(is_numeric($hid))
 {
-    $hid=intval($_GET['hid']);
-}
-else if (!isset($_GET['id'])){
-	$view_errors= "No such code!\n";
-	require("template/".$OJ_TEMPLATE."/error.php");
-	exit(0);
-}
-$ok=false;
-$id=strval(intval($_GET['id']));
-$slanguage="";
-$sresult="";
-$stime="";
-$smemory="";
-$sproblem_id="";
-$view_user_id="";
-$contest_id="";
-$oj_name="";
-if($hid!="")
-{
-    $result=$database->select("vjudge_solution","*",[
-        "solution_id"=>$hid
-        ]);
-    $result=$result[0];
-    $slanguage=$result['language'];
-    $sresult=$result['result'];
-    $stime=$result['time'];
-    $smemory=$result['memory'];
-    $sproblem_id=$result['problem_id'];
-    $view_user_id=$suser_id=$result['user_id'];
-    $contest_id=$result['contest_id'];
-    $oj_name=$result['oj_name'];
+    $brush=strtolower($vjudge_lang_name[$oj_name][$slanguage]);
 }
 else
+    $brush=strtolower($language_name[$slanguage]);
+if(preg_match('/c\+\+',$brush))
 {
-$sql="SELECT * FROM `solution` WHERE `solution_id`='".$id."'";
-$result=mysqli_query($mysqli,$sql);
-$row=mysqli_fetch_object($result);
-$slanguage=$row->language;
-$sresult=$row->result;
-$stime=$row->time;
-$smemory=$row->memory;
-$sproblem_id=$row->problem_id;
-$view_user_id=$suser_id=$row->user_id;
-$contest_id=$row->contest_id;
-
-mysqli_free_result($result);
+    $brush='cpp';
 }
-if(isset($OJ_EXAM_CONTEST_ID)){
-	if($contest_id<$OJ_EXAM_CONTEST_ID&&!isset($_SESSION['source_browser'])){
-	header("Content-type: text/html; charset=utf-8");
-	 echo $MSG_SOURCE_NOT_ALLOWED_FOR_EXAM;
-	 exit();
-	}
+else if(preg_match('/c/',$brush))
+{
+    $brush='c';
 }
-
-if (isset($OJ_AUTO_SHARE)&&$OJ_AUTO_SHARE&&isset($_SESSION['user_id'])){
-	$sql="SELECT 1 FROM solution where 
-			result=4 and problem_id=$sproblem_id and user_id='".$_SESSION['user_id']."'";
-	$rrs=mysqli_query($mysqli,$sql);
-	$ok=(mysqli_num_rows($rrs)>0);
-	mysqli_free_result($rrs);
+if ($brush=='pascal') $brush='delphi';
+if ($brush=='obj-c') $brush='c';
+if ($brush=='freebasic') $brush='vb';
+if ($brush=='swift') $brush='csharp';
+if($brush=='clang') $brush='c';
+if($brush=='clang++')$brush='cpp';
+echo "<pre class=\"brush:".$brush.";\">";
+ob_start();
+echo "/**************************************************************\n";
+echo "\tProblem: $sproblem_id\n\tUser: $suser_id\n";
+if(is_numeric($hid))
+{
+echo "\tLanguage: ".$vjudge_pre_name[$oj_name][$slanguage]."\n\tResult: ".$judge_result[$sresult]."\n";
 }
-$view_source="No source code available!";
-if (isset($_SESSION['user_id'])&&$row && $row->user_id==$_SESSION['user_id']) $ok=true;
-if(isset($_SESSION['user_id'])&&$view_user_id==$_SESSION['user_id'])$ok=true;
-if (isset($_SESSION['source_browser'])||isset($_SESSION['administrator'])) $ok=true;
-    if($hid!="")
-    {
-        $result=$database->select("vjudge_source_code","source",[
-            "solution_id"=>$hid
-            ]);
-            if($result[0])
-            $view_source=$result[0];
-    }
-    else
-    {
-		$sql="SELECT `source` FROM `source_code_user` WHERE `solution_id`=".$id;
-		$result=mysqli_query($mysqli,$sql);
-		$row=mysqli_fetch_object($result);
-		if($row)
-			$view_source=$row->source;
-    }
+else
+echo "\tLanguage: ".$language_name[$slanguage]."\n\tResult: ".$judge_result[$sresult]."\n";
+if ($sresult==4){
+echo "\tTime:".$stime." ms\n";
+echo "\tMemory:".$smemory." kb\n";
+}*/
+//echo "****************************************************************/\n\n";
+/*
+$auth=ob_get_contents();
+ob_end_clean();
+echo htmlentities(str_replace("\n\r","\n",$view_source),ENT_QUOTES,"utf-8")."\n".$auth."</pre>";
+}else{
+echo "I am sorry, You could not view this code!";
 }
-/////////////////////////Template
-require("template/".$OJ_TEMPLATE."/showsource.php");
-/////////////////////////Common foot
-if(file_exists('./include/cache_end.php'))
-	require_once('./include/cache_end.php');
+*/
 ?>
 
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+     <?php include("template/$OJ_TEMPLATE/bottom.php");?>
+  </body>
+</html>
