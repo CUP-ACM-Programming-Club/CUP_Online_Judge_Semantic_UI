@@ -55,7 +55,8 @@ include("csrf.php");
                         <tr style="text-align:center" v-for="value in user" v-cloak>
                             <td>{{ value.user_id }}</td>
                             <td><a :href="'userinfo.php?user='+value.user_id" target="_blank">{{ value.nick }}</a></td>
-                            <td><a :href="decodeURI(location.protocol+'//'+window.hostname+value.url)">{{ decodeURI(location.protocol+"//"+window.hostname+value.url) }}</a></td>
+                            <td><a :href="decodeURI(location.protocol+'//'+window.hostname+value.url)">{{
+                                    decodeURI(location.protocol+"//"+window.hostname+value.url) }}</a></td>
                         </tr>
                         </tbody>
                     </table>
@@ -66,13 +67,17 @@ include("csrf.php");
                         <tr class="toprow" align=center>
                             <th>user_id
                             <th>name
-                            <th width=10% >Position
+                            <th width=10%>Position
                         </thead>
                         <tbody id="user_list_table" refresh="true">
                         <tr style='text-align:center' v-for="value in user" v-cloak>
                             <td><a :href="'userinfo.php?user='+value.user_id">{{ value.user_id }}</a></td>
-                            <td><a :href="'userinfo.php?user='+value.user_id">{{ value.nick||localStorage.getItem(value.user_id) }}</a></td>
-                            <td width=30% :data-html="'<b>IP</b><p>内网IP:'+value.intranet_ip+'<br>外网IP:'+value.ip+'</p>'" >{{ value.place }}</td>
+                            <td><a :href="'userinfo.php?user='+value.user_id">{{
+                                    value.nick||localStorage.getItem(value.user_id) }}</a></td>
+                            <td width=30%
+                                :data-html="'<b>IP</b><p>内网IP:'+value.intranet_ip+'<br>外网IP:'+value.ip+'</p>'">{{
+                                value.place }}
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -91,58 +96,85 @@ include("csrf.php");
 </div>
 </body>
 <script>
-function detect_ip(tmp){
-    if(tmp.intranet_ip)
-                                    {
-                                    if(tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/))
-                                    {
-                                        tmp.place="润杰有线";
-                                    }
-                                    else if(tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)||tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
-                                        ||tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/))
-                                    {
-                                        tmp.place="机房";
-                                    }
-                                    else if(tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/))
-                                    {
-                                        tmp.place="润杰公寓Wi-Fi";
-                                    }
-                                    else if(tmp.intranet_ip.match(/10\.102\.[0-9]{1,3}\.[0-9]{1,3}/))
-                                    {
-                                        tmp.place="第三教学楼Wi-Fi";
-                                    }
-                                    else if(tmp.intranet_ip.match(/10\.103\.[0-9]{1,3}\.[0-9]{1,3}/))
-                                    {
-                                        tmp.place="地质楼Wi-Fi";
-                                    }
-                                    else if(tmp.intranet_ip.match(/10\.1[0-9]{2}\.[0-9]{1,3}\.[0-9]{1,3}/))
-                                    {
-                                        tmp.place="其他Wi-Fi";
-                                    }
-                                    else if(tmp.intranet_ip.match(/172\.16\.[\s\S]+/))
-                                    {
-                                        tmp.place="VPN";
-                                    }
-                                    else if(tmp.intranet_ip && tmp.ip && tmp.intranet_ip != tmp.ip)
-                                    {
-                                        tmp.place="外网";
-                                    }
-                                    else if(tmp.intranet_ip.match(/2001:[\s\S]+/))
-                                    {
-                                        tmp.place = "IPv6";
-                                    }
-                                    else if(tmp.intranet_ip.match(/10\.3\.[\s\S]+/))
-                                    {
-                                        tmp.place="地质楼";
-                                    }
-                                    else
-                                    {
-                                        tmp.place="未知";
-                                    }
-                                    }
-                                    else
-                                        tmp.place="未知";
-}
+    function detect_ip(tmp) {
+        if (tmp.intranet_ip) {
+            if (tmp.intranet_ip.trim() === "202.204.193.82") {
+                var temp = tmp.intranet_ip;
+                tmp.intranet_ip = tmp.ip;
+                if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰有线";
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
+                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
+                    tmp.place = "机房";
+                }
+                else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰公寓Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.102\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "第三教学楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.103\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "地质楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.1[0-9]{2}\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "其他Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/172\.16\.[\s\S]+/)) {
+                    tmp.place = "VPN";
+                }
+                else if (tmp.intranet_ip.match(/2001:[\s\S]+/)) {
+                    tmp.place = "IPv6";
+                }
+                else if (tmp.intranet_ip.match(/10\.3\.[\s\S]+/)) {
+                    tmp.place = "地质楼";
+                }
+                else {
+                    tmp.place = "未知";
+                }
+                tmp.intranet_ip = temp;
+            }
+            else {
+                if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰有线";
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
+                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
+                    tmp.place = "机房";
+                }
+                else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰公寓Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.102\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "第三教学楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.103\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "地质楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.1[0-9]{2}\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "其他Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/172\.16\.[\s\S]+/)) {
+                    tmp.place = "VPN";
+                }
+                else if (tmp.intranet_ip && tmp.ip && tmp.intranet_ip != tmp.ip) {
+                    tmp.place = "外网";
+                }
+                else if (tmp.intranet_ip.match(/2001:[\s\S]+/)) {
+                    tmp.place = "IPv6";
+                }
+                else if (tmp.intranet_ip.match(/10\.3\.[\s\S]+/)) {
+                    tmp.place = "地质楼";
+                }
+                else {
+                    tmp.place = "未知";
+                }
+            }
+        }
+        else
+            tmp.place = "未知";
+    }
+
     var hostname = "<?=$_SERVER['HTTP_HOST']?>";
     var user_list = new Vue({
         el: "#user_list_table",
@@ -150,21 +182,21 @@ function detect_ip(tmp){
             userlist: window.online_list
         },
         computed:
-        {
-            user:{
-                get:function(){
-                    if(!this.userlist)return [];
-                    for (var i=0;i<this.userlist.length;++i){
-                        var tmp=this.userlist[i];
-                        detect_ip(tmp);
+            {
+                user: {
+                    get: function () {
+                        if (!this.userlist) return [];
+                        for (var i = 0; i < this.userlist.length; ++i) {
+                            var tmp = this.userlist[i];
+                            detect_ip(tmp);
+                        }
+                        return this.userlist;
+                    },
+                    set: function (newval) {
+                        this.userlist = newval;
                     }
-                    return this.userlist;
-                },
-                set:function(newval){
-                    this.userlist=newval;
                 }
             }
-        }
     });
     var $online_list = new Vue({
             el: "#online_user_table",
@@ -176,7 +208,7 @@ function detect_ip(tmp){
                     user: {
                         get: function () {
                             var newlist = [];
-                            if(!this.userlist)return [];
+                            if (!this.userlist) return [];
                             for (var i = 0; i < this.userlist.length; ++i) {
                                 var tat = this.userlist[i];
                                 for (var j = 0; j < this.userlist[i].url.length; ++j) {
@@ -186,18 +218,17 @@ function detect_ip(tmp){
                                     newlist.push(tmp);
                                 }
                             }
-                            if(localStorage.getItem("sort")=="true")
-                            {
-                            newlist.sort(function (a, b) {
-                                var a1 = a["user_id"];
-                                var b1 = b["user_id"];
-                                if (!isNaN(parseInt(a1)) && !isNaN(parseInt(b1))) {
-                                    return parseInt(a1) - parseInt(b1);
-                                }
-                                else {
-                                    return isNaN(parseInt(b1)) ? 1 : -1;
-                                }
-                            });
+                            if (localStorage.getItem("sort") == "true") {
+                                newlist.sort(function (a, b) {
+                                    var a1 = a["user_id"];
+                                    var b1 = b["user_id"];
+                                    if (!isNaN(parseInt(a1)) && !isNaN(parseInt(b1))) {
+                                        return parseInt(a1) - parseInt(b1);
+                                    }
+                                    else {
+                                        return isNaN(parseInt(b1)) ? 1 : -1;
+                                    }
+                                });
                             }
                             return newlist;
                         },
@@ -206,12 +237,12 @@ function detect_ip(tmp){
                         }
                     }
                 },
-                updated:function(){
-                    $("td").popup({
-                        on:'hover',
-                        positon:"top center"
-                    })
-                }
+            updated: function () {
+                $("td").popup({
+                    on: 'hover',
+                    positon: "top center"
+                })
+            }
         }
     );
     if (!localStorage.getItem("refresh")) {
@@ -264,8 +295,8 @@ function detect_ip(tmp){
     })
 
     function list_online() {
-       user_list.user = window.online_list;
-       $online_list.user = window.online_list;
+        user_list.user = window.online_list;
+        $online_list.user = window.online_list;
     }
 
 </script>
