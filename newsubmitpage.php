@@ -1,10 +1,4 @@
 <!DOCTYPE html>
-<?php
-$PID = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-if (!$nodejsmode) {
-    $id = $row->problem_id;
-}
-?>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -23,16 +17,16 @@ if (!$nodejsmode) {
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
     <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-<script src="ace-builds/src-min-noconflict/ext-language_tools.js" type="text/javascript"
-                charset="utf-8"></script>
+    <script src="ace-builds/src-min-noconflict/ext-language_tools.js" type="text/javascript"
+            charset="utf-8"></script>
 
-<script src="ace-builds/src-min-noconflict/ext-error_marker.js" type="text/javascript" charset="utf-8"></script>
-<script src="ace-builds/src-min-noconflict/ext-statusbar.js?ver=1.0" type="text/javascript"
-                charset="utf-8"></script>
-<script src="ace-builds/src-min-noconflict/ext-emmet.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-builds/src-min-noconflict/ext-error_marker.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-builds/src-min-noconflict/ext-statusbar.js?ver=1.0" type="text/javascript"
+            charset="utf-8"></script>
+    <script src="ace-builds/src-min-noconflict/ext-emmet.js" type="text/javascript" charset="utf-8"></script>
 
-<script src="template/semantic-ui/js/cookie.js"></script>
-<script src="ace-builds/src-min-noconflict/ext-static_highlight.js"></script>
+    <script src="template/semantic-ui/js/cookie.js"></script>
+    <script src="ace-builds/src-min-noconflict/ext-static_highlight.js"></script>
     <style>
         .ui.modal {
             top: 30%;
@@ -51,619 +45,597 @@ if (!$nodejsmode) {
 <?php include("template/$OJ_TEMPLATE/nav.php"); ?>
 <div class="main screen">
     <script>
-    window.lastlang = localStorage.getItem("lastlang") || 19;
-                        function qsa(sel) {
-                            return Array.apply(null, document.querySelectorAll(sel));
-                        }
-                    function load_editor() {
-                        ace.require("ace/ext/language_tools");
-                        var editor = ace.edit("source");
-                        window.editor = editor;
-                        var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
-                        var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
-                        editor.$blockScrolling = Infinity;
-                        if (localStorage.getItem('theme')) {
-                            editor.setTheme(localStorage.getItem('theme'));
-                            qsa(".code").forEach(function (codeEl) {
-                                codeEl.setAttribute("ace-theme", localStorage.getItem('theme'));
-                            });
-                            <?php if(!isset($is_vjudge) || (isset($is_vjudge) && !$is_vjudge)){  ?>
-                            $(document).ready(function () {
-                                console.log("页面加载完毕，进行AJAX POST请求");
-                                var file_n = language_ext[document.getElementById('language').value];
-                                var qstring = getParameterByName;
-                                $.post("getfile.php?ajax",
-                                    {
-                                        file_name: file_n,
-                                        id: qstring("id"),
-                                        cid: qstring("cid"),
-                                        pid: qstring("pid"),
-                                        csrf: "<?=$token?>"
-                                    }, function (data) {
-                                        console.log("POST请求得到响应");
-                                        var res = JSON.parse(data);
-                                        if (res["empty"] == false) {
-                                            console.log(res);
-                                            prepend_file_context = res["prepend"];
-                                            append_file_context = res["append"];
-                                            var empty = res["empty"];
-                                            if (empty != "true") {
-                                                $("#prepend").text(prepend_file_context);
-                                                $("#prepend_hide").text(prepend_file_context);
-                                                $("#append").text(append_file_context);
-                                                $("#append_hide").text(append_file_context);
-                                            }
-                                            setTimeout(function () {
-                                                console.log("刷新前后置代码主题");
-                                                flush_theme();
-                                            }, 0);
-                                        }
-                                    });
+        window.lastlang = localStorage.getItem("lastlang") || 19;
+        function qsa(sel) {
+            return Array.apply(null, document.querySelectorAll(sel));
+        }
+        function load_editor() {
+            ace.require("ace/ext/language_tools");
+            var editor = ace.edit("source");
+            window.editor = editor;
+            var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
+            var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
+            editor.$blockScrolling = Infinity;
+            if (localStorage.getItem('theme')) {
+                editor.setTheme(localStorage.getItem('theme'));
+                qsa(".code").forEach(function (codeEl) {
+                    codeEl.setAttribute("ace-theme", localStorage.getItem('theme'));
+                });
+                <?php if(!isset($is_vjudge) || (isset($is_vjudge) && !$is_vjudge)){  ?>
+                $(document).ready(function () {
+                    console.log("页面加载完毕，进行AJAX POST请求");
+                    var file_n = language_ext[document.getElementById('language').value];
+                    var qstring = getParameterByName;
+                    $.post("getfile.php?ajax",
+                        {
+                            file_name: file_n,
+                            id: qstring("id"),
+                            cid: qstring("cid"),
+                            pid: qstring("pid"),
+                            csrf: "<?=$token?>"
+                        }, function (data) {
+                            console.log("POST请求得到响应");
+                            var res = JSON.parse(data);
+                            if (res["empty"] == false) {
+                                console.log(res);
+                                prepend_file_context = res["prepend"];
+                                append_file_context = res["append"];
+                                var empty = res["empty"];
+                                if (empty != "true") {
+                                    $("#prepend").text(prepend_file_context);
+                                    $("#prepend_hide").text(prepend_file_context);
+                                    $("#append").text(append_file_context);
+                                    $("#append_hide").text(append_file_context);
+                                }
                                 setTimeout(function () {
                                     console.log("刷新前后置代码主题");
                                     flush_theme();
                                 }, 0);
-                            });
-                            <?php } ?>
-                        }
-                        else {
-                            editor.setTheme("ace/theme/monokai");
-                            console.log("使用默认主题作为前后置代码主题");
-                            flush_theme();
-                        }
-                        editor.setOptions({
-                            enableBasicAutocompletion: true,
-                            enableSnippets: true,
-                            enableLiveAutocompletion: true,
-                            enableEmmet: true
-                        });
-                        editor.getSession().setMode("ace/mode/" + language[window.lastlang]);
-                        console.log(language[window.lastlang]);
-                        //editor.setValue("//Please paste your code here");
-                        /*editor.addEventListener("focus",function(){
-                         var v=editor.getValue();
-                         if(v=="//Please paste your code here")
-                         {
-                         editor.setValue("");
-                         }
-                         });*/
-                        // editor.addEventListener("blur",function(){
-                        // var v=editor.getValue();
-                        // if(v=="")
-                        // {
-                        //      editor.setValue("//Please paste your code here");
-                        //  }
-                        //  });
-                        if (localStorage.getItem('font-size')) {
-                            document.getElementById('source').style.fontSize = localStorage.getItem('font-size') + 'px';
-                            document.getElementById('fontsize').value = localStorage.getItem('font-size');
-                            console.log("从Cookie中获取字体大小成功");
-                            //  document.getElementById('prepend').style.fontSize='18px';
-                            // document.getElementById('append').style.fontSize='18px';
-                        }
-                        else {
-                            document.getElementById('source').style.fontSize = '18px';
-                            console.log("未设置字体大小，使用默认字体大小");
-                            // document.getElementById('prepend').style.fontSize='18px';
-                            //  document.getElementById('append').style.fontSize='18px';
-                        }
-                        var theme_n;
-                        if (localStorage.getItem('theme')) {
-                            theme_n = localStorage.getItem('theme');
-                        }
-                        else {
-                            theme_n = "ace/theme/monokai";
-                        }
-                        //console.log(theme_n);
-                        var arr = document.getElementsByTagName("option");
-                        var len = arr.length;
-                        for (var i = 0; i < len; i++) {
-                            //  console.log(arr[i].value);
-                            if (arr[i].value == theme_n) {
-                                arr[i].selected = true;
-                                break;
                             }
-                        }
-                        $("#theme").on('change', function () {
-                            var prepend_code = "";
-                            <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
-                            {?>
-                            prepend_code = document.getElementById('prepend_hide').innerHTML;
-                            console.log("成功设置前置代码");
-                            <?php } ?>
-                            var append_code = "";
-                            <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
-                            {?>
-                            append_code = document.getElementById('append_hide').innerHTML;
-                            console.log("成功设置后置代码");
-                            <?php } ?>
-                            var this_theme = this.value;
-                            localStorage.setItem('theme', this.value);
-                            console.log("设置主题成功！主题为:" + this.value);
-                            localStorage.setItem('theme-name', $(this).find("option:selected").text());
-                            console.log("设置主题名称成功！主题名称为:" + $(this).find("option:selected").text());
-                            editor.setTheme(this.value);
-                            qsa(".code").forEach(function (codeEl) {
-                                codeEl.setAttribute("ace-theme", this_theme);
-                            });
-                            <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
-                            {
-                            ?>
-                            document.getElementById('prepend').innerHTML = prepend_code;
-                            console.log("加入前置代码");
-                            <?php
-
-                            } ?>
-                            <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
-                            {
-                            ?>
-                            document.getElementById('append').innerHTML = append_code;
-                            console.log("加入后置代码");
-                            <?php
-
-                            } ?>
-                            flush_theme();
-                            setTimeout(function () {
-                                $("#total_control").height($("#right-side").height());
-                            }, 0);
                         });
-                        var fonts = document.getElementById('source').style.fontSize;
-                        $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
+                    setTimeout(function () {
+                        console.log("刷新前后置代码主题");
+                        flush_theme();
+                    }, 0);
+                });
+                <?php } ?>
+            }
+            else {
+                editor.setTheme("ace/theme/monokai");
+                console.log("使用默认主题作为前后置代码主题");
+                flush_theme();
+            }
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+                enableEmmet: true
+            });
+            editor.getSession().setMode("ace/mode/" + language[window.lastlang]);
+            console.log(language[window.lastlang]);
+            //editor.setValue("//Please paste your code here");
+            /*editor.addEventListener("focus",function(){
+             var v=editor.getValue();
+             if(v=="//Please paste your code here")
+             {
+             editor.setValue("");
+             }
+             });*/
+            // editor.addEventListener("blur",function(){
+            // var v=editor.getValue();
+            // if(v=="")
+            // {
+            //      editor.setValue("//Please paste your code here");
+            //  }
+            //  });
+            if (localStorage.getItem('font-size')) {
+                document.getElementById('source').style.fontSize = localStorage.getItem('font-size') + 'px';
+                document.getElementById('fontsize').value = localStorage.getItem('font-size');
+                console.log("从Cookie中获取字体大小成功");
+                //  document.getElementById('prepend').style.fontSize='18px';
+                // document.getElementById('append').style.fontSize='18px';
+            }
+            else {
+                document.getElementById('source').style.fontSize = '18px';
+                console.log("未设置字体大小，使用默认字体大小");
+                // document.getElementById('prepend').style.fontSize='18px';
+                //  document.getElementById('append').style.fontSize='18px';
+            }
+            var theme_n;
+            if (localStorage.getItem('theme')) {
+                theme_n = localStorage.getItem('theme');
+            }
+            else {
+                theme_n = "ace/theme/monokai";
+            }
+            //console.log(theme_n);
+            var arr = document.getElementsByTagName("option");
+            var len = arr.length;
+            for (var i = 0; i < len; i++) {
+                //  console.log(arr[i].value);
+                if (arr[i].value == theme_n) {
+                    arr[i].selected = true;
+                    break;
+                }
+            }
+            $("#theme").on('change', function () {
+                var prepend_code = "";
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
+                {?>
+                prepend_code = document.getElementById('prepend_hide').innerHTML;
+                console.log("成功设置前置代码");
+                <?php } ?>
+                var append_code = "";
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
+                {?>
+                append_code = document.getElementById('append_hide').innerHTML;
+                console.log("成功设置后置代码");
+                <?php } ?>
+                var this_theme = this.value;
+                localStorage.setItem('theme', this.value);
+                console.log("设置主题成功！主题为:" + this.value);
+                localStorage.setItem('theme-name', $(this).find("option:selected").text());
+                console.log("设置主题名称成功！主题名称为:" + $(this).find("option:selected").text());
+                editor.setTheme(this.value);
+                qsa(".code").forEach(function (codeEl) {
+                    codeEl.setAttribute("ace-theme", this_theme);
+                });
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
+                {
+                ?>
+                document.getElementById('prepend').innerHTML = prepend_code;
+                console.log("加入前置代码");
+                <?php
 
-                        
-                    }
+                } ?>
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
+                {
+                ?>
+                document.getElementById('append').innerHTML = append_code;
+                console.log("加入后置代码");
+                <?php
+
+                } ?>
+                flush_theme();
+                setTimeout(function () {
+                    $("#total_control").height($("#right-side").height());
+                }, 0);
+            });
+            var fonts = document.getElementById('source').style.fontSize;
+            $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
+
+
+        }
         var loadVue = new Promise(function(resolve,reject){
             $.get("/api/problem/local" + window.location.search, function (data) {
                 console.log(data);
-            if (data['status'] == "error") {
-                return;
-            }
-            var cid = null, pid = null, id = null, tid = null;
-            if ((cid = getParameterByName("cid"))) {
-                pid = getParameterByName("pid");
-            }
-            else if (tid = getParameterByName("tid")) {
-                pid = getParameterByName("pid");
-            }
-            else {
-                id = getParameterByName("id");
-            }
-            var d = data.problem;
-            var source_code = data.source;
-            var iseditor = data.editor;
-            var isadmin = data.isadmin;
-            var problemsubmitter = window.problemsubmitter = new Vue({
-                el: ".main.screen",
-                data: function () {
-                    var _data = {
-                        _title: d.title,
-                        problem_id: d.problem_id,
-                        original_id:d.problem_id,
-                        description: d.description,
-                        time: "时间限制:" + d.time_limit + "秒",
-                        memory: "内存限制:" + d.memory_limit + "MB",
-                        input: d.input,
-                        output: d.output,
-                        sampleinput: d.sample_input,
-                        sampleoutput: d.sample_output,
-                        hint: d.hint,
-                        submit: "提交:" + d.submit,
-                        accepted: "正确:" + d.accepted,
-                        source: d.source,
-                        show_style: "preview",
-                        not_show_toolbar: false,
-                        spj: Boolean(parseInt(d.spj)),
-                        single_page: false,
-                        source_code:source_code,
-                        language_name:d.language_name,
-                        prepend:d.prepend,
-                        append:d.append,
-                        langmask:d.langmask,
-                        isadmin:isadmin,
-                        iseditor:iseditor,
-                        selected_language:localStorage.getItem("lastlang")&&Boolean(parseInt(localStorage.getItem("lastlang"))&(~d.langmask))?parseInt(localStorage.getItem("lastlang")):Math.log2(~d.langmask&-~d.langmask),
-                        language_template:d.language_template,
-                        fontSize : 18,
-                        hide_warning:true,
-                        confirm_text:"",
-                        submitDisabled:false,
-                        resume_time:0
-                    };
-                    if (id) {
-                        _data.problem_id = d.problem_id;
-                    }
-                    else {
-                        _data.problem_id = String.fromCharCode(parseInt(pid) + "A".charCodeAt(0));
-                    }
-                    $("title").html(_data.problem_id + ":" + _data._title + " -- CUP Online Judge");
-                    return _data;
-                },
-                computed: {
-                    title: function () {
-                        return this.problem_id + ": " + d.title;
-                    },
-                    lang_list:function(){
-                        var len = this.language_name.length-1;
-                        var _langmask = ~this.langmask;
-                        let result = [];
-                        for(var cnt = 0;cnt<len;++cnt){
-                            if(_langmask & (1<<cnt)){
-                                result.push({
-                                    num:cnt,
-                                    name:this.language_name[cnt]
-                                })
-                            }
-                        }
-                        result.sort(function(a,b){
-                            if(a.name<b.name)return -1;
-                            else if(a.name>b.name)return 1;
-                            else return 0;
-                        })
-                        return result;
-                    }
-                },
-                methods: {
-                    switch_screen: function ($event) {
-                        this.single_page = !this.single_page;
-                    },
-                    resize:function($event){
-                        var size = $event.target.value;
-                        console.log(size);
-                        if (!isNaN(size)) {
-                            localStorage.setItem('font-size', size);
-                            this.fontSize = size;
-                        }
-                    },
-                    wsfs_result:function(data){
-                        console.log(data);
-                        var solution_id = data["solution_id"];
-                        sid = solution_id;
-                        var state = data["state"];
-                        var time = data["time"];
-                        var memory = data["memory"];
-                        var test_run_result = data["test_run_result"];
-                        var compile_info = data["compile_info"];
-                        var tb = window.document.getElementById('result');
-                        var loader = "<img width=18 src=image/loader.gif>";
-                        var tag = "span";
-                        if (state < 4) tag = "span disabled=true";
-                        else tag = "a";
-                        if (state == 11) {
-                            tb.innerHTML = "<" + tag + " href='ceinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[state] + "</" + tag + ">";
-                            tb.className = "ui button " + judge_color[state];
+                if (data['status'] == "error") {
+                    alert(data['statement']);
+                    return;
+                }
+                var cid = null, pid = null, id = null, tid = null;
+                if ((cid = getParameterByName("cid"))) {
+                    pid = getParameterByName("pid");
+                }
+                else if (tid = getParameterByName("tid")) {
+                    pid = getParameterByName("pid");
+                }
+                else {
+                    id = getParameterByName("id");
+                }
+                var d = data.problem;
+                var source_code = data.source;
+                var iseditor = data.editor;
+                var isadmin = data.isadmin;
+                var problemsubmitter = window.problemsubmitter = new Vue({
+                    el: ".main.screen",
+                    data: function () {
+                        var _data = {
+                            _title: d.title,
+                            problem_id: d.problem_id,
+                            original_id:d.problem_id,
+                            description: d.description,
+                            time: "时间限制:" + d.time_limit + "秒",
+                            memory: "内存限制:" + d.memory_limit + "MB",
+                            input: d.input,
+                            output: d.output,
+                            sampleinput: d.sample_input,
+                            sampleoutput: d.sample_output,
+                            hint: d.hint,
+                            submit: "提交:" + d.submit,
+                            accepted: "正确:" + d.accepted,
+                            source: d.source,
+                            show_style: "preview",
+                            not_show_toolbar: false,
+                            spj: Boolean(parseInt(d.spj)),
+                            single_page: false,
+                            source_code:source_code,
+                            language_name:d.language_name,
+                            prepend:d.prepend,
+                            append:d.append,
+                            langmask:d.langmask,
+                            isadmin:isadmin,
+                            iseditor:iseditor,
+                            selected_language:localStorage.getItem("lastlang")&&Boolean(parseInt(localStorage.getItem("lastlang"))&(~d.langmask))?parseInt(localStorage.getItem("lastlang")):Math.log2(~d.langmask&-~d.langmask),
+                            language_template:d.language_template,
+                            fontSize : 18,
+                            hide_warning:true,
+                            confirm_text:"",
+                            submitDisabled:false,
+                            resume_time:0
+                        };
+                        if (id) {
+                            _data.problem_id = d.problem_id;
                         }
                         else {
-                            tb.innerHTML = "<" + tag + " href='reinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[state] + "</" + tag + ">";
-                            tb.className = "ui button " + judge_color[state];
+                            _data.problem_id = String.fromCharCode(parseInt(pid) + "A".charCodeAt(0));
                         }
-
-                        if (state < 4) tb.innerHTML += loader;
-                        tb.innerHTML += "Memory:" + memory + "kb&nbsp;&nbsp;";
-                        tb.innerHTML += "Time:" + time + "ms";
-                        if (state >= 4) {
-                            if (test_run_result || compile_info) {
-                                $("#out").text("运行结果  :\n" + (test_run_result || "") + (compile_info||""));
-                            }
-                        //    else
-                          //      window.setTimeout("print_result(" + solution_id + ")", 2000);
-                            count = 0;
-                        }
+                        $("title").html(_data.problem_id + ":" + _data._title + " -- CUP Online Judge");
+                        return _data;
                     },
-                    nl2br:function(str, is_xhtml) {
-                        var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
-                        return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-                    },
-                    wsresult:function(data){
-                         //var res = data.split(',');
-                        var status = parseInt(data["state"]);
-                        var compile_info = data["compile_info"]
-                        var pass_point = data["pass_point"];
-                        var time = data["time"];
-                        var memory = data["memory"];
-                        var pass_rate = data["pass_rate"]*100;
-                        if (status > 3) {
-                            count = 0;
-                            this.resume();
-                        }
-                        if(status > 4 && status != 13)
-                        {
-                            $("#right-side").transition("shake");
-                        }
-                        if (status == 0) {
-                            $("#progess_text").text(judge_result[status]);
-                            //setTimeout("frush_result(" + runner_id + ")", 250);
-                            $('#progress').progress({
-                                percent: 20
-                            });
-                        }
-                        else if (status == 2) {
-                            $("#progess_text").text(judge_result[status]);
-                            //setTimeout("frush_result(" + runner_id + ")", 250);
-                            $('#progress').progress({
-                                percent: 40
-                            });
-                        }
-                        else if (status == 3) {
-                            $("#progess_text").text(judge_result[status] + " 已通过测试点:" + pass_point + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
-                            // setTimeout("frush_result(" + runner_id + ")", 250);
-                            $('#progress').progress({
-                                percent: 40
-                            });
-                        }
-                        else if (status == 4) {
-                            //count=0;
-                            $("#progess_text").text(judge_result[status] + " 内存使用:" + memory + "KB 运行时间:" + time + "ms");
-                            $('#progress').progress({
-                                percent: 100
-                            });
-                            $("#progress").progress('set success');
-                            if(getParameterByName("cid")&&parseInt(getParameterByName("cid"))>1000){
-                            $.get("contest_problem_ajax.php?cid="+getParameterByName("cid"), function (data) {
-                                var json = JSON.parse(data);
-                                setTimeout(function () {
-                                    $(".mainwindow").html("").animate({width: 0, borderRadius: 0, padding: 0});
-                                }, 500);
-                                var str = "<a class='item'><h3>剩下未完成的题目</h3></a>";
-                                if (json.length == 0) {
-                                    str += "<a class='item'><h2>恭喜AK</h2>";
-                                }
-                                else {
-                                    console.log(typeof json);
-                                    json.sort(function (a, b) {
-                                        if (a['num'] > b['num']) return 1;
-                                        else if (a['num'] == b['num']) return 0;
-                                        else return -1;
+                    computed: {
+                        title: function () {
+                            return this.problem_id + ": " + d.title;
+                        },
+                        lang_list:function(){
+                            var len = this.language_name.length-1;
+                            var _langmask = ~this.langmask;
+                            let result = [];
+                            for(var cnt = 0;cnt<len;++cnt){
+                                if(_langmask & (1<<cnt)){
+                                    result.push({
+                                        num:cnt,
+                                        name:this.language_name[cnt]
                                     })
                                 }
-                                for (i in json) {
-                                    str += "<a class='item' href='" + json[i]['url'] + "'><div class='ui small teal label'>通过:&nbsp;" + json[i]['accept'] + "</div><div class='ui small label'>提交:&nbsp;" + json[i]['submit'] + "</div>" + json[i]['num'] + " . " + json[i]['title'] + "</a>";
-                                }
-                                $(".ui.massive.vertical.menu").html(str).fadeIn();
-                            });
                             }
+                            result.sort(function(a,b){
+                                if(a.name<b.name)return -1;
+                                else if(a.name>b.name)return 1;
+                                else return 0;
+                            })
+                            return result;
                         }
-                        else if (status == 5 || status == 6) {
-                            //count=0;
-                            $("#progess_text").text("在第" + (pass_point+1) + "个测试点发生 " + judge_result[status] + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
-                            $('#progress').progress({
-                                percent: 100
-                            });
-                            $("#progress").progress('set error');
-                        }
-                        else {
-                            //count=0;
-                            if (typeof compile_info != "undefined") compile_info = "<br>" + this.nl2br(compile_info);
-                            else compile_info = "";
-                            $("#progess_text").text("在第" + (pass_point+1) + "个测试点发生 " + judge_result[status] + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
-                            if (compile_info.length > 0) {
-                                $(".compile.header").html(compile_info);
-                                $(".warning.message").show();
+                    },
+                    methods: {
+                        switch_screen: function ($event) {
+                            this.single_page = !this.single_page;
+                        },
+                        resize:function($event){
+                            var size = $event.target.value;
+                            console.log(size);
+                            if (!isNaN(size)) {
+                                localStorage.setItem('font-size', size);
+                                this.fontSize = size;
                             }
-                            $('#progress').progress({
-                                percent: 100
-                            });
-                            $("#progress").progress('set warning');
-                        }
-                    },
-                    reloadtemplate:function($event,_value){
-                        var $value;
-                        if($event){
-                            $value = $event.target.value;
-                        }
-                        else{
-                            $value = _value;
-                        }
-                        localStorage.setItem("lastlang",$value);
-                        $("#language").dropdown("set selected",$value.toString())
-                        this.selected_language = $value;
-                        var editor = window.editor;
-                        var langn = $value;
-                        var file_n = language_ext[langn];
-                        editor.getSession().setMode("ace/mode/" + language[langn]);
-                        var highlight = ace.require("ace/ext/static_highlight")
-                        var dom = ace.require("ace/lib/dom")
-                        qsa(".code").forEach(function (codeEl) {
-                            codeEl.innerHTML = "";
-                            codeEl.setAttribute("ace-mode", "ace/mode/" + language[langn])
-                        });
-                        var that = this;
-                        /*
-                        $.post("getfile.php?ajax",
-                            {
-                                file_name: file_n,
-                                id: that.problem_id,
-                                csrf: "<?=$token?>"
-                            }, function (data) {
-                                var prepend_file_context = "";
-                                var append_file_context = "";
-                                data = JSON.parse(data);
-                                prepend_file_context = data['prepend'];
-                                append_file_context = data['append'];
-                                var empty = data['empty'];
-
-                                if (!empty) {
-                                    document.getElementById("prepend").innerText = prepend_file_context;
-                                    document.getElementById("append").innerText = append_file_context;
-                                    setTimeout(function () {
-                                        flush_theme();
-                                    }, 0);
-                                }
-                            });*/
-                    },
-                    do_submit:function(){
-                        this.hide_warning = true;
-                        var that = this;
-                        if (editor.getValue().length < 15) {
-                            $('.ui.basic.confirms.modal')
-                                .modal({
-                                    offset: 400,
-                                    onShow: function () {
-                                        that.confirm_text = "<h2><center>代码过短</center></h2>";
-                                    }, onApprove: function () {
-                                        that.presubmit();
-                                    }
-                                })
-                                .modal('show')
-                        }
-                        else {
-                            this.presubmit();
-                        }
-                    },
-                    presubmit:function(){
-                        var qstring = getParameterByName;
-                        var type = "problem";
-                        if (qstring("cid")) {
-                            type = "contest";
-                        }
-                        else if (qstring("tid")) {
-                            type = "topic"
-                        }
-                        this.submitDisabled = true;
-                        $(".ui.teal.progress").show();
-                        $("#progess_text").text("提交");
-                        $('#progress').progress({
-                            percent: 0
-                        });
-                        $("#progress").progress('set active');
-                        var postdata = {
-                            id: qstring("id"),
-                            cid: qstring("cid"),
-                            tid: qstring("tid"),
-                            pid: qstring("pid"),
-                            input_text: $("#ipt").val(),
-                            language: $("#language").val(),
-                            source: window.editor.getValue(),
-                            type: type,
-                            csrf: "<?=$token?>"
-                        };
-                        window.postdata = postdata;
-                        var that = this;
-                        $.post("submit.php", {json: JSON.stringify(postdata), csrf: "<?=$token?>"}, function (data) {
-                            var running_id = parseInt(data);
-                            if (isNaN(running_id)) {
-                                alert("提交被服务器拒绝\n");
+                        },
+                        wsfs_result:function(data){
+                            console.log(data);
+                            var solution_id = data["solution_id"];
+                            sid = solution_id;
+                            var state = data["state"];
+                            var time = data["time"];
+                            var memory = data["memory"];
+                            var test_run_result = data["test_run_result"];
+                            var compile_info = data["compile_info"];
+                            var tb = window.document.getElementById('result');
+                            var loader = "<img width=18 src=image/loader.gif>";
+                            var tag = "span";
+                            if (state < 4) tag = "span disabled=true";
+                            else tag = "a";
+                            if (state == 11) {
+                                tb.innerHTML = "<" + tag + " href='ceinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[state] + "</" + tag + ">";
+                                tb.className = "ui button " + judge_color[state];
                             }
                             else {
-                                if (typeof window.socket == "object" && socket.connected) {
-                                    window.socket.emit("submit", {submission_id: parseInt(running_id), val: window.postdata});
-                                }
-                                else
-                                    frush_result(running_id);
-                                that.resume_time = 20;
-                                window.handler_interval = setTimeout(that.resume,1000);
+                                tb.innerHTML = "<" + tag + " href='reinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[state] + "</" + tag + ">";
+                                tb.className = "ui button " + judge_color[state];
                             }
-                        });
-                    },
-                    resume:function(){
-                        if(--this.resume_time<=0){
-                            this.submitDisabled = false;
-                            clearInterval(window.handler_interval);
-                        }
-                        else{
-                            window.handler_interval = setTimeout(this.resume,1000);
-                        }
-                    },
-                    test_run:function(){
-                        this.hide_warning = true;
-                        var that = this;
-                        if (editor.getValue().length < 15) {
-                            $('.ui.basic.confirms.modal')
-                                .modal({
-                                    offset: 400,
-                                    onShow: function () {
-                                        that.confirm_text = "<h2><center>代码过短</center></h2>";
-                                    }
-                                })
-                                .modal('show')
-                            return;
-                        }
-                        $("#out").html($("#hidden_sample_output").html());
-                        $('.ui.standard.modal')
-                            .modal({
-                                blurring: false,
-                                allowMultiple: true
-                            })
-                            .modal('show')
-                        ;
-                        if (window.handler_interval) window.clearInterval(handler_interval);
-                        var loader = "<img width=18 src=image/loader.gif>";
-                        var tb = window.document.getElementById('result');
-                        if (editor.getValue().length < 10) return alert("too short!");
-                        tb.innerHTML = loader;
-                        var qstring = getParameterByName;
-                        var type = "problem";
-                        if (qstring("cid")) {
-                            type = "contest";
-                        }
-                        else if (qstring("tid")) {
-                            type = "topic"
-                        }
-                        if (typeof window.socket === "object") {
+
+                            if (state < 4) tb.innerHTML += loader;
+                            tb.innerHTML += "Memory:" + memory + "kb&nbsp;&nbsp;";
+                            tb.innerHTML += "Time:" + time + "ms";
+                            if (state >= 4) {
+                                if (test_run_result || compile_info) {
+                                    $("#out").text("运行结果  :\n" + (test_run_result || "") + (compile_info||""));
+                                }
+                                //    else
+                                //      window.setTimeout("print_result(" + solution_id + ")", 2000);
+                                count = 0;
+                            }
+                        },
+                        nl2br:function(str, is_xhtml) {
+                            var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+                            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+                        },
+                        wsresult:function(data){
+                            //var res = data.split(',');
+                            var status = parseInt(data["state"]);
+                            var compile_info = data["compile_info"]
+                            var pass_point = data["pass_point"];
+                            var time = data["time"];
+                            var memory = data["memory"];
+                            var pass_rate = data["pass_rate"]*100;
+                            if (status > 3) {
+                                count = 0;
+                                this.resume();
+                            }
+                            if(status > 4 && status != 13)
+                            {
+                                $("#right-side").transition("shake");
+                            }
+                            if (status == 0) {
+                                $("#progess_text").text(judge_result[status]);
+                                //setTimeout("frush_result(" + runner_id + ")", 250);
+                                $('#progress').progress({
+                                    percent: 20
+                                });
+                            }
+                            else if (status == 2) {
+                                $("#progess_text").text(judge_result[status]);
+                                //setTimeout("frush_result(" + runner_id + ")", 250);
+                                $('#progress').progress({
+                                    percent: 40
+                                });
+                            }
+                            else if (status == 3) {
+                                $("#progess_text").text(judge_result[status] + " 已通过测试点:" + pass_point + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
+                                // setTimeout("frush_result(" + runner_id + ")", 250);
+                                $('#progress').progress({
+                                    percent: 40
+                                });
+                            }
+                            else if (status == 4) {
+                                //count=0;
+                                $("#progess_text").text(judge_result[status] + " 内存使用:" + memory + "KB 运行时间:" + time + "ms");
+                                $('#progress').progress({
+                                    percent: 100
+                                });
+                                $("#progress").progress('set success');
+                                if(getParameterByName("cid")&&parseInt(getParameterByName("cid"))>1000){
+                                    $.get("contest_problem_ajax.php?cid="+getParameterByName("cid"), function (data) {
+                                        var json = JSON.parse(data);
+                                        setTimeout(function () {
+                                            $(".mainwindow").html("").animate({width: 0, borderRadius: 0, padding: 0});
+                                        }, 500);
+                                        var str = "<a class='item'><h3>剩下未完成的题目</h3></a>";
+                                        if (json.length == 0) {
+                                            str += "<a class='item'><h2>恭喜AK</h2>";
+                                        }
+                                        else {
+                                            console.log(typeof json);
+                                            json.sort(function (a, b) {
+                                                if (a['num'] > b['num']) return 1;
+                                                else if (a['num'] == b['num']) return 0;
+                                                else return -1;
+                                            })
+                                        }
+                                        for (i in json) {
+                                            str += "<a class='item' href='" + json[i]['url'] + "'><div class='ui small teal label'>通过:&nbsp;" + json[i]['accept'] + "</div><div class='ui small label'>提交:&nbsp;" + json[i]['submit'] + "</div>" + json[i]['num'] + " . " + json[i]['title'] + "</a>";
+                                        }
+                                        $(".ui.massive.vertical.menu").html(str).fadeIn();
+                                    });
+                                }
+                            }
+                            else if (status == 5 || status == 6) {
+                                //count=0;
+                                $("#progess_text").text("在第" + (pass_point+1) + "个测试点发生 " + judge_result[status] + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
+                                $('#progress').progress({
+                                    percent: 100
+                                });
+                                $("#progress").progress('set error');
+                            }
+                            else {
+                                //count=0;
+                                if (typeof compile_info != "undefined") compile_info = "<br>" + this.nl2br(compile_info);
+                                else compile_info = "";
+                                $("#progess_text").text("在第" + (pass_point+1) + "个测试点发生 " + judge_result[status] + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
+                                if (compile_info.length > 0) {
+                                    $(".compile.header").html(compile_info);
+                                    $(".warning.message").show();
+                                }
+                                $('#progress').progress({
+                                    percent: 100
+                                });
+                                $("#progress").progress('set warning');
+                            }
+                        },
+                        reloadtemplate:function($event,_value){
+                            var $value;
+                            if($event){
+                                $value = $event.target.value;
+                            }
+                            else{
+                                $value = _value;
+                            }
+                            localStorage.setItem("lastlang",$value);
+                            $("#language").dropdown("set selected",$value.toString())
+                            this.selected_language = $value;
+                            var editor = window.editor;
+                            var langn = $value;
+                            var file_n = language_ext[langn];
+                            editor.getSession().setMode("ace/mode/" + language[langn]);
+                            var highlight = ace.require("ace/ext/static_highlight")
+                            var dom = ace.require("ace/lib/dom")
+                            qsa(".code").forEach(function (codeEl) {
+                                codeEl.innerHTML = "";
+                                codeEl.setAttribute("ace-mode", "ace/mode/" + language[langn])
+                            });
+                        },
+                        do_submit:function(){
+                            this.hide_warning = true;
+                            var that = this;
+                            if (editor.getValue().length < 15) {
+                                $('.ui.basic.confirms.modal')
+                                    .modal({
+                                        offset: 400,
+                                        onShow: function () {
+                                            that.confirm_text = "<h2><center>代码过短</center></h2>";
+                                        }, onApprove: function () {
+                                            that.presubmit();
+                                        }
+                                    })
+                                    .modal('show')
+                            }
+                            else {
+                                this.presubmit();
+                            }
+                        },
+                        presubmit:function(){
+                            var qstring = getParameterByName;
+                            var type = "problem";
+                            if (qstring("cid")) {
+                                type = "contest";
+                            }
+                            else if (qstring("tid")) {
+                                type = "topic"
+                            }
+                            this.submitDisabled = true;
+                            $(".ui.teal.progress").show();
+                            $("#progess_text").text("提交");
+                            $('#progress').progress({
+                                percent: 0
+                            });
+                            $("#progress").progress('set active');
                             var postdata = {
-                                id: -Math.abs(parseInt(qstring("id"))) || -Math.abs(parseInt(that.original_id)),
-                                cid: -Math.abs(parseInt(qstring("cid")))||null,
+                                id: qstring("id"),
+                                cid: qstring("cid"),
                                 tid: qstring("tid"),
                                 pid: qstring("pid"),
-                                input_text: window.problemsubmitter.$data.sampleinput,
+                                input_text: $("#ipt").val(),
                                 language: $("#language").val(),
                                 source: window.editor.getValue(),
                                 type: type,
                                 csrf: "<?=$token?>"
-
                             };
                             window.postdata = postdata;
+                            var that = this;
+                            $.post("submit.php", {json: JSON.stringify(postdata), csrf: "<?=$token?>"}, function (data) {
+                                var running_id = parseInt(data);
+                                if (isNaN(running_id)) {
+                                    alert("提交被服务器拒绝\n");
+                                }
+                                else {
+                                    if (typeof window.socket == "object" && socket.connected) {
+                                        window.socket.emit("submit", {submission_id: parseInt(running_id), val: window.postdata});
+                                    }
+                                    else
+                                        frush_result(running_id);
+                                    that.resume_time = 20;
+                                    window.handler_interval = setTimeout(that.resume,1000);
+                                }
+                            });
+                        },
+                        resume:function(){
+                            if(--this.resume_time<=0){
+                                this.submitDisabled = false;
+                                clearInterval(window.handler_interval);
+                            }
+                            else{
+                                window.handler_interval = setTimeout(this.resume,1000);
+                            }
+                        },
+                        test_run:function(){
+                            this.hide_warning = true;
+                            var that = this;
+                            if (editor.getValue().length < 15) {
+                                $('.ui.basic.confirms.modal')
+                                    .modal({
+                                        offset: 400,
+                                        onShow: function () {
+                                            that.confirm_text = "<h2><center>代码过短</center></h2>";
+                                        }
+                                    })
+                                    .modal('show')
+                                return;
+                            }
+                            $("#out").html($("#hidden_sample_output").html());
+                            $('.ui.standard.modal')
+                                .modal({
+                                    blurring: false,
+                                    allowMultiple: true
+                                })
+                                .modal('show')
+                            ;
+                            if (window.handler_interval) window.clearInterval(handler_interval);
+                            var loader = "<img width=18 src=image/loader.gif>";
+                            var tb = window.document.getElementById('result');
+                            if (editor.getValue().length < 10) return alert("too short!");
+                            tb.innerHTML = loader;
+                            var qstring = getParameterByName;
+                            var type = "problem";
+                            if (qstring("cid")) {
+                                type = "contest";
+                            }
+                            else if (qstring("tid")) {
+                                type = "topic"
+                            }
+                            if (typeof window.socket === "object") {
+                                var postdata = {
+                                    id: -Math.abs(parseInt(qstring("id"))) || -Math.abs(parseInt(that.original_id)),
+                                    cid: -Math.abs(parseInt(qstring("cid")))||null,
+                                    tid: qstring("tid"),
+                                    pid: qstring("pid"),
+                                    input_text: window.problemsubmitter.$data.sampleinput,
+                                    language: $("#language").val(),
+                                    source: window.editor.getValue(),
+                                    type: type,
+                                    csrf: "<?=$token?>"
+
+                                };
+                                window.postdata = postdata;
 
 
+                            }
+                            console.log(window.postdata);
+                            $.post("submit.php?ajax", {
+                                json: JSON.stringify(window.postdata),
+                                csrf: "<?=$token?>"
+                            }, function (data) {
+                                if (typeof window.socket == "object" && window.socket.connected) {
+                                    window.socket.emit("submit", {submission_id: parseInt(data), val: window.postdata});
+                                }
+                                else
+                                {
+                                    //TODO:wait for edit
+                                    //fresh_result(data);
+                                }
+                            });
+                            this.submitDisabled = true;
+                            this.resume_time = 20;
+                            window.handler_interval = setTimeout(that.resume,1000);
                         }
-                        console.log(window.postdata);
-                        $.post("submit.php?ajax", {
-                            json: JSON.stringify(window.postdata),
-                            csrf: "<?=$token?>"
-                        }, function (data) {
-                            if (typeof window.socket == "object" && window.socket.connected) {
-                                window.socket.emit("submit", {submission_id: parseInt(data), val: window.postdata});
-                            }
-                            else
-                            {
-                                //TODO:wait for edit 
-                                //fresh_result(data);
-                            }
+                    },
+                    mounted: function () {
+                        var that = this;
+                        $(".not-compile").removeClass("not-compile");
+                        load_editor.call(window);
+                        window.editor.getSession().setValue(this.source_code);
+                        $('.ui.accordion')
+                            .accordion({
+                                'exclusive': false
+                            });
+                        $('.ui.dropdown.selection').dropdown({
+                            on: 'hover'
                         });
-                        this.submitDisabled = true;
-                        this.resume_time = 20;
-                        window.handler_interval = setTimeout(that.resume,1000);
-                    }
-                },
-                mounted: function () {
-                    var that = this;
-                    $(".not-compile").removeClass("not-compile");
-                    load_editor.call(window);
-                    window.editor.getSession().setValue(this.source_code);
-                    $('.ui.accordion')
-                        .accordion({
-                            'exclusive': false
-                    });
-                    $('.ui.dropdown.selection').dropdown({
-                    on: 'hover'
-                });
                         resolve();
                         if(getParameterByName("sid")){
                             $.get("/api/status/solution?sid="+getParameterByName("sid"),function(data){
                                 that.reloadtemplate(null,data.data.language)
                             })
                         }
-                }
+                    }
+                });
+                <?php if(isset($_SESSION["administrator"])) { ?>
+                window.problemsubmitter = problemsubmitter;
+                <?php } ?>
+                window.problem_detail = data;
+                //MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             });
-            <?php if(isset($_SESSION["administrator"])) { ?>
-            window.problemsubmitter = problemsubmitter;
-            <?php } ?>
-            window.problem_detail = data;
-            //MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-        });
         })
-        .then(function(resolve){
-            var obj = document.getElementById('clipbtn');
-            if(obj){
+            .then(function(resolve){
+                var obj = document.getElementById('clipbtn');
+                if(obj){
                     var clipboard = new Clipboard(obj, {
                         text: function (trigger) {
                             var data = problemsubmitter.$data;
@@ -690,8 +662,8 @@ if (!$nodejsmode) {
                         console.log("复制失败！请手动复制代码");
                         console.log("Firefox 有一定几率报错，待修复");
                     });
-            }
-        });
+                }
+            });
         if (isMobile.any()) {
             location.href = "problem.php?<?=$_SERVER['QUERY_STRING']?>";
         }
@@ -764,21 +736,6 @@ SHOULD BE:
         <div v-show="single_page === true" class="ui container not-compile" v-cloak>
             <div class="not-compile">
                 <center><h2 id="probid" v-text="title">
-                        <?php
-                        $PID = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                        if (!$nodejsmode)
-                            $id = $row->problem_id;
-                        if ($nodejsmode) {
-                            echo $MSG_PROBLEM . " :";
-                        } else {
-                            if ($pr_flag) {
-                                echo $MSG_PROBLEM . "$id: $row->title";
-                            } else {
-                                echo "$MSG_PROBLEM $PID[$pid] ";
-                                if (!$iscmode)
-                                    echo ":" . $row->title;
-                            }
-                        } ?>
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
@@ -796,14 +753,14 @@ SHOULD BE:
                         <a :href="'problemstatus.php?id='+original_id" class='ui button orange'><?= $MSG_STATUS ?></a>
                         <a @click.prevent="switch_screen($event)" href='problem.php?<?= $_SERVER['QUERY_STRING'] ?>'
                            class='ui button blue'>切换双屏</a>
-                           <a v-if="!getParameterByName('cid') && !getParameterByName('tid')" :href="'tutorial.php?id='+original_id" class="ui button teal">
-                               查看题解
-                           </a>
+                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')" :href="'tutorial.php?id='+original_id" class="ui button teal">
+                            查看题解
+                        </a>
 
-                            <a class='ui button violet' v-if="iseditor||isadmin"
-                               :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
-                            <?php
-                               if (isset($_SESSION['administrator'])) {
+                        <a class='ui button violet' v-if="iseditor||isadmin"
+                           :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
+                        <?php
+                        if (isset($_SESSION['administrator'])) {
                             require_once("include/set_get_key.php");
                             ?>
                             <a class='ui button purple'
@@ -836,21 +793,6 @@ SHOULD BE:
             <div class="padding ui container mainwindow"
                  style="height:100%;width: 35%;overflow-y: auto;float:left;-webkit-border-radius: ;-moz-border-radius: ;border-radius: 10px;">
                 <center><h2 id="probid" v-text="title">
-                        <?php
-                        $PID = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                        if (!$nodejsmode)
-                            $id = $row->problem_id;
-                        if ($nodejsmode) {
-                            echo $MSG_PROBLEM . " :";
-                        } else {
-                            if ($pr_flag) {
-                                echo $MSG_PROBLEM . "$id: $row->title";
-                            } else {
-                                echo "$MSG_PROBLEM $PID[$pid] ";
-                                if (!$iscmode)
-                                    echo ":" . $row->title;
-                            }
-                        } ?>
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
@@ -868,11 +810,11 @@ SHOULD BE:
                         <a :href="'problemstatus.php?id='+original_id" class='ui button orange'><?= $MSG_STATUS ?></a>
                         <a @click.prevent="switch_screen($event)" href='problem.php?<?= $_SERVER['QUERY_STRING'] ?>'
                            class='ui button blue'>切换单屏</a>
-                           <a v-if="!getParameterByName('cid') && !getParameterByName('tid')" :href="'tutorial.php?id='+original_id" class="ui button teal">
-                               查看题解
-                           </a>
-                            <a v-if="iseditor||isadmin" class='ui button violet'
-                               :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
+                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')" :href="'tutorial.php?id='+original_id" class="ui button teal">
+                            查看题解
+                        </a>
+                        <a v-if="iseditor||isadmin" class='ui button violet'
+                           :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
                         <?php
                         if (isset($_SESSION['administrator'])) {
                             require_once("include/set_get_key.php");
@@ -892,20 +834,20 @@ SHOULD BE:
                     </div>
                     <div class='title'><?= $MSG_Input ?><i class="dropdown icon"></i></div>
                     <div class='content' id='problem_input' v-html="input">
-                        </div>
+                    </div>
                     <div class='title'><?= $MSG_Output ?><i class="dropdown icon"></i></div>
                     <div class='content' id='problem_output' v-html="output"></div>
-                        <div class='title'><?= $MSG_Sample_Input ?><i class="dropdown icon"></i></div>
-                        <div class='content'>
+                    <div class='title'><?= $MSG_Sample_Input ?><i class="dropdown icon"></i></div>
+                    <div class='content'>
                             <pre class='ui bottom attached segment'><span id='problem_sample_input' class='sample_input'
                                                                           v-text='sampleinput'><?= ($sinput) ?></span></pre>
-                        </div>
-                        <div class='title'><?= $MSG_Sample_Output ?><i class="dropdown icon"></i></div>
-                        <div class='content'>
+                    </div>
+                    <div class='title'><?= $MSG_Sample_Output ?><i class="dropdown icon"></i></div>
+                    <div class='content'>
                             <pre class='ui bottom attached segment'><span id='problem_sample_output'
                                                                           class='sample_output'
                                                                           v-text='sampleoutput'><?= ($soutput) ?></span></pre>
-                        </div>
+                    </div>
                     <div class='title'><?= $MSG_HINT ?><i class="dropdown icon"></i></div>
                     <div class='content' v-html="hint">
                     </div>
@@ -931,11 +873,11 @@ SHOULD BE:
         color: black;width:100%;text-align:right" class="ui menu borderless">
                     <div class="item not-compile">
                         <select class="not-compile" v-cloak :class="'ui dropdown selection'" id="language" name="language"
-                                 @change="reloadtemplate($event)" v-model="selected_language">
-                           <option  v-for="language in lang_list" :value="language.num">{{language.name}}</option>
+                                @change="reloadtemplate($event)" v-model="selected_language">
+                            <option  v-for="language in lang_list" :value="language.num">{{language.name}}</option>
                         </select>
                         <a
-                             :class="'item'" class="not-compile" v-cloak id="clipbtn" data-clipboard-action="copy"
+                                :class="'item'" class="not-compile" v-cloak id="clipbtn" data-clipboard-action="copy"
                                 style="float:left;" v-if="prepend||append">复制代码</a>
                     </div>
                     <div class="right menu">
@@ -991,19 +933,19 @@ SHOULD BE:
                             </select></div>
                     </div>
                 </div>
-                    <div v-if="prepend" class="code"
-                         style="width: 100%;padding:0px;line-height:1.2;text-align:left;margin-bottom:0px;"
-                         :ace-mode="'ace/mode/'+language_template[selected_language]"
-                         ace-theme="ace/theme/monokai"
-                         id="prepend" v-text="prepend[selected_language]">
-                    </div>
+                <div v-if="prepend" class="code"
+                     style="width: 100%;padding:0px;line-height:1.2;text-align:left;margin-bottom:0px;"
+                     :ace-mode="'ace/mode/'+language_template[selected_language]"
+                     ace-theme="ace/theme/monokai"
+                     id="prepend" v-text="prepend[selected_language]">
+                </div>
                 <div style="width:100%;height:460px" :style="{width:'100%',height:'460px',fontSize:fontSize+'px'}" cols=180 rows=20
                      id="source"></div>
-                    <div v-if="append" id="append" class="code"
-                         style="width: 100%; padding:0px; line-height:1.2;text-align:left;margin-bottom:0px;"
-                         :ace-mode="'ace/mode/'+language_template[selected_language]"
-                         ace-theme="ace/theme/monokai" v-text="append[selected_language]">
-                    </div>
+                <div v-if="append" id="append" class="code"
+                     style="width: 100%; padding:0px; line-height:1.2;text-align:left;margin-bottom:0px;"
+                     :ace-mode="'ace/mode/'+language_template[selected_language]"
+                     ace-theme="ace/theme/monokai" v-text="append[selected_language]">
+                </div>
                 <div id="statusBar" style="margin: 0;
         padding: 0;
         position: relative;
@@ -1017,7 +959,7 @@ SHOULD BE:
                                    @click="do_submit">
                             <div class="or"></div>
                             <input id="TestRun" class="ui button blue" @click="test_run" :disabled="submitDisabled" type=button value="<?php echo $MSG_TR ?>"
-                                   >&nbsp;<!--<span class="btn" id=result>状态</span>-->
+                            >&nbsp;<!--<span class="btn" id=result>状态</span>-->
                         </div>
                     </div>
                 </div>
@@ -1188,17 +1130,6 @@ SHOULD BE:
                     }
                     console.timeEnd("function");
                 </script>
-
-                <div id="prepend_hide"
-                     style="display:none"><?php if (isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file)) {
-                        echo htmlentities(file_get_contents($prepend_file));
-
-                    } ?></div>
-                <div id="append_hide"
-                     style="display:none"><?php if (isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file)) {
-                        echo htmlentities(file_get_contents($append_file));
-
-                    } ?></div>
                 <div id="clipcp" style="display:none"></div>
             </div>
             <div id="next_problem">
