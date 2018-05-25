@@ -26,10 +26,10 @@ $homepage="";
         .white{
             color:white;
         }
+        
     </style>
 </head>
 <body>
-
 <!-- Following Menu -->
 <?php include("template/$OJ_TEMPLATE/nav.php"); ?>
 

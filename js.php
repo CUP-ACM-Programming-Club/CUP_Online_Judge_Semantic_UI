@@ -18,6 +18,7 @@
 <script src="/template/semantic-ui/js/vue.js"></script>
 <script src="/template/semantic-ui/js/base64.js"></script>
 <script src="/template/semantic-ui/js/utils.js"></script>
+<script src="https://cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script>
 <script src="/js/lodash.min.js"></script>
 
 <script>
