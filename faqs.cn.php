@@ -35,9 +35,7 @@
             <h1 class="ui header block"><?php echo $OJ_NAME?> FAQ</h1>
         </center>
         <font color=green>Q</font>:这个在线评测平台使用什么样的编译器和编译选项?<br>
-            <font color=red>A</font>:详见<a href="//<?=$_SERVER['SERVER_NAME']?>:8100/常见问题/编译命令" target="_blank">CUP Online Judge WIKI</a><br>
-            <font color=green>Q</font>:如何在非校园网访问在线评测平台?<br>
-            <font color=red>A</font>:详见<a href="//<?=$_SERVER['SERVER_NAME']?>:8100/常见问题/外网访问" target="_blank">CUP Online Judge WIKI</a>
+            <font color=red>A</font>:详见<a href="https://wiki.cupacm.com/常见问题/编译命令" target="_blank">CUP Online Judge WIKI</a><br>
         <p>  编译器版本为（系统可能升级编译器版本，这里直供参考）:<br>
         <div class="ui raised segment">
             <font color=blue>

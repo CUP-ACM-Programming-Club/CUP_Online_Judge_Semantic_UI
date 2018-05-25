@@ -43,12 +43,14 @@
 </head>
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php"); ?>
-<div class="main screen">
+<div class="main screen" v-cloak>
     <script>
         window.lastlang = localStorage.getItem("lastlang") || 19;
+
         function qsa(sel) {
             return Array.apply(null, document.querySelectorAll(sel));
         }
+
         function load_editor() {
             ace.require("ace/ext/language_tools");
             var editor = ace.edit("source");
@@ -206,7 +208,8 @@
 
 
         }
-        var loadVue = new Promise(function(resolve,reject){
+
+        var loadVue = new Promise(function (resolve, reject) {
             $.get("/api/problem/local" + window.location.search, function (data) {
                 console.log(data);
                 if (data['status'] == "error") {
@@ -233,7 +236,7 @@
                         var _data = {
                             _title: d.title,
                             problem_id: d.problem_id,
-                            original_id:d.problem_id,
+                            original_id: d.problem_id,
                             description: d.description,
                             time: "时间限制:" + d.time_limit + "秒",
                             memory: "内存限制:" + d.memory_limit + "MB",
@@ -249,20 +252,20 @@
                             not_show_toolbar: false,
                             spj: Boolean(parseInt(d.spj)),
                             single_page: false,
-                            source_code:source_code,
-                            language_name:d.language_name,
-                            prepend:d.prepend,
-                            append:d.append,
-                            langmask:d.langmask,
-                            isadmin:isadmin,
-                            iseditor:iseditor,
-                            selected_language:localStorage.getItem("lastlang")&&Boolean(parseInt(localStorage.getItem("lastlang"))&(~d.langmask))?parseInt(localStorage.getItem("lastlang")):Math.log2(~d.langmask&-~d.langmask),
-                            language_template:d.language_template,
-                            fontSize : 18,
-                            hide_warning:true,
-                            confirm_text:"",
-                            submitDisabled:false,
-                            resume_time:0
+                            source_code: source_code,
+                            language_name: d.language_name,
+                            prepend: d.prepend,
+                            append: d.append,
+                            langmask: d.langmask,
+                            isadmin: isadmin,
+                            iseditor: iseditor,
+                            selected_language: localStorage.getItem("lastlang") && Boolean(parseInt(localStorage.getItem("lastlang")) & (~d.langmask)) ? parseInt(localStorage.getItem("lastlang")) : Math.log2(~d.langmask & -~d.langmask),
+                            language_template: d.language_template,
+                            fontSize: 18,
+                            hide_warning: true,
+                            confirm_text: "",
+                            submitDisabled: false,
+                            resume_time: 0
                         };
                         if (id) {
                             _data.problem_id = d.problem_id;
@@ -277,21 +280,21 @@
                         title: function () {
                             return this.problem_id + ": " + d.title;
                         },
-                        lang_list:function(){
-                            var len = this.language_name.length-1;
+                        lang_list: function () {
+                            var len = this.language_name.length - 1;
                             var _langmask = ~this.langmask;
                             let result = [];
-                            for(var cnt = 0;cnt<len;++cnt){
-                                if(_langmask & (1<<cnt)){
+                            for (var cnt = 0; cnt < len; ++cnt) {
+                                if (_langmask & (1 << cnt)) {
                                     result.push({
-                                        num:cnt,
-                                        name:this.language_name[cnt]
+                                        num: cnt,
+                                        name: this.language_name[cnt]
                                     })
                                 }
                             }
-                            result.sort(function(a,b){
-                                if(a.name<b.name)return -1;
-                                else if(a.name>b.name)return 1;
+                            result.sort(function (a, b) {
+                                if (a.name < b.name) return -1;
+                                else if (a.name > b.name) return 1;
                                 else return 0;
                             })
                             return result;
@@ -301,7 +304,7 @@
                         switch_screen: function ($event) {
                             this.single_page = !this.single_page;
                         },
-                        resize:function($event){
+                        resize: function ($event) {
                             var size = $event.target.value;
                             console.log(size);
                             if (!isNaN(size)) {
@@ -309,7 +312,7 @@
                                 this.fontSize = size;
                             }
                         },
-                        wsfs_result:function(data){
+                        wsfs_result: function (data) {
                             console.log(data);
                             var solution_id = data["solution_id"];
                             sid = solution_id;
@@ -337,31 +340,30 @@
                             tb.innerHTML += "Time:" + time + "ms";
                             if (state >= 4) {
                                 if (test_run_result || compile_info) {
-                                    $("#out").text("运行结果  :\n" + (test_run_result || "") + (compile_info||""));
+                                    $("#out").text("运行结果  :\n" + (test_run_result || "") + (compile_info || ""));
                                 }
                                 //    else
                                 //      window.setTimeout("print_result(" + solution_id + ")", 2000);
                                 count = 0;
                             }
                         },
-                        nl2br:function(str, is_xhtml) {
+                        nl2br: function (str, is_xhtml) {
                             var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
                             return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
                         },
-                        wsresult:function(data){
+                        wsresult: function (data) {
                             //var res = data.split(',');
                             var status = parseInt(data["state"]);
                             var compile_info = data["compile_info"]
                             var pass_point = data["pass_point"];
                             var time = data["time"];
                             var memory = data["memory"];
-                            var pass_rate = data["pass_rate"]*100;
+                            var pass_rate = data["pass_rate"] * 100;
                             if (status > 3) {
                                 count = 0;
                                 this.resume();
                             }
-                            if(status > 4 && status != 13)
-                            {
+                            if (status > 4 && status != 13) {
                                 $("#right-side").transition("shake");
                             }
                             if (status == 0) {
@@ -379,7 +381,7 @@
                                 });
                             }
                             else if (status == 3) {
-                                $("#progess_text").text(judge_result[status] + " 已通过测试点:" + pass_point + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
+                                $("#progess_text").text(judge_result[status] + " 已通过测试点:" + pass_point + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
                                 // setTimeout("frush_result(" + runner_id + ")", 250);
                                 $('#progress').progress({
                                     percent: 40
@@ -392,8 +394,8 @@
                                     percent: 100
                                 });
                                 $("#progress").progress('set success');
-                                if(getParameterByName("cid")&&parseInt(getParameterByName("cid"))>1000){
-                                    $.get("contest_problem_ajax.php?cid="+getParameterByName("cid"), function (data) {
+                                if (getParameterByName("cid") && parseInt(getParameterByName("cid")) > 1000) {
+                                    $.get("contest_problem_ajax.php?cid=" + getParameterByName("cid"), function (data) {
                                         var json = JSON.parse(data);
                                         setTimeout(function () {
                                             $(".mainwindow").html("").animate({width: 0, borderRadius: 0, padding: 0});
@@ -419,7 +421,7 @@
                             }
                             else if (status == 5 || status == 6) {
                                 //count=0;
-                                $("#progess_text").text("在第" + (pass_point+1) + "个测试点发生 " + judge_result[status] + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
+                                $("#progess_text").text("在第" + (pass_point + 1) + "个测试点发生 " + judge_result[status] + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
                                 $('#progress').progress({
                                     percent: 100
                                 });
@@ -429,7 +431,7 @@
                                 //count=0;
                                 if (typeof compile_info != "undefined") compile_info = "<br>" + this.nl2br(compile_info);
                                 else compile_info = "";
-                                $("#progess_text").text("在第" + (pass_point+1) + "个测试点发生 " + judge_result[status] + "  通过率:"+pass_rate.toString().substring(0,3)+"%");
+                                $("#progess_text").text("在第" + (pass_point + 1) + "个测试点发生 " + judge_result[status] + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
                                 if (compile_info.length > 0) {
                                     $(".compile.header").html(compile_info);
                                     $(".warning.message").show();
@@ -440,16 +442,16 @@
                                 $("#progress").progress('set warning');
                             }
                         },
-                        reloadtemplate:function($event,_value){
+                        reloadtemplate: function ($event, _value) {
                             var $value;
-                            if($event){
+                            if ($event) {
                                 $value = $event.target.value;
                             }
-                            else{
+                            else {
                                 $value = _value;
                             }
-                            localStorage.setItem("lastlang",$value);
-                            $("#language").dropdown("set selected",$value.toString())
+                            localStorage.setItem("lastlang", $value);
+                            $("#language").dropdown("set selected", $value.toString())
                             this.selected_language = $value;
                             var editor = window.editor;
                             var langn = $value;
@@ -462,7 +464,7 @@
                                 codeEl.setAttribute("ace-mode", "ace/mode/" + language[langn])
                             });
                         },
-                        do_submit:function(){
+                        do_submit: function () {
                             this.hide_warning = true;
                             var that = this;
                             if (editor.getValue().length < 15) {
@@ -481,7 +483,7 @@
                                 this.presubmit();
                             }
                         },
-                        presubmit:function(){
+                        presubmit: function () {
                             var qstring = getParameterByName;
                             var type = "problem";
                             if (qstring("cid")) {
@@ -510,32 +512,38 @@
                             };
                             window.postdata = postdata;
                             var that = this;
-                            $.post("submit.php", {json: JSON.stringify(postdata), csrf: "<?=$token?>"}, function (data) {
+                            $.post("submit.php", {
+                                json: JSON.stringify(postdata),
+                                csrf: "<?=$token?>"
+                            }, function (data) {
                                 var running_id = parseInt(data);
                                 if (isNaN(running_id)) {
                                     alert("提交被服务器拒绝\n");
                                 }
                                 else {
                                     if (typeof window.socket == "object" && socket.connected) {
-                                        window.socket.emit("submit", {submission_id: parseInt(running_id), val: window.postdata});
+                                        window.socket.emit("submit", {
+                                            submission_id: parseInt(running_id),
+                                            val: window.postdata
+                                        });
                                     }
                                     else
                                         frush_result(running_id);
                                     that.resume_time = 20;
-                                    window.handler_interval = setTimeout(that.resume,1000);
+                                    window.handler_interval = setTimeout(that.resume, 1000);
                                 }
                             });
                         },
-                        resume:function(){
-                            if(--this.resume_time<=0){
+                        resume: function () {
+                            if (--this.resume_time <= 0) {
                                 this.submitDisabled = false;
                                 clearInterval(window.handler_interval);
                             }
-                            else{
-                                window.handler_interval = setTimeout(this.resume,1000);
+                            else {
+                                window.handler_interval = setTimeout(this.resume, 1000);
                             }
                         },
-                        test_run:function(){
+                        test_run: function () {
                             this.hide_warning = true;
                             var that = this;
                             if (editor.getValue().length < 15) {
@@ -573,7 +581,7 @@
                             if (typeof window.socket === "object") {
                                 var postdata = {
                                     id: -Math.abs(parseInt(qstring("id"))) || -Math.abs(parseInt(that.original_id)),
-                                    cid: -Math.abs(parseInt(qstring("cid")))||null,
+                                    cid: -Math.abs(parseInt(qstring("cid"))) || null,
                                     tid: qstring("tid"),
                                     pid: qstring("pid"),
                                     input_text: window.problemsubmitter.$data.sampleinput,
@@ -595,15 +603,14 @@
                                 if (typeof window.socket == "object" && window.socket.connected) {
                                     window.socket.emit("submit", {submission_id: parseInt(data), val: window.postdata});
                                 }
-                                else
-                                {
+                                else {
                                     //TODO:wait for edit
                                     //fresh_result(data);
                                 }
                             });
                             this.submitDisabled = true;
                             this.resume_time = 20;
-                            window.handler_interval = setTimeout(that.resume,1000);
+                            window.handler_interval = setTimeout(that.resume, 1000);
                         }
                     },
                     mounted: function () {
@@ -619,9 +626,9 @@
                             on: 'hover'
                         });
                         resolve();
-                        if(getParameterByName("sid")){
-                            $.get("/api/status/solution?sid="+getParameterByName("sid"),function(data){
-                                that.reloadtemplate(null,data.data.language)
+                        if (getParameterByName("sid")) {
+                            $.get("/api/status/solution?sid=" + getParameterByName("sid"), function (data) {
+                                that.reloadtemplate(null, data.data.language)
                             })
                         }
                     }
@@ -633,9 +640,9 @@
                 //MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             });
         })
-            .then(function(resolve){
+            .then(function (resolve) {
                 var obj = document.getElementById('clipbtn');
-                if(obj){
+                if (obj) {
                     var clipboard = new Clipboard(obj, {
                         text: function (trigger) {
                             var data = problemsubmitter.$data;
@@ -735,7 +742,7 @@ SHOULD BE:
         <!-- Main component for a primary marketing message or call to action -->
         <div v-show="single_page === true" class="ui container not-compile" v-cloak>
             <div class="not-compile">
-                <center><h2 id="probid" v-text="title">
+                <div class="ui vertical center aligned segment"><h2 id="probid" v-text="title">
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
@@ -753,7 +760,8 @@ SHOULD BE:
                         <a :href="'problemstatus.php?id='+original_id" class='ui button orange'><?= $MSG_STATUS ?></a>
                         <a @click.prevent="switch_screen($event)" href='problem.php?<?= $_SERVER['QUERY_STRING'] ?>'
                            class='ui button blue'>切换双屏</a>
-                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')" :href="'tutorial.php?id='+original_id" class="ui button teal">
+                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')"
+                           :href="'tutorial.php?id='+original_id" class="ui button teal">
                             查看题解
                         </a>
 
@@ -769,37 +777,40 @@ SHOULD BE:
                         }
                         ?>
                     </div>
-                </center>
-                <h4 class='ui top attached block header hidden'><?= $MSG_Description ?></h4>
-                <div class='ui bottom attached segment hidden' v-html="description"></div>
-                <h4 class='ui top attached block header hidden'><?= $MSG_Input ?></h4>
-                <div class='ui bottom attached segment hidden' v-html="input"></div>
-                <h4 class='ui top attached block header hidden'><?= $MSG_Output ?></h4>
-                <div class='ui bottom attached segment hidden' v-html="output"></div>
-                <h4 class='ui top attached block header hidden'><?= $MSG_Sample_Input ?></h4>
-                <pre class='ui bottom attached segment hidden' v-text='sampleinput'><span class=sampledata><?= ($sinput) ?></span></pre>
-                <h4 class='ui top attached block header hidden'><?= $MSG_Sample_Output ?></h4>
-                <pre class='ui bottom attached segment hidden' v-text='sampleoutput'><span class=sampledata><?= ($soutput) ?></span></pre>
-                <h4 class='ui top attached block header hidden'><?= $MSG_HINT ?></h4>
-                <div class='ui bottom attached segment hidden' v-html="hint"></div>
-                <h4 class='ui top attached block header hidden'><?= $MSG_Source ?></h4>
-                <div class='ui bottom attached segment hidden'><p v-text="source"></p>
+                </div>
+                <h2 class='ui header hidden'><?= $MSG_Description ?></h2>
+                <div class='ui hidden' v-html="description"></div>
+                <h2 class='ui header hidden'><?= $MSG_Input ?></h2>
+                <div class='ui hidden' v-html="input"></div>
+                <h2 class='ui header hidden'><?= $MSG_Output ?></h2>
+                <div class='ui hidden' v-html="output"></div>
+                <h2 class='ui header hidden'><?= $MSG_Sample_Input ?></h2>
+                <pre class='ui bottom attached segment hidden' v-text='sampleinput'><span
+                            class=sampledata><?= ($sinput) ?></span></pre>
+                <h2 class='ui header hidden'><?= $MSG_Sample_Output ?></h2>
+                <pre class='ui bottom attached segment hidden' v-text='sampleoutput'><span
+                            class=sampledata><?= ($soutput) ?></span></pre>
+                <h2 class='ui header hidden'><?= $MSG_HINT ?></h2>
+                <div class='ui hidden' v-html="hint"></div>
+                <h2 class='ui header hidden'><?= $MSG_Source ?></h2>
+                <div class='ui hidden'><p v-text="source"></p>
                 </div>
             </div>
         </div>
         <div v-show="single_page === false"
              style="max-width:1300px;position:relative;margin:auto;height: 540px;border-radius: 10px"
-             id="total_control" class="background">
+             id="total_control">
             <div class="padding ui container mainwindow"
                  style="height:100%;width: 35%;overflow-y: auto;float:left;-webkit-border-radius: ;-moz-border-radius: ;border-radius: 10px;">
-                <center><h2 id="probid" v-text="title">
+                <div class="ui vertical center aligned segment"><h2 id="probid" v-text="title">
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
                             v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
                         <li class='ui label red' id="mlimit"
                             v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
-                        <li class='not-compile' :class="'ui label orange'" id="spj" v-cloak v-show="spj">Special Judge</li>
+                        <li class='not-compile' :class="'ui label orange'" id="spj" v-cloak v-show="spj">Special Judge
+                        </li>
                         <li class='ui label grey' id="totsub"
                             v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
                         <li class='ui label green' id="totac"
@@ -810,7 +821,8 @@ SHOULD BE:
                         <a :href="'problemstatus.php?id='+original_id" class='ui button orange'><?= $MSG_STATUS ?></a>
                         <a @click.prevent="switch_screen($event)" href='problem.php?<?= $_SERVER['QUERY_STRING'] ?>'
                            class='ui button blue'>切换单屏</a>
-                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')" :href="'tutorial.php?id='+original_id" class="ui button teal">
+                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')"
+                           :href="'tutorial.php?id='+original_id" class="ui button teal">
                             查看题解
                         </a>
                         <a v-if="iseditor||isadmin" class='ui button violet'
@@ -826,7 +838,7 @@ SHOULD BE:
                         }
                         ?>
                     </div>
-                </center>
+                </div>
                 <br>
                 <div class="ui styled accordion">
                     <div class='title'><?= $MSG_Description ?><i class="dropdown icon"></i></div>
@@ -872,9 +884,10 @@ SHOULD BE:
         height: 35px;
         color: black;width:100%;text-align:right" class="ui menu borderless">
                     <div class="item not-compile">
-                        <select class="not-compile" v-cloak :class="'ui dropdown selection'" id="language" name="language"
+                        <select class="not-compile" v-cloak :class="'ui dropdown selection'" id="language"
+                                name="language"
                                 @change="reloadtemplate($event)" v-model="selected_language">
-                            <option  v-for="language in lang_list" :value="language.num">{{language.name}}</option>
+                            <option v-for="language in lang_list" :value="language.num">{{language.name}}</option>
                         </select>
                         <a
                                 :class="'item'" class="not-compile" v-cloak id="clipbtn" data-clipboard-action="copy"
@@ -886,7 +899,7 @@ SHOULD BE:
                         <div class="item"><span class="item">字号:</span>
                             <div class="ui input"><input type="text" value=""
                                                          style="width:60px;text-align:center;height:30px"
-                                                         id="fontsize" @keyup="resize($event)" ></div>
+                                                         id="fontsize" @keyup="resize($event)"></div>
                         </div>
                         <div class="item">
                             <span>主题:</span><select class="ui selection dropdown search" id="theme" size="1">
@@ -939,7 +952,8 @@ SHOULD BE:
                      ace-theme="ace/theme/monokai"
                      id="prepend" v-text="prepend[selected_language]">
                 </div>
-                <div style="width:100%;height:460px" :style="{width:'100%',height:'460px',fontSize:fontSize+'px'}" cols=180 rows=20
+                <div style="width:100%;height:460px" :style="{width:'100%',height:'460px',fontSize:fontSize+'px'}"
+                     cols=180 rows=20
                      id="source"></div>
                 <div v-if="append" id="append" class="code"
                      style="width: 100%; padding:0px; line-height:1.2;text-align:left;margin-bottom:0px;"
@@ -958,7 +972,8 @@ SHOULD BE:
                                    value="<?php echo $MSG_SUBMIT ?>"
                                    @click="do_submit">
                             <div class="or"></div>
-                            <input id="TestRun" class="ui button blue" @click="test_run" :disabled="submitDisabled" type=button value="<?php echo $MSG_TR ?>"
+                            <input id="TestRun" class="ui button blue" @click="test_run" :disabled="submitDisabled"
+                                   type=button value="<?php echo $MSG_TR ?>"
                             >&nbsp;<!--<span class="btn" id=result>状态</span>-->
                         </div>
                     </div>
@@ -1112,7 +1127,7 @@ SHOULD BE:
                             }
                             else if (status == 5 || status == 6) {
                                 count = 0;
-                                $("#progess_text").text("在第" + (parseInt(res[3])+1) + "个测试点发生 " + judge_result[status]);
+                                $("#progess_text").text("在第" + (parseInt(res[3]) + 1) + "个测试点发生 " + judge_result[status]);
                                 $('#progress').progress({
                                     percent: 100
                                 });
@@ -1120,7 +1135,7 @@ SHOULD BE:
                             }
                             else {
                                 count = 0;
-                                $("#progess_text").text("在第" + (parseInt(res[3])+1) + "个测试点发生 " + judge_result[status]);
+                                $("#progess_text").text("在第" + (parseInt(res[3]) + 1) + "个测试点发生 " + judge_result[status]);
                                 $('#progress').progress({
                                     percent: 100
                                 });
@@ -1128,6 +1143,7 @@ SHOULD BE:
                             }
                         })
                     }
+
                     console.timeEnd("function");
                 </script>
                 <div id="clipcp" style="display:none"></div>

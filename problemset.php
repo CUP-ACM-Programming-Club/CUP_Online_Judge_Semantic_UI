@@ -24,6 +24,9 @@
             padding-top:0.5em;
             padding-bottom: 0.5em;
         }
+        .grid-table-move {
+  transition: transform 1s;
+}
     </style>
 </head>
 <body>
@@ -60,7 +63,8 @@
     </div>
 </script>
 <script type="text/x-template" id="grid-template">
-    <table v-tableUpdated id='problemset' width='90%' class='ui unstackable very basic center aligned large table'>
+
+    <table v-if="!dim" v-tableUpdated id='problemset' width='90%' class='ui unstackable very basic center aligned large table'>
         <thead>
         <tr class='toprow'>
             <th width='2%'></th>
@@ -80,9 +84,14 @@
         </tr>
         </thead>
 
-        <tbody>
+        <transition-group tag="tbody"
+    name="grip-table"
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOut"
+    mode="out-in"
+  >
         <tr style="vertical-align:middle" v-for="row in result.problem"
-            v-if="row.ac == 0 || row.ac == -1 || (row.ac == 1 && !hide_currect)">
+            v-if="!dim && (row.ac == 0 || row.ac == -1 || (row.ac == 1 && !hide_currect))" :key="row">
             <td>
                 <i class="checkmark icon" v-if="row.ac == 1"></i>
                 <i class="remove icon" v-else-if="row.ac == 0"></i>
@@ -117,12 +126,11 @@
                 </div>
             </td>
         </tr>
-        </tbody>
-        <div class="ui active inverted dimmer" v-if="dim">
+</transition-group>
+        <!--<div class="ui active inverted dimmer" v-if="dim">
             <div class="ui large text loader">Loading</div>
-        </div>
+        </div>-->
     </table>
-
 </script>
 <div class="ui left aligned container">
     <div class="padding">
