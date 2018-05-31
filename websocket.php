@@ -56,7 +56,7 @@ if (isset($_SESSION['user_id'])) {
             socket.emit("auth",auth_msg);
         });
         socket.on('error',function(error){
-            console.log(error);
+            console.error(error);
         })
         socket.on('disconnect',function(data){
             vonline_num.message="与服务器连接丢失";
@@ -121,6 +121,9 @@ if (isset($_SESSION['user_id'])) {
    var url=location.href;
    var arr=url.split("/");
    var protocol=arr[0];
+   window.addEventListener("beforeunload", function (event) {
+  window.socket.close();
+});
   // $.getScript( protocol+"//"+location.hostname+"/socket.io/socket.io.js",function(){
         
   // });

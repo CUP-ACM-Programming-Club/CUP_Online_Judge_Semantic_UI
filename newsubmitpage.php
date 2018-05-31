@@ -39,6 +39,12 @@
         .not-compile {
             display: none;
         }
+        .sample_input{
+            color:#ad1457;
+        }
+        .sample_output{
+            color:#ad1457;
+        }
     </style>
 </head>
 <body>
@@ -361,6 +367,7 @@
                             var pass_rate = data["pass_rate"] * 100;
                             if (status > 3) {
                                 count = 0;
+                                this.submitDisabled = false;
                                 this.resume();
                             }
                             if (status > 4 && status != 13) {
@@ -742,7 +749,8 @@ SHOULD BE:
         <!-- Main component for a primary marketing message or call to action -->
         <div v-show="single_page === true" class="ui container not-compile" v-cloak>
             <div class="not-compile">
-                <div class="ui vertical center aligned segment"><h2 id="probid" v-text="title">
+                <div class="ui vertical center aligned segment">
+                    <h2 class="ui header" id="probid" v-text="title">
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
@@ -785,10 +793,10 @@ SHOULD BE:
                 <h2 class='ui header hidden'><?= $MSG_Output ?></h2>
                 <div class='ui hidden' v-html="output"></div>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Input ?></h2>
-                <pre class='ui bottom attached segment hidden' v-text='sampleinput'><span
+                <pre class='ui bottom attached segment hidden sample_input' v-text='sampleinput'><span
                             class=sampledata><?= ($sinput) ?></span></pre>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Output ?></h2>
-                <pre class='ui bottom attached segment hidden' v-text='sampleoutput'><span
+                <pre class='ui bottom attached segment hidden sample_output' v-text='sampleoutput'><span
                             class=sampledata><?= ($soutput) ?></span></pre>
                 <h2 class='ui header hidden'><?= $MSG_HINT ?></h2>
                 <div class='ui hidden' v-html="hint"></div>
@@ -802,7 +810,8 @@ SHOULD BE:
              id="total_control">
             <div class="padding ui container mainwindow"
                  style="height:100%;width: 35%;overflow-y: auto;float:left;-webkit-border-radius: ;-moz-border-radius: ;border-radius: 10px;">
-                <div class="ui vertical center aligned segment"><h2 id="probid" v-text="title">
+                <div class="ui vertical center aligned segment">
+                    <h2 class="ui header" id="probid" v-text="title">
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"

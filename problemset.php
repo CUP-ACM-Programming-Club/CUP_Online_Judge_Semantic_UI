@@ -41,7 +41,7 @@
         <a :class="'icon item '+(current_page?'':'disabled')" @click="current_page&&page($event,-1)">
             <i class="left chevron icon"></i>
         </a>
-        <div v-for="i in Array.from(Array(Math.min(Math.ceil(total/page_cnt),14)).keys()).map(function(n){if(current_page<7){return n+1;}else if(current_page+8>Math.ceil(total/page_cnt)){return Math.ceil(total/page_cnt)-13+n}else{return current_page+n-6;}})">
+        <div v-for="i in Array.from(Array(Math.min(Math.ceil(total/page_cnt),total_menu)).keys()).map(function(n){if(current_page<total_menu/2){return parseInt(n+1);}else if(current_page+total_menu/2+1>Math.ceil(total/page_cnt)){return parseInt(Math.ceil(total/page_cnt)-total_menu + 1 + n);}else{return parseInt(current_page+n-total_menu / 2 + 1);}})">
             <a :class="(current_page+1 == i?'active':'')+' item page'" @click="page($event)">
                 {{i}}
             </a>
@@ -72,10 +72,12 @@
            class='ui unstackable very basic center aligned large table'>
         <thead>
         <tr class='toprow'>
-            <th width='2%'></th>
+            <!--<th width='2%'></th>-->
             <th width='10%' @click="sort('problem_id',$event)">
                 <a><i v-show="order_target == 'problem_id'"
-                      :class="'angle icon '+(order?'down':'up')"></i><?php echo $MSG_PROBLEM_ID ?></a></th>
+                      :class="'angle icon '+(order?'down':'up')"></i><?php echo $MSG_PROBLEM_ID ?>
+                      <i v-show="order_target == 'problem_id'"
+                      :class="'angle icon '+(order?'down':'up')" style="opacity: 0"></i></a></th>
             <th width='60%' class="left aligned"><?php echo $MSG_TITLE ?></th>
             <th width='13%'>
                 <a @click="sort('accepted',$event,1)"><i v-show="order_target == 'accepted'"
@@ -88,22 +90,24 @@
             </th>
         </tr>
         </thead>
-
+        <tbody>
+        <!--
         <transition-group tag="tbody"
                           name="grip-table"
                           enter-active-class="animated fadeIn"
                           leave-active-class="animated fadeOut"
                           mode="out-in"
-        >
+        >-->
             <tr style="vertical-align:middle" v-for="row in result.problem"
-                v-if="!dim && (row.ac == 0 || row.ac == -1 || (row.ac == 1 && !hide_currect))" :key="row">
-                <td>
-                    <i class="checkmark icon" v-if="row.ac == 1"></i>
-                    <i class="remove icon" v-else-if="row.ac == 0"></i>
-                </td>
+                v-if="!dim && (row.ac == 0 || row.ac == -1 || (row.ac == 1 && !hide_currect))" >
+                <!--<td>
+                </td>-->
                 <td>
                     <div class="center">
                         {{row.problem_id}}
+                        <i class="checkmark icon" v-if="row.ac == 1"></i>
+                        <i class="remove icon" v-else-if="row.ac == 0"></i>
+                        <i class="checkmark icon" style="opacity: 0" v-else></i>
                     </div>
                 </td>
                 <td>
@@ -132,7 +136,8 @@
                     </div>
                 </td>
             </tr>
-        </transition-group>
+            </tbody>
+        <!--</transition-group>-->
         <!--<div class="ui active inverted dimmer" v-if="dim">
             <div class="ui large text loader">Loading</div>
         </div>-->
@@ -361,6 +366,17 @@
             page_cnt: Number,
             current_page: Number
         },
+        data:function(){
+            var width = document.body.clientWidth;
+            var container = $(".ui.container").width();
+            if(width > 1127)
+            {
+                width = container;
+            }
+            return {
+                total_menu:Math.max(0,parseInt(container * 0.7 / 42) - 4)
+            };
+        },
         methods: {
             page: function (event, arrow) {
                 if (arrow) {
@@ -426,8 +442,9 @@
                 page_cnt: query_string.page_cnt || 50,
                 total: 0,
                 hide_currect: localStorage.getItem("hide_currect") === 'true',
-                show_label_cloud: true,
-                chart: undefined
+                show_label_cloud: localStorage.getItem("show_label_cloud") === 'true',
+                chart: undefined,
+                has_draw:false,
             },
             computed: {
                 tables: {
@@ -574,50 +591,19 @@
                     localStorage.setItem("hide_currect", Boolean(this.hide_currect))
                 },
                 cloud: function () {
+                    if(!this.has_draw) {
+                        this.drawLabelCloud();
+                    }
                     this.show_label_cloud = Boolean(!this.show_label_cloud);
-                    //localStorage.setItem("label_cloud", Boolean(this.show_label_cloud));
+                    localStorage.setItem("show_label_cloud", Boolean(this.show_label_cloud));
                 },
                 enter: function (obj) {
                     var val = obj.target.value;
                     this.searching(val);
-                }
-            },
-            created: function () {
-                var that = this;
-                var page = parseInt(getParameterByName("page") || query_string.page || "1") - 1;
-                $(document).ready(function () {
-                    $("#show_tag").checkbox((that.show_tag ? "" : "un") + "check");
-                    $("#hide_currect").checkbox((that.hide_currect ? "" : "un") + "check");
-                    $("#show_cloud").checkbox((that.show_label_cloud ? "" : "un") + "check");
-                })
-                $("#show_tag").checkbox((this.show_tag ? "" : "un") + "check");
-                $("#hide_currect").checkbox((that.hide_currect ? "" : "un") + "check");
-                $("#show_cloud").checkbox((that.show_label_cloud ? "" : "un") + "check");
-
-                this.current_page = page;
-                $.get("../api/problemset/" + page + "/" + this.search_tag || "none" + "/" + this.order_target + "/" + this.order + "/?label=" + this.label, function (data) {
-                    that.tables = data;
-                });
-
-            },
-            mounted: function () {
-                $('.ui.search')
-                    .search({
-                        apiSettings: {
-                            url: '../api/problem/module/search/{query}'
-                        },
-                        fields: {
-                            results: 'items',
-                            title: 'title',
-                            url: 'url',
-                            description: 'source'
-                        },
-                        searchFields: [
-                            'title', 'description', 'source', 'problem_id', 'label'
-                        ],
-                        minCharacters: 2
-                    });
-                var that = this;
+                },
+                drawLabelCloud:function(){
+                    this.has_draw = true;
+                    var that = this;
                 new Promise(function (resolve) {
                     $.get("/api/problem/local/?label=true", function (d) {
                         var data = [];
@@ -675,6 +661,47 @@
                         });
                     });
                 });
+                
+                }
+            },
+            created: function () {
+                var that = this;
+                var page = parseInt(getParameterByName("page") || query_string.page || "1") - 1;
+                $(document).ready(function () {
+                    $("#show_tag").checkbox((that.show_tag ? "" : "un") + "check");
+                    $("#hide_currect").checkbox((that.hide_currect ? "" : "un") + "check");
+                    $("#show_cloud").checkbox((that.show_label_cloud ? "" : "un") + "check");
+                })
+                $("#show_tag").checkbox((this.show_tag ? "" : "un") + "check");
+                $("#hide_currect").checkbox((that.hide_currect ? "" : "un") + "check");
+                $("#show_cloud").checkbox((that.show_label_cloud ? "" : "un") + "check");
+
+                this.current_page = page;
+                $.get("../api/problemset/" + page + "/" + this.search_tag || "none" + "/" + this.order_target + "/" + this.order + "/?label=" + this.label, function (data) {
+                    that.tables = data;
+                });
+
+            },
+            mounted: function () {
+                $('.ui.search')
+                    .search({
+                        apiSettings: {
+                            url: '../api/problem/module/search/{query}'
+                        },
+                        fields: {
+                            results: 'items',
+                            title: 'title',
+                            url: 'url',
+                            description: 'source'
+                        },
+                        searchFields: [
+                            'title', 'description', 'source', 'problem_id', 'label'
+                        ],
+                        minCharacters: 2
+                    });
+                if(this.show_label_cloud) {
+                    setTimeout(this.drawLabelCloud,300)
+                }
             }
         });
     }
