@@ -51,168 +51,8 @@
 <?php include("template/$OJ_TEMPLATE/nav.php"); ?>
 <div class="main screen" v-cloak>
     <script>
-        window.lastlang = localStorage.getItem("lastlang") || 19;
-
         function qsa(sel) {
             return Array.apply(null, document.querySelectorAll(sel));
-        }
-
-        function load_editor() {
-            ace.require("ace/ext/language_tools");
-            var editor = ace.edit("source");
-            window.editor = editor;
-            var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
-            var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
-            editor.$blockScrolling = Infinity;
-            if (localStorage.getItem('theme')) {
-                editor.setTheme(localStorage.getItem('theme'));
-                qsa(".code").forEach(function (codeEl) {
-                    codeEl.setAttribute("ace-theme", localStorage.getItem('theme'));
-                });
-                <?php if(!isset($is_vjudge) || (isset($is_vjudge) && !$is_vjudge)){  ?>
-                $(document).ready(function () {
-                    console.log("页面加载完毕，进行AJAX POST请求");
-                    var file_n = language_ext[document.getElementById('language').value];
-                    var qstring = getParameterByName;
-                    $.post("getfile.php?ajax",
-                        {
-                            file_name: file_n,
-                            id: qstring("id"),
-                            cid: qstring("cid"),
-                            pid: qstring("pid"),
-                            csrf: "<?=$token?>"
-                        }, function (data) {
-                            console.log("POST请求得到响应");
-                            var res = JSON.parse(data);
-                            if (res["empty"] == false) {
-                                console.log(res);
-                                prepend_file_context = res["prepend"];
-                                append_file_context = res["append"];
-                                var empty = res["empty"];
-                                if (empty != "true") {
-                                    $("#prepend").text(prepend_file_context);
-                                    $("#prepend_hide").text(prepend_file_context);
-                                    $("#append").text(append_file_context);
-                                    $("#append_hide").text(append_file_context);
-                                }
-                                setTimeout(function () {
-                                    console.log("刷新前后置代码主题");
-                                    flush_theme();
-                                }, 0);
-                            }
-                        });
-                    setTimeout(function () {
-                        console.log("刷新前后置代码主题");
-                        flush_theme();
-                    }, 0);
-                });
-                <?php } ?>
-            }
-            else {
-                editor.setTheme("ace/theme/monokai");
-                console.log("使用默认主题作为前后置代码主题");
-                flush_theme();
-            }
-            editor.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: true,
-                enableEmmet: true
-            });
-            editor.getSession().setMode("ace/mode/" + language[window.lastlang]);
-            console.log(language[window.lastlang]);
-            //editor.setValue("//Please paste your code here");
-            /*editor.addEventListener("focus",function(){
-             var v=editor.getValue();
-             if(v=="//Please paste your code here")
-             {
-             editor.setValue("");
-             }
-             });*/
-            // editor.addEventListener("blur",function(){
-            // var v=editor.getValue();
-            // if(v=="")
-            // {
-            //      editor.setValue("//Please paste your code here");
-            //  }
-            //  });
-            if (localStorage.getItem('font-size')) {
-                document.getElementById('source').style.fontSize = localStorage.getItem('font-size') + 'px';
-                document.getElementById('fontsize').value = localStorage.getItem('font-size');
-                console.log("从Cookie中获取字体大小成功");
-                //  document.getElementById('prepend').style.fontSize='18px';
-                // document.getElementById('append').style.fontSize='18px';
-            }
-            else {
-                document.getElementById('source').style.fontSize = '18px';
-                console.log("未设置字体大小，使用默认字体大小");
-                // document.getElementById('prepend').style.fontSize='18px';
-                //  document.getElementById('append').style.fontSize='18px';
-            }
-            var theme_n;
-            if (localStorage.getItem('theme')) {
-                theme_n = localStorage.getItem('theme');
-            }
-            else {
-                theme_n = "ace/theme/monokai";
-            }
-            //console.log(theme_n);
-            var arr = document.getElementsByTagName("option");
-            var len = arr.length;
-            for (var i = 0; i < len; i++) {
-                //  console.log(arr[i].value);
-                if (arr[i].value == theme_n) {
-                    arr[i].selected = true;
-                    break;
-                }
-            }
-            $("#theme").on('change', function () {
-                var prepend_code = "";
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
-                {?>
-                prepend_code = document.getElementById('prepend_hide').innerHTML;
-                console.log("成功设置前置代码");
-                <?php } ?>
-                var append_code = "";
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
-                {?>
-                append_code = document.getElementById('append_hide').innerHTML;
-                console.log("成功设置后置代码");
-                <?php } ?>
-                var this_theme = this.value;
-                localStorage.setItem('theme', this.value);
-                console.log("设置主题成功！主题为:" + this.value);
-                localStorage.setItem('theme-name', $(this).find("option:selected").text());
-                console.log("设置主题名称成功！主题名称为:" + $(this).find("option:selected").text());
-                editor.setTheme(this.value);
-                qsa(".code").forEach(function (codeEl) {
-                    codeEl.setAttribute("ace-theme", this_theme);
-                });
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
-                {
-                ?>
-                document.getElementById('prepend').innerHTML = prepend_code;
-                console.log("加入前置代码");
-                <?php
-
-                } ?>
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
-                {
-                ?>
-                document.getElementById('append').innerHTML = append_code;
-                console.log("加入后置代码");
-                <?php
-
-                } ?>
-                flush_theme();
-                setTimeout(function () {
-                    $("#total_control").height($("#right-side").height());
-                }, 0);
-            });
-            var fonts = document.getElementById('source').style.fontSize;
-            $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
-
-
         }
 
         var loadVue = new Promise(function (resolve, reject) {
@@ -265,7 +105,7 @@
                             langmask: d.langmask,
                             isadmin: isadmin,
                             iseditor: iseditor,
-                            selected_language: localStorage.getItem("lastlang") && Boolean(parseInt(localStorage.getItem("lastlang")) & (~d.langmask)) ? parseInt(localStorage.getItem("lastlang")) : Math.log2(~d.langmask & -~d.langmask),
+                            selected_language: localStorage.getItem("lastlang") && Boolean(1<<parseInt(localStorage.getItem("lastlang")) & (~d.langmask)) ? parseInt(localStorage.getItem("lastlang")) : Math.log2(~d.langmask & -~d.langmask),
                             language_template: d.language_template,
                             fontSize: 18,
                             hide_warning: true,
@@ -467,9 +307,16 @@
                             var highlight = ace.require("ace/ext/static_highlight")
                             var dom = ace.require("ace/lib/dom")
                             qsa(".code").forEach(function (codeEl) {
-                                codeEl.innerHTML = "";
-                                codeEl.setAttribute("ace-mode", "ace/mode/" + language[langn])
-                            });
+                                highlight(codeEl, {
+                                mode: codeEl.getAttribute("ace-mode"),
+                                theme: codeEl.getAttribute("ace-theme"),
+                                startLineNumber: 1,
+                                showGutter: codeEl.getAttribute("ace-gutter"),
+                                trim: true
+                            }, function (highlighted) {
+            
+                                  });
+                               });
                         },
                         do_submit: function () {
                             this.hide_warning = true;
@@ -620,10 +467,182 @@
                             window.handler_interval = setTimeout(that.resume, 1000);
                         }
                     },
+                    updated:function(){
+                        var highlight = ace.require("ace/ext/static_highlight")
+                            var dom = ace.require("ace/lib/dom")
+                            qsa(".code").forEach(function (codeEl) {
+                                highlight(codeEl, {
+                                mode: codeEl.getAttribute("ace-mode"),
+                                theme: codeEl.getAttribute("ace-theme"),
+                                startLineNumber: 1,
+                                showGutter: codeEl.getAttribute("ace-gutter"),
+                                trim: true
+                            }, function (highlighted) {
+            
+                                  });
+                               });
+                    },
                     mounted: function () {
                         var that = this;
                         $(".not-compile").removeClass("not-compile");
-                        load_editor.call(window);
+                        function load_editor() {
+            ace.require("ace/ext/language_tools");
+            var editor = ace.edit("source");
+            window.editor = editor;
+            var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
+            var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
+            editor.$blockScrolling = Infinity;
+            if (localStorage.getItem('theme')) {
+                editor.setTheme(localStorage.getItem('theme'));
+                qsa(".code").forEach(function (codeEl) {
+                    codeEl.setAttribute("ace-theme", localStorage.getItem('theme'));
+                });
+                <?php if(!isset($is_vjudge) || (isset($is_vjudge) && !$is_vjudge)){  ?>
+                $(document).ready(function () {
+                    console.log("页面加载完毕，进行AJAX POST请求");
+                    var file_n = language_ext[document.getElementById('language').value];
+                    var qstring = getParameterByName;
+                    $.post("getfile.php?ajax",
+                        {
+                            file_name: file_n,
+                            id: qstring("id"),
+                            cid: qstring("cid"),
+                            pid: qstring("pid"),
+                            csrf: "<?=$token?>"
+                        }, function (data) {
+                            console.log("POST请求得到响应");
+                            var res = JSON.parse(data);
+                            if (res["empty"] == false) {
+                                console.log(res);
+                                prepend_file_context = res["prepend"];
+                                append_file_context = res["append"];
+                                var empty = res["empty"];
+                                if (empty != "true") {
+                                    $("#prepend").text(prepend_file_context);
+                                    $("#prepend_hide").text(prepend_file_context);
+                                    $("#append").text(append_file_context);
+                                    $("#append_hide").text(append_file_context);
+                                }
+                                setTimeout(function () {
+                                    console.log("刷新前后置代码主题");
+                                    flush_theme();
+                                }, 0);
+                            }
+                        });
+                    setTimeout(function () {
+                        console.log("刷新前后置代码主题");
+                        flush_theme();
+                    }, 0);
+                });
+                <?php } ?>
+            }
+            else {
+                editor.setTheme("ace/theme/monokai");
+                console.log("使用默认主题作为前后置代码主题");
+                flush_theme();
+            }
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+                enableEmmet: true
+            });
+            editor.getSession().setMode("ace/mode/" + language[that.selected_language]);
+            console.log(language[that.selected_language]);
+            //editor.setValue("//Please paste your code here");
+            /*editor.addEventListener("focus",function(){
+             var v=editor.getValue();
+             if(v=="//Please paste your code here")
+             {
+             editor.setValue("");
+             }
+             });*/
+            // editor.addEventListener("blur",function(){
+            // var v=editor.getValue();
+            // if(v=="")
+            // {
+            //      editor.setValue("//Please paste your code here");
+            //  }
+            //  });
+            if (localStorage.getItem('font-size')) {
+                document.getElementById('source').style.fontSize = localStorage.getItem('font-size') + 'px';
+                document.getElementById('fontsize').value = localStorage.getItem('font-size');
+                console.log("从Cookie中获取字体大小成功");
+                //  document.getElementById('prepend').style.fontSize='18px';
+                // document.getElementById('append').style.fontSize='18px';
+            }
+            else {
+                document.getElementById('source').style.fontSize = '18px';
+                console.log("未设置字体大小，使用默认字体大小");
+                // document.getElementById('prepend').style.fontSize='18px';
+                //  document.getElementById('append').style.fontSize='18px';
+            }
+            var theme_n;
+            if (localStorage.getItem('theme')) {
+                theme_n = localStorage.getItem('theme');
+            }
+            else {
+                theme_n = "ace/theme/monokai";
+            }
+            //console.log(theme_n);
+            var arr = document.getElementsByTagName("option");
+            var len = arr.length;
+            for (var i = 0; i < len; i++) {
+                //  console.log(arr[i].value);
+                if (arr[i].value == theme_n) {
+                    arr[i].selected = true;
+                    break;
+                }
+            }
+            $("#theme").on('change', function () {
+                var prepend_code = "";
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
+                {?>
+                prepend_code = document.getElementById('prepend_hide').innerHTML;
+                console.log("成功设置前置代码");
+                <?php } ?>
+                var append_code = "";
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
+                {?>
+                append_code = document.getElementById('append_hide').innerHTML;
+                console.log("成功设置后置代码");
+                <?php } ?>
+                var this_theme = this.value;
+                localStorage.setItem('theme', this.value);
+                console.log("设置主题成功！主题为:" + this.value);
+                localStorage.setItem('theme-name', $(this).find("option:selected").text());
+                console.log("设置主题名称成功！主题名称为:" + $(this).find("option:selected").text());
+                editor.setTheme(this.value);
+                qsa(".code").forEach(function (codeEl) {
+                    codeEl.setAttribute("ace-theme", this_theme);
+                });
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
+                {
+                ?>
+                document.getElementById('prepend').innerHTML = prepend_code;
+                console.log("加入前置代码");
+                <?php
+
+                } ?>
+                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
+                {
+                ?>
+                document.getElementById('append').innerHTML = append_code;
+                console.log("加入后置代码");
+                <?php
+
+                } ?>
+                flush_theme();
+                setTimeout(function () {
+                    $("#total_control").height($("#right-side").height());
+                }, 0);
+            });
+            var fonts = document.getElementById('source').style.fontSize;
+            $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
+
+
+        }
+        load_editor();
                         window.editor.getSession().setValue(this.source_code);
                         $('.ui.accordion')
                             .accordion({
@@ -717,12 +736,12 @@
                     <?php echo $MSG_Input ?>:<textarea style="height:100%;resize: none;border-radius:10px" cols=40
                                                        rows=5
                                                        id="input_text"
-                                                       class="sample_input" v-model="sampleinput"></textarea>
+                                                        v-model="sampleinput"></textarea>
                 </div>
                 <div class="column">
                     <?php echo $MSG_Output ?>:
                     <textarea style="height:100%;resize: none;border-radius:10px" cols=40 rows=5 id="out" name="out"
-                              class="sample_output" :placeholder="'SHOULD BE:'+sampleoutput">
+                               :placeholder="'SHOULD BE:'+sampleoutput">
                         <?php echo $view_sample_output ?></textarea>
                     <textarea style="display:none" id="hidden_sample_output" class="sample_output">
 SHOULD BE:
