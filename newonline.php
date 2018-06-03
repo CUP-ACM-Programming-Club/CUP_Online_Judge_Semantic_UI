@@ -188,7 +188,17 @@ include("csrf.php");
                         if (!this.userlist) return [];
                         for (var i = 0; i < this.userlist.length; ++i) {
                             var tmp = this.userlist[i];
+                            var doc = document.createElement("div");
+                            doc.innerHTML = this.userlist[i].nick;
+                            this.userlist[i].nick = doc.innerText;
                             detect_ip(tmp);
+                        }
+                        if (localStorage.getItem("sort") == "true") {
+                        this.userlist.sort(function(a,b){
+                            var a1 = a["user_id"];
+                                    var b1 = b["user_id"];
+                                    return a1<b1?-1:a1===b1?0:1;
+                        })
                         }
                         return this.userlist;
                     },
@@ -214,6 +224,9 @@ include("csrf.php");
                                 for (var j = 0; j < this.userlist[i].url.length; ++j) {
                                     var tmp = JSON.parse(JSON.stringify(tat));
                                     tmp.url = tmp.url[j];
+                                    var doc = document.createElement("div");
+                                    doc.innerHTML = tmp.nick;
+                                    tmp.nick = doc.innerText;
                                     detect_ip(tmp);
                                     newlist.push(tmp);
                                 }
@@ -222,12 +235,13 @@ include("csrf.php");
                                 newlist.sort(function (a, b) {
                                     var a1 = a["user_id"];
                                     var b1 = b["user_id"];
-                                    if (!isNaN(parseInt(a1)) && !isNaN(parseInt(b1))) {
-                                        return parseInt(a1) - parseInt(b1);
-                                    }
-                                    else {
-                                        return isNaN(parseInt(b1)) ? 1 : -1;
-                                    }
+                                    //if (!isNaN(parseInt(a1)) && !isNaN(parseInt(b1))) {
+                                     //   return parseInt(a1) - parseInt(b1);
+                                    //}
+                                    //else {
+                                    //    return isNaN(parseInt(b1)) ? 1 : -1;
+                                    //}
+                                    return a1<b1?-1:a1===b1?0:1;
                                 });
                             }
                             return newlist;

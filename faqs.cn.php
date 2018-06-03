@@ -35,19 +35,26 @@
             <h1 class="ui header block"><?php echo $OJ_NAME?> FAQ</h1>
         </center>
         <font color=green>Q</font>:这个在线评测平台使用什么样的编译器和编译选项?<br>
-            <font color=red>A</font>:详见<a href="https://wiki.cupacm.com/常见问题/编译命令" target="_blank">CUP Online Judge WIKI</a><br>
+            <font color=red>A</font>:详见<a href="http://acm.cup.edu.cn/wiki/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/%E7%BC%96%E8%AF%91%E5%91%BD%E4%BB%A4" target="_blank">CUP Online Judge WIKI</a><br>
         <p>  编译器版本为（系统可能升级编译器版本，这里直供参考）:<br>
         <div class="ui raised segment">
             <font color=blue>
-gcc 版本 7.3.0 (GCC) 使用内建 specs<br>目标：x86_64-pc-linux-gnu <br>配置为：../configure --disable-multilib <br>线程模型：posix
+gcc 版本 8.1.0 (GCC)<br>
+使用内建 specs。<br>
+COLLECT_GCC=/usr/local/bin/gcc<br>
+COLLECT_LTO_WRAPPER=/usr/local/libexec/gcc/x86_64-pc-linux-gnu/8.1.0/lto-wrapper<br>
+目标：x86_64-pc-linux-gnu<br>
+配置为：../configure --disable-multilib<br>
+线程模型：posix<br>
+
             </font><br>
             <font color=blue>clang version 3.4.2 (tags/RELEASE_34/dot2-final)
                 Target: x86_64-redhat-linux-gnu
             </font><br>
             <font color=blue>glibc 2.3.6</font><br>
-            <font color=blue>openjdk version "1.8.0_161-debug"<br>
-OpenJDK Runtime Environment (build 1.8.0_161-debug-b14)<br>
-OpenJDK 64-Bit Server VM (build 25.161-b14-debug, mixed mode)
+            <font color=blue>openjdk version "1.8.0_171"<br>
+OpenJDK Runtime Environment (build 1.8.0_171-b10)<br>
+OpenJDK 64-Bit Server VM (build 25.171-b10, mixed mode)
 <br>
 Python 2.7.5
 <br>

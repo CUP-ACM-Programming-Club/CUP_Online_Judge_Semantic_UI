@@ -319,6 +319,10 @@
                                });
                         },
                         do_submit: function () {
+                            if(!window.connected) {
+                                alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
+                                return;
+                            }
                             this.hide_warning = true;
                             var that = this;
                             if (editor.getValue().length < 15) {
@@ -398,6 +402,10 @@
                             }
                         },
                         test_run: function () {
+                            if(!window.connected) {
+                                alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
+                                return;
+                            }
                             this.hide_warning = true;
                             var that = this;
                             if (editor.getValue().length < 15) {
@@ -895,7 +903,7 @@ SHOULD BE:
                     if ($pr_flag) {
                         ?>
                         <div class='title'><?= $MSG_Source ?><i class="dropdown icon"></i></div>
-                        <div class='content'><p><a :href='"problemset.php?search="+source' id='problem_source'
+                        <div class='content'><p><a :href='"problemset.php?tag="+escape(source)' id='problem_source'
                                                    v-text='source'></a></p></div>
                         <?php
                     }
@@ -1127,9 +1135,10 @@ SHOULD BE:
                                     percent: 100
                                 });
                                 $("#progress").progress('set success');
-                                <?php if(isset($cid) && $cid > 1000){ ?>
-                                $.get("contest_problem_ajax.php?cid=<?=$cid?>", function (data) {
+                                if(getParameterByName("cid") && parseInt(getParameterByName("cid"))>1000) {
+                                $.get("contest_problem_ajax.php?cid="+getParameterByName("cid"), function (data) {
                                     var json = JSON.parse(data);
+                                    console.log(json);
                                     setTimeout(function () {
                                         $(".mainwindow").html("").animate({width: 0, borderRadius: 0, padding: 0});
                                     }, 500);
@@ -1151,7 +1160,7 @@ SHOULD BE:
                                     $(".ui.massive.vertical.menu").html(str).fadeIn();
                                     // console.log(json);
                                 })
-                                <?php } ?>
+                                }
                             }
                             else if (status == 5 || status == 6) {
                                 count = 0;

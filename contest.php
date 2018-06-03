@@ -35,9 +35,10 @@ $pass_st=["negative","","positive"];
                 <thead>
                 <tr align=center class='toprow'>
                     <th style="cursor:hand" onclick="sortTable('problemset', 1, 'int');" width="13%" ><?php echo $MSG_PROBLEM_ID?>
-                    <th width='60%'><?php echo $MSG_TITLE?></td>
-                    <th style="cursor:hand" onclick="sortTable('problemset', 4, 'int');" width='8%'><?php echo $MSG_AC?></td>
-                    <th style="cursor:hand" onclick="sortTable('problemset', 5, 'int');" width='8%'><?php echo $MSG_SUBMIT?></td>
+                    <th width='60%'><?php echo $MSG_TITLE?></th>
+                    <th style="cursor:hand" onclick="sortTable('problemset', 4, 'int');" width='8%'>
+                        正确</th>
+                    <th style="cursor:hand" onclick="sortTable('problemset', 5, 'int');" width='8%'><?php echo $MSG_SUBMIT?></th>
                 </tr>
                 </thead>
                 <tbody>

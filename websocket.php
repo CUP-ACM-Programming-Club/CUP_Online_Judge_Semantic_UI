@@ -21,12 +21,21 @@ if (isset($_SESSION['user_id'])) {
             user_id:"<?=$_SESSION['user_id']?>",
             token:"<?=$authcode?>"
         }
+        <?php
+        $ip = "";
+        if(isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+            $ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+        }
+        else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        ?>
         var auth_msg={
             user_id: "<?=$_SESSION['user_id']?>",
             id: "<?php if (isset($_SESSION['administrator'])) echo "admin" ?>",
             url: "<?=$_SERVER['REQUEST_URI']?>",
             authcode: "<?=$authcode?>",
-            intranet_ip:"<?=$_SERVER['REMOTE_ADDR']?>",
+            intranet_ip:"<?=$ip?>",
             version:window.navigator.appVersion,
             nick:"<?=stripslashes(trim($_SESSION['nick']))?>",
             platform:window.navigator.platform,
@@ -39,6 +48,7 @@ if (isset($_SESSION['user_id'])) {
         };
         //$.post("/api/login/token","token="+Base64.encode(JSON.stringify(auth)));
         window.socket = io(location.hostname);
+        //window.socket = io("school.haoyuan.info");
         var socket=window.socket;
         window.online_list = [];
         var vonline_num = new Vue({
@@ -50,16 +60,18 @@ if (isset($_SESSION['user_id'])) {
                binding_method();
            }
         });
-
+        window.connected = false;
         socket.on('connect',function(data){
             vonline_num.message="<i class='feed icon'></i>";
             socket.emit("auth",auth_msg);
+            window.connected = true;
         });
         socket.on('error',function(error){
             console.error(error);
         })
         socket.on('disconnect',function(data){
             vonline_num.message="与服务器连接丢失";
+            window.connected = false;
         })
         socket.on('user', function (data) {
             vonline_num.message="<i class='users icon'></i>" + data['user_cnt'] + "人";

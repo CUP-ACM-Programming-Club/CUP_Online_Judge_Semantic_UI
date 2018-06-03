@@ -34,7 +34,7 @@
             <td>{{row.solution_id}}</td>
             <td><div class="ui grid">
             <div class="three wide column">
-            <img class="ui avatar image" :src="'../avatar/'+row.user_id+'.jpg'" v-if="row.avatar||user[row.user_id].avatar">
+            <img class="ui avatar image" :src="'../avatar/'+row.user_id+'.jpg'" v-if="row.avatar||user[row.user_id].avatar" style="object-fit: cover;">
             </div>
             <div class="twelve wide column">
             <a :href="'userinfo.php?user='+row.user_id">{{row.user_id}}<br>{{row.nick}}</a>
@@ -396,7 +396,7 @@
                 that.language_name = data.const_list.language_name.local;
                 that.result = data.const_list.result.cn;
                 that.self = data.self;
-                that.isadmin = data.isadmin
+                that.isadmin = data.isadmin || data.browse_code
             },
             search: function ($event) {
                 this.dim = true;
