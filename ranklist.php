@@ -11,7 +11,11 @@
     <title><?php echo $OJ_NAME ?></title>
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
-
+    <style>
+        .center.head{
+            text-align:center!important;
+        }
+    </style>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
@@ -24,11 +28,13 @@
 <?php include("template/$OJ_TEMPLATE/nav.php"); ?>
 <script type="text/x-template" id="ranklist_template">
 <div>
-    <table style="width:100%" class="ui padded celled selectable table">
-    <thead>
-        <tr>
-            <td colspan="2">
-                <div class="ui mini statistic">
+    <div class="ui stack segment">
+
+    <div class="ui grid">
+    
+    <div class="row">
+    <div class="three wide column">
+    <div class="ui mini statistic">
                     <div class="value">
                         <i class="user icon"></i>{{registed_user}}
                     </div>
@@ -44,27 +50,33 @@
                         ACMER
                     </div>
                 </div>
-            </td>
-            <td colspan="1" align="left">
+                </div>
+                <div class="seven wide column">
                 <div class="ui search">
                     <label>{{_name.user}}</label>
                     <div class="ui input">
                         <input name="user" @keyup="search_user($event)">
                     </div>
                 </div>
-            </td>
-            <td colspan="4" align="right">
+                </div>
+                <div class="six wide column">
                 <a :class="'ui blue mini button '+(time_stamp === 'D'?'disabled':'')" @click="timestamp('D',$event)">Day</a>
                 <a :class="'ui blue mini button '+(time_stamp === 'W'?'disabled':'')" @click="timestamp('W',$event)">Week</a>
                 <a :class="'ui blue mini button '+(time_stamp === 'M'?'disabled':'')" @click="timestamp('M',$event)">Month</a>
                 <a :class="'ui blue mini button '+(time_stamp === 'Y'?'disabled':'')" @click="timestamp('Y',$event)">Year</a>
                 <a :class="'ui blue mini button '+(time_stamp === ''?'disabled':'')" @click="timestamp('',$event)">Total</a>
-            </td>
-        </tr>
+                </div>
+    </div>
+    </div>
+    </div>
+    <div class="ui stack segment">
+    <table style="width:100%" class="ui padded borderless selectable table">
+    <thead>
         <tr>
-            <th width="5%"><b>{{_name.rank}}</b></th>
-            <th width="10%"><b>{{_name.user}}</b></th>
-            <th width="35%"><b>{{_name.nick}}</b></th>
+            <th width="5%" class="center head">{{_name.rank}}</th>
+            <th width="10%" class="center head"><b>{{_name.user}}</b></th>
+            <th width="3%"></th>
+            <th width="32%"><b>{{_name.nick}}</b></th>
             <th width="7%"><b>{{_name.accept}}</b></th>
             <th width="7%"><b>{{_name.vjudge_accept}}</b></th>
             <th width="7%"><b>{{_name.submit}}</b></th>
@@ -73,16 +85,22 @@
     </thead>
     <tbody>
         <tr v-for="(row,key,index) in ranklist">
-            <td>{{page*50+key+1}}</td>
-            <td><a :href="'/userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
-            <td>{{row.nick}}</td>
+            <td  class="center head">{{page*50+key+1}}</td>
+            <td class="center head"><a :href="'/userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
+            <td>
+                <img class="ui avatar image" :src="'../avatar/'+row.user_id+'.jpg'" v-if="row.avatar" style="object-fit: cover;">
+            </td>
+            <td>
+                    {{row.nick}}
+            </td>
             <td><a :href="'status.php?user_id='+row.user_id+'&jresult=4'">{{row.solved||0}}</a></td>
             <td><a :href="'hdu_status.php?user_id='+row.user_id+'&jresult=4'">{{row.vjudge_solved||0}}</a></td>
             <td><a :href="'status.php?user_id='+row.user_id">{{row.submit||0}}</a></td>
-            <td><a>{{(((row.solved*100/(row.submit||0)||0)).toString().substring(0,5)+"%")}}</a></td>
+            <td>{{(((row.solved*100/(row.submit||0)||0)).toString().substring(0,5)+"%")}}</td>
         </tr>
     </tbody>
 </table>
+</div>
 <a v-cloak :class="'ui button '+(page == 0?'disabled':'')" @click="page != 0 && _page(-page,$event)" class="ui button">
     Top
 </a>

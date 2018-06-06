@@ -335,6 +335,11 @@
                 for(let i of this.problem_list){
                     this.user[i.user_id] = this.user[i.user_id] || i;
                 }
+                var doc = document.createElement("div");
+                for(let i in this.problem_list) {
+                    doc.innerHTML = this.problem_list[i].nick;
+                    this.problem_list[i].nick = doc.innerText;
+                }
                 return this.problem_list;
             }
         }

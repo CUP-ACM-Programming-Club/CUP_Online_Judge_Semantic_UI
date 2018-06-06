@@ -49,6 +49,7 @@
 </head>
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+
 <div class="main screen" v-cloak>
     <script>
         function qsa(sel) {
@@ -111,7 +112,8 @@
                             hide_warning: true,
                             confirm_text: "",
                             submitDisabled: false,
-                            resume_time: 0
+                            resume_time: 0,
+                            finished:false
                         };
                         if (id) {
                             _data.problem_id = d.problem_id;
@@ -493,6 +495,7 @@
                     mounted: function () {
                         var that = this;
                         $(".not-compile").removeClass("not-compile");
+                        $(".loading.dimmer").remove();
                         function load_editor() {
             ace.require("ace/ext/language_tools");
             var editor = ace.edit("source");
@@ -773,6 +776,7 @@ SHOULD BE:
                 border: solid lightgrey 1px
             }
         </style>
+        
         <!-- Main component for a primary marketing message or call to action -->
         <div v-show="single_page === true" class="ui container not-compile" v-cloak>
             <div class="not-compile">
