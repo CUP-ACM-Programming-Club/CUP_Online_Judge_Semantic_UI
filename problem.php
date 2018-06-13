@@ -47,7 +47,7 @@
         <li class='ui label orange'>Special Judge</li>
         <?php } ?>
         <li class='ui label grey'><?=$MSG_SUBMIT?>: <?=$row['submit']?></li>
-        <li class='ui label green'><?=$MSG_SOVLED?>:"<?=$row['accepted']?></li>
+        <li class='ui label green'><?=$MSG_SOVLED?>:<?=$row['accepted']?></li>
         </div>
         <div class='ui buttons'>
         <?php

@@ -193,25 +193,26 @@
         var result = _result.result;
         var _label = _result.label;
         var row = {};
-        for(let i of result){
+        _.forEach(result,function(i){
             row[i[_label[0]]] = row[i[_label[0]]]||{};
             row[i[_label[0]]][i[_label[1]]] = {
                 submit:i.submit,
                 accepted:i.accepted||0
             }
-        };
+        })
+
         var _labels = [];
         var _submits = [];
         var _accepteds = [];
         var _persent = [];
-        for(let i in row){
-            for(let j in row[i]){
+        _.forEach(row,function(val,i){
+            _.forEach(row[i],function(val2,j){
                 _labels.push(i.toString()+"-"+j.toString());
                 _submits.push(row[i][j].submit);
                 _accepteds.push(row[i][j].accepted);
                 _persent.push((row[i][j].accepted/row[i][j].submit*100).toString().substring(0,5));
-            }
-        }
+            })
+        })
         var config = {
             type: 'line',
             data: {
@@ -332,14 +333,15 @@
         },
         computed: {
             problem_lists: function () {
-                for(let i of this.problem_list){
-                    this.user[i.user_id] = this.user[i.user_id] || i;
-                }
+                var that = this;
+                _.forEach(this.problem_list,function(i){
+                    that.user[i.user_id] = that.user[i.user_id] || i;
+                })
                 var doc = document.createElement("div");
-                for(let i in this.problem_list) {
-                    doc.innerHTML = this.problem_list[i].nick;
-                    this.problem_list[i].nick = doc.innerText;
-                }
+                _.forEach(this.problem_list,function(val,i){
+                    doc.innerHTML = that.problem_list[i].nick;
+                    that.problem_list[i].nick = doc.innerText;
+                })
                 return this.problem_list;
             }
         }
@@ -430,6 +432,10 @@
                     that.dim = false;
                     that.search_func(data);
                 })
+                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt, function (data) {
+                    that.dim = false;
+                    that.search_func(data);
+                })
             },
             submit: function (data) {
                 var obj = {};
@@ -454,7 +460,9 @@
                 var time = data.time;
                 var memory = data.memory;
                 var pass_rate = data.pass_rate;
-                for (let i of this.problem_list) {
+                var that = this;
+                _.forEach(this.problem_list,function(val,key){
+                    var i = that.problem_list[key];
                     if (i.solution_id == solution_id) {
                         i.result = status;
                         i.time = time;
@@ -464,7 +472,7 @@
                         i.pass_rate = pass_rate;
                         return;
                     }
-                }
+                })
             },
             tag:function(tag_name,$event){
                 this.current_tag = tag_name;

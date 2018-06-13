@@ -7,6 +7,16 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
+    <?php
+        if(isset($_SESSION["user_id"])) {
+            ?>
+            <script>
+                alert("请退出登录后注册");
+                location.href = "/";
+            </script>
+            <?php
+        }
+    ?>
     <?php include("csrf.php") ?>
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>

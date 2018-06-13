@@ -15,7 +15,7 @@
 
 <body>
 <script type="text/x-template" id="status_table">
-    <table class="ui padded selectable unstackable table" align="center" width="90%">
+    <table class="ui padded selectable unstackable table" align="center" width="90%" v-if="finish">
         <thead v-cloak>
         <tr class='toprow'>
             <th>{{target.solution_id}}</th>
@@ -139,7 +139,8 @@
                               :self="self"
                               :result="result"
                               :end="end"
-                              :isadmin="isadmin"></status-table>
+                              :isadmin="isadmin"
+                              :finish="finish"></status-table>
                 <div class="ui active inverted dimmer" v-if="dim"><div class="ui large text loader">Loading</div></div>
             </div>
             <br>
@@ -181,14 +182,14 @@
         var _submits = [];
         var _accepteds = [];
         var _persent = [];
-        for(let i of result){
+        _.forEach(result,function(i){
             if(i[_label[0]]&&i[_label[1]]){
                 _labels.push(i[_label[0]]+"-"+i[_label[1]]);
                 _submits.push(i.submit||0);
                 _accepteds.push(i.accepted||0);
                 _persent.push((i.accepted/i.submit*100).toString().substring(0,5));
             }
-        };
+        })
         var config = {
             type: 'line',
             data: {
@@ -279,7 +280,8 @@
             result: Array,
             self: String,
             isadmin: Boolean,
-            end:Boolean
+            end:Boolean,
+            finish:Boolean
         },
         data: function () {
             return {
@@ -316,6 +318,11 @@
         },
         computed: {
             problem_lists: function () {
+                var doc = document.createElement("div");
+                for(let i in this.problem_list) {
+                    doc.innerHTML = this.problem_list[i].nick;
+                    this.problem_list[i].nick = doc.innerText;
+                }
                 return this.problem_list;
             }
         }
@@ -339,6 +346,7 @@
             current_tag : "status",
             dim:false,
             end:false,
+            finish:false,
             cid:getParameterByName("cid")
         },
         computed: {},
@@ -382,7 +390,7 @@
                 that.result = data.const_list.result.cn;
                 that.self = data.self;
                 that.end = data.end;
-                that.isadmin = data.isadmin
+                that.isadmin = data.isadmin || data.browse_code
             },
             search: function ($event) {
                 this.dim = true;
@@ -458,6 +466,7 @@
             var cid = this.cid||"";
             $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/"+cid, function (data) {
                     that.dim = false;
+                    that.finish = true;
                     that.search_func(data);
                 })
                 $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/"+cid, function (data) {

@@ -54,7 +54,34 @@ if (isset($_SESSION['user_id'])) {
         var vonline_num = new Vue({
            el:".following.bar",
            data:{
-               message: '<i class="remove icon"></i>'
+               message: '<i class="remove icon"></i>',
+               user:0,
+               judger:0
+           },
+           computed:{
+               users:{
+                   get:function(){
+                       
+                   },
+                   set:function(val) {
+                       this.user = val;
+                       this.update();
+                   }
+               },
+               judgers:{
+                   get:function(){
+                       
+                   },
+                   set:function(val) {
+                       this.judger = val;
+                       this.update();
+                   }
+               }
+           },
+           methods:{
+               update:function(){
+                   this.message = "<i class='users icon'></i>" + this.user + "人" + "&nbsp;<i class='microchip icon'></i>"+this.judger;
+               }
            },
            mounted:function(){
                binding_method();
@@ -70,13 +97,22 @@ if (isset($_SESSION['user_id'])) {
             console.error(error);
         })
         socket.on('disconnect',function(data){
-            vonline_num.message="与服务器连接丢失";
+            if(!socket.windowDestroyClose) {
+                vonline_num.message = "与服务器连接丢失";
+            }
             window.connected = false;
         })
+        socket.on('judgerChange',function(data){
+            vonline_num.judgers = data.length;
+        })
         socket.on('user', function (data) {
-            vonline_num.message="<i class='users icon'></i>" + data['user_cnt'] + "人";
+            var user = data.user;
+            var judger = data.judger;
+            vonline_num.users = user['user_cnt'];
+            vonline_num.judgers = judger.length;
+           // vonline_num.message="<i class='users icon'></i>" + user['user_cnt'] + "人" + "&nbsp;<i class='microchip icon'></i>"+judger.length;
             <?php if(isset($_SESSION['administrator'])){ ?>
-            var receive_data = data;
+            var receive_data = user;
             console.log(receive_data)
             window.online_list = receive_data["user"];
             if (online_list&&typeof list_online=="function" && $("#online_user_table").attr("refresh") == "true")
@@ -134,7 +170,8 @@ if (isset($_SESSION['user_id'])) {
    var arr=url.split("/");
    var protocol=arr[0];
    window.addEventListener("beforeunload", function (event) {
-  window.socket.close();
+       window.socket.windowDestroyClose = true;
+       window.socket.close();
 });
   // $.getScript( protocol+"//"+location.hostname+"/socket.io/socket.io.js",function(){
         

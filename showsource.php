@@ -37,7 +37,7 @@
             Source Code
         </h2>
       <!-- Main component for a primary marketing message or call to action -->
-
+<!--
 <link href='highlight/styles/shCore.css' rel='stylesheet' type='text/css'/>
 <link href='highlight/styles/shThemeDefault.css' rel='stylesheet' type='text/css'/>
 <script src='highlight/scripts/shCore.js' type='text/javascript'></script>
@@ -52,11 +52,14 @@
 <script src='highlight/scripts/shBrushPerl.js' type='text/javascript'></script>
 <script src='highlight/scripts/shBrushCSharp.js' type='text/javascript'></script>
 <script src='highlight/scripts/shBrushVb.js' type='text/javascript'></script>
+
 <script language='javascript'>
 SyntaxHighlighter.config.bloggerMode = false;
 SyntaxHighlighter.config.clipboardSwf = 'highlight/scripts/clipboard.swf';
 SyntaxHighlighter.all();
 </script>
+-->
+    <script src="/template/semantic-ui/js/clipboard.min.js"></script>
 <div class="ui existing segment" v-cloak>
     <div class="ui raised segment" v-cloak >
     <div class="ui tiny statistics" v-if="code">
@@ -117,14 +120,27 @@ SyntaxHighlighter.all();
         </div>
     </div>
     </div>
-    <div v-html="code" class="ui raised segment" v-if="code">
-        
+    <div class="ui raised segment" v-if="code">
+        <div class="ui top right attached label"><a data-clipboard-target="#code" id="copy">Copy Source Code</a></div>
+        <div v-html="code" id="code">
+        </div>
     </div>
     <div class="ui existing segment" v-text="statement" v-if="statement">
         
     </div>
 </div>
     <script>
+    var clipboard = new Clipboard("#copy");
+    
+    clipboard.on("success",function(e){
+        $('#copy')
+        .popup({
+            title   : 'Finished',
+            content : 'Your code is in your clipboard',
+            on      : 'click'
+         })
+         .popup("show");
+    })
     var local;
     var id;
     if(getParameterByName("id")) {

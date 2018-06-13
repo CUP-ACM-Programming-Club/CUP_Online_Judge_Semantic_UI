@@ -33,7 +33,7 @@
     <div class="ui grid">
     
     <div class="row">
-    <div class="three wide column">
+    <div class="four wide column">
     <div class="ui mini statistic">
                     <div class="value">
                         <i class="user icon"></i>{{registed_user}}
@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 </div>
-                <div class="seven wide column">
+                <div class="five wide column">
                 <div class="ui search">
                     <label>{{_name.user}}</label>
                     <div class="ui input">
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 </div>
-                <div class="six wide column">
+                <div class="seven wide column">
                 <a :class="'ui blue mini button '+(time_stamp === 'D'?'disabled':'')" @click="timestamp('D',$event)">Day</a>
                 <a :class="'ui blue mini button '+(time_stamp === 'W'?'disabled':'')" @click="timestamp('W',$event)">Week</a>
                 <a :class="'ui blue mini button '+(time_stamp === 'M'?'disabled':'')" @click="timestamp('M',$event)">Month</a>

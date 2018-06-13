@@ -59,9 +59,9 @@
 <script type="text/x-template" id="selectedTag">
     <div>
         <div class="ui labels">
-            <a v-for="label in datas.search" :class="'ui label '+datas.color[label]||''">{{label}}<i class="delete icon"
+            <a v-for="label in datas.search" :class="'ui label '+labelColor(label)">{{label}}<i class="delete icon"
                                                                                                      @click="remove('search',$event)"></i></a>
-            <a v-for="label in datas.label" :class="'ui label '+datas.color[label]||''">{{label}}<i class="delete icon"
+            <a v-for="label in datas.label" :class="'ui label '+labelColor(label)">{{label}}<i class="delete icon"
                                                                                                     @click="remove('label',$event)"></i></a>
         </div>
     </div>
@@ -356,6 +356,15 @@
         methods: {
             remove: function () {
                 this.$root.remove(...arguments);
+            },
+            labelColor: function(label) {
+                var datas = this.datas;
+                if(datas && datas.color && datas.color[label]) {
+                    return datas.color[label];
+                }
+                else {
+                    return "";
+                }
             }
         }
     });
@@ -677,7 +686,7 @@
                 $("#show_cloud").checkbox((that.show_label_cloud ? "" : "un") + "check");
 
                 this.current_page = page;
-                $.get("../api/problemset/" + page + "/" + this.search_tag || "none" + "/" + this.order_target + "/" + this.order + "/?label=" + this.label, function (data) {
+                $.get("../api/problemset/" + page + "/" + (this.search_tag || "none") + "/" + this.order_target + "/" + this.order + "/?label=" + this.label, function (data) {
                     that.tables = data;
                 });
 
