@@ -427,6 +427,14 @@
                             status[index][i] = 0;
                         }
                     })
+                    for(var i = 0;i<=maxNum;++i) {
+                        if(!lang[i]) {
+                            lang[i] = {};
+                        }
+                        _.forEach(used_lang,function(val){
+                            lang[i][val] = 0;
+                        })
+                    }
                     _.forEach(this.stat,function(val,index){
                         ++status[val.num][val.result];
                         ++lang[val.num][val.language];
