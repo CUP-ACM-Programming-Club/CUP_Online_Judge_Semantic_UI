@@ -182,23 +182,27 @@
         <thead v-cloak>
             <th>Problem</th>
             <th v-for="i in Array.from(Array(Math.max(0,statistics.total_result-3)).keys()).map(function(i){return i+4})"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{statistics.status[i]}}</a></th>
+            <th>Total</th>
         </thead>
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
                 <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
                 <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&jresult='+key">{{row}}</a></td>
+                 <td>{{statistics.totalSumResult[i]}}</td>
             </tr>
         </tbody>
     </table>
     <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
         <thead v-cloak>
             <th>Problem</th>
-            <th v-for="i in statistics.used_lang"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{language_name.local[i]}}</a></th>
+            <th v-for="i in statistics.used_lang"><a target="_blank" :href="'status.php?cid='+cid+'&language='+i">{{language_name.local[i]}}</a></th>
+            <th>Total</th>
         </thead>
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
                 <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
                 <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&language='+key">{{row}}</a></td>
+                <td>{{statistics.totalSumProblem[i]}}</td>
             </tr>
         </tbody>
     </table>
@@ -446,6 +450,24 @@
                             }
                         })
                     })
+                    var totalSumProblem = {};
+                    _.forEach(status,function(val,index){
+                        if(!totalSumProblem[index]) {
+                            totalSumProblem[index] = 0;
+                        }
+                        _.forEach(status[index],function(val2){
+                            totalSumProblem[index]+=val2;
+                        })
+                    })
+                    var totalSumResult = {};
+                    _.forEach(lang,function(val,index){
+                        if(!totalSumResult[index]) {
+                            totalSumResult[index] = 0;
+                        }
+                        _.forEach(lang[index],function(val2){
+                            totalSumResult[index] += val2;
+                        })
+                    })
                     if(maxResult === 0) {
                         maxNum = -1;
                     }
@@ -455,7 +477,9 @@
                         status:this.res||[],
                         stat_data:status||[],
                         used_lang:used_lang,
-                        lang_data:lang
+                        lang_data:lang,
+                        totalSumResult:totalSumResult,
+                        totalSumProblem:totalSumProblem
                     }
                 },
                 set:function(val) {
