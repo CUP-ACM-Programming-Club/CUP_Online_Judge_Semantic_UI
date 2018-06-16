@@ -392,7 +392,7 @@
             total:0,
             stat:[],
             cid:getParameterByName("cid"),
-            res:["WT","WR","CPL","RN","AC","PE","WA","PE","WA","TLE","MLE","OLE","RE","CE","CF","TR",
+            res:["WT","WR","CPL","RN","AC","PE","WA","TLE","MLE","OLE","RE","CE","CF","TR",
             "SP","SR"]
             }
         },
