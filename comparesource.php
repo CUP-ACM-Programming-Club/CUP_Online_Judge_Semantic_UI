@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 	<link type="text/css" rel="stylesheet" href="mergely/codemirror.css" />
-	<link type="text/css" rel="stylesheet" href="mergely/mergely.css" />
+	<link type="text/css" rel="stylesheet" href="mergely/mergely.css?ver=1.0.1" />
     <style>
         .container.padding{
             margin:auto;
@@ -53,7 +53,9 @@
 	<script type="text/javascript">
         $(document).ready(function () {
 			$('#compare').mergely({
-				cmsettings: { readOnly: false, lineWrapping: true }
+				cmsettings: { readOnly: false, lineWrapping: true },
+				ignorews: true,
+				ignorecase: true
 			});
 			$.ajax({
 				type: 'GET', async: true, dataType: 'text',

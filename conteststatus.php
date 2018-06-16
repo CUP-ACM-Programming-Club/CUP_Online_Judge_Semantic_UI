@@ -72,6 +72,7 @@
         <div class="ui top attached tabular menu">
             <a v-cloak :class="(current_tag == 'status'?'active':'')+' item'" @click="tag('status',$event)" id="submitstatus">提交状态</a>
             <a v-cloak :class="(current_tag == 'graph'?'active':'')+' item'" @click="tag('graph',$event)" id="graph">提交图表</a>
+            <a v-cloak :class="(current_tag == 'statistics'?'active':'')+' item'" @click="tag('statistics',$event)" id="statistics">提交统计</a>
         </div>
         <div class="ui bottom attached segment" v-show="current_tag == 'status'">
             <div align=center class="input-append">
@@ -88,17 +89,27 @@
                         </div>
                         <div class="field">
                             <label><?php echo $MSG_LANG ?></label>
-                            <select v-model="language" class="ui search dropdown" size="1" name="language"
-                                    data-toggle='select'>
-                                <option value='-1' selected>All</option>
+                            <div class="ui fluid search dropdown selection" size="1">
+                                <input v-model="language" @change="language=$event.target.value"
+                                       type="hidden" name="language">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">All</div>
+                                <div class="menu">
+                                    <div class='item' data-value='-1'>All<i class="dropdown icon"
+                                                                            style="visibility: hidden; "></i></div>
                                 <?php
                                 $i = 0;
-                                foreach ($language_name as $lang) {
-                                    echo "<option value=$i>$language_name[$i]</option>";
+                                foreach ($language_name as $lang) {?>
+                                <div class="item" data-value="<?=$i?>">
+                                <i class="<?=$language_icon[$i]?> color"></i>
+                                <?=$language_name[$i]?>
+                                </div>
+                                <?php
                                     $i++;
                                 }
                                 ?>
-                            </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="field">
                             <label><?php echo $MSG_RESULT ?></label>
@@ -165,6 +176,32 @@
             <div style="width:75%;margin:auto">
                 <canvas id="canvas"></canvas>
             </div>
+        </div>
+        <div class="ui attached bottom segment" v-show="current_tag == 'statistics'">
+            <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
+        <thead v-cloak>
+            <th>Problem</th>
+            <th v-for="i in Array.from(Array(Math.max(0,statistics.total_result-3)).keys()).map(function(i){return i+4})"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{statistics.status[i]}}</a></th>
+        </thead>
+        <tbody>
+            <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
+                <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
+                <td v-for="(row,key) in statistics.stat_data[i]"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&jresult='+key">{{row}}</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
+        <thead v-cloak>
+            <th>Problem</th>
+            <th v-for="i in statistics.used_lang"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{language_name.local[i]}}</a></th>
+        </thead>
+        <tbody>
+            <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
+                <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
+                <td v-for="(row,key) in statistics.lang_data[i]"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&language='+key">{{row}}</a></td>
+            </tr>
+        </tbody>
+    </table>
         </div>
     </div>
 </div>
@@ -329,7 +366,8 @@
     })
     var problemStatus = new Vue({
         el: ".ui.container.padding",
-        data: {
+        data: function(){
+            return {
             problem_list: [],
             icon_list: [],
             judge_color: [],
@@ -347,9 +385,76 @@
             dim:false,
             end:false,
             finish:false,
-            cid:getParameterByName("cid")
+            total:0,
+            stat:[],
+            cid:getParameterByName("cid"),
+            res:["WT","WR","CPL","RN","AC","PE","WA","PE","WA","TLE","MLE","OLE","RE","CE","CF","TR",
+            "SP","SR"]
+            }
         },
-        computed: {},
+        computed: {
+            statistics:{
+                get:function(){
+                    var that = this;
+                    var lang = {};
+                    var status = {};
+                    var maxResult = 0;
+                    var maxNum = 0;
+                    var used_lang = {};
+                    _.forEach(this.stat,function(val,index){
+                        if(!status[val.num]) {
+                            status[val.num] = {};
+                        }
+                        if(!lang[val.num]) {
+                            lang[val.num] = {};
+                        }
+                        maxResult = Math.max(maxResult,val.result);
+                        maxNum = Math.max(maxNum,val.num);
+                        if(!status[val.num][val.result])
+                        status[val.num][val.result] = 0;
+                        lang[val.num][val.language] = 0;
+                        used_lang[val.language] = val.language;
+                    });
+                    used_lang = _.values(used_lang);
+                    used_lang.sort(function(a,b){return a-b;});
+                    for(var i = 0;i<=maxNum;++i) {
+                        if(!status[i]) {
+                            status[i] = {};
+                        }
+                    }
+                    _.forEach(status,function(val,index){
+                        for(var i = 4;i<= maxResult;++i) {
+                            status[index][i] = 0;
+                        }
+                    })
+                    _.forEach(this.stat,function(val,index){
+                        ++status[val.num][val.result];
+                        ++lang[val.num][val.language];
+                    });
+                    _.forEach(lang,function(val,index){
+                        _.forEach(used_lang,function(val){
+                            if(!lang[index][val]){
+                                lang[index][val] = 0;
+                            }
+                        })
+                    })
+                    return {
+                        total_problem:maxNum||0,
+                        total_result:maxResult||0,
+                        status:this.res||[],
+                        stat_data:status||[],
+                        used_lang:used_lang,
+                        lang_data:lang
+                    }
+                },
+                set:function(val) {
+                    if(val.status == "OK") {
+                        this.total = val.total;
+                        this.stat = JSON.parse(JSON.stringify(val.data));
+                    }
+                }
+            }
+        },
         methods: {
             getUserId:function(){
                 return getParameterByName("user_id")
@@ -475,8 +580,12 @@
                 })
         },
         mounted: function () {
+            var that = this;
             $.get("../api/status/graph?cid="+this.cid,function(data){
                 draw(data);
+            })
+            $.get("../api/contest/statistics/"+this.cid,function(data){
+                that.statistics = data;
             })
         }
     })
