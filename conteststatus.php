@@ -186,7 +186,7 @@
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
                 <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
-                <td v-for="(row,key) in statistics.stat_data[i]"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&jresult='+key">{{row}}</a></td>
+                <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&jresult='+key">{{row}}</a></td>
             </tr>
         </tbody>
     </table>
@@ -198,7 +198,7 @@
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
                 <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
-                <td v-for="(row,key) in statistics.lang_data[i]"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&language='+key">{{row}}</a></td>
+                <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&language='+key">{{row}}</a></td>
             </tr>
         </tbody>
     </table>
@@ -446,6 +446,9 @@
                             }
                         })
                     })
+                    if(maxResult === 0) {
+                        maxNum = -1;
+                    }
                     return {
                         total_problem:maxNum||0,
                         total_result:maxResult||0,
