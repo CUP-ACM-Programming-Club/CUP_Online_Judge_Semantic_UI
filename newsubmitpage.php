@@ -84,6 +84,7 @@
                             _title: d.title,
                             problem_id: d.problem_id,
                             original_id: d.problem_id,
+                            iscontest:getParameterByName("cid")!==null,
                             description: d.description,
                             time: "时间限制:" + d.time_limit + "秒",
                             memory: "内存限制:" + d.memory_limit + "MB",
@@ -106,6 +107,7 @@
                             langmask: d.langmask,
                             isadmin: isadmin,
                             iseditor: iseditor,
+                            share:false,
                             selected_language: localStorage.getItem("lastlang") && Boolean(1<<parseInt(localStorage.getItem("lastlang")) & (~d.langmask)) ? parseInt(localStorage.getItem("lastlang")) : Math.log2(~d.langmask & -~d.langmask),
                             language_template: d.language_template,
                             fontSize: 18,
@@ -367,6 +369,7 @@
                                 input_text: $("#ipt").val(),
                                 language: $("#language").val(),
                                 source: window.editor.getValue(),
+                                share:this.share,
                                 type: type,
                                 csrf: "<?=$token?>"
                             };
@@ -448,6 +451,7 @@
                                     cid: -Math.abs(parseInt(qstring("cid"))) || null,
                                     tid: qstring("tid"),
                                     pid: qstring("pid"),
+                                    share:this.share,
                                     input_text: window.problemsubmitter.$data.sampleinput,
                                     language: $("#language").val(),
                                     source: window.editor.getValue(),
@@ -650,8 +654,6 @@
             });
             var fonts = document.getElementById('source').style.fontSize;
             $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
-
-
         }
         load_editor();
                         window.editor.getSession().setValue(this.source_code);
@@ -846,15 +848,15 @@ SHOULD BE:
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
-                            v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
+                            v-text="time"></li>
                         <li class='ui label red' id="mlimit"
-                            v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
+                            v-text="memory"></li>
                         <li class='not-compile' :class="'ui label orange'" id="spj" v-cloak v-show="spj">Special Judge
                         </li>
                         <li class='ui label grey' id="totsub"
-                            v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
+                            v-text="submit"></li>
                         <li class='ui label green' id="totac"
-                            v-text="accepted"><?php echo "$MSG_SOVLED:$row->accepted" ?> </li>
+                            v-text="accepted"> </li>
                     </div>
                     <br>
                     <div class='ui buttons'>
@@ -892,13 +894,13 @@ SHOULD BE:
                     <div class='title'><?= $MSG_Sample_Input ?><i class="dropdown icon"></i></div>
                     <div class='content'>
                             <pre class='ui bottom attached segment'><span id='problem_sample_input' class='sample_input'
-                                                                          v-text='sampleinput'><?= ($sinput) ?></span></pre>
+                                                                          v-text='sampleinput'></span></pre>
                     </div>
                     <div class='title'><?= $MSG_Sample_Output ?><i class="dropdown icon"></i></div>
                     <div class='content'>
                             <pre class='ui bottom attached segment'><span id='problem_sample_output'
                                                                           class='sample_output'
-                                                                          v-text='sampleoutput'><?= ($soutput) ?></span></pre>
+                                                                          v-text='sampleoutput'></span></pre>
                     </div>
                     <div class='title'><?= $MSG_HINT ?><i class="dropdown icon"></i></div>
                     <div class='content' v-html="hint">
@@ -1005,7 +1007,15 @@ SHOULD BE:
         position: relative;
         height: 30px;
         color: black;width:100%" class="ui menu borderless">
-                    <div style="text-align:center;" class="item"><?php echo $OJ_NAME ?>&nbsp;&nbsp;</div>
+                    <div style="text-align:center;" class="item">
+                        <?php echo $OJ_NAME ?>&nbsp;&nbsp;
+                        <div class="item">
+    <div class="ui toggle checkbox" v-cloak v-if="!iscontest">
+  <input type="checkbox" name="share" v-model="share">
+  <label>允许他人查看代码</label>
+    </div>
+</div>
+                        </div>
                     <div class="ui right menu">
                         <div class="ui buttons">
                             <input id="Submit" class="ui button green " :disabled="submitDisabled" type=button

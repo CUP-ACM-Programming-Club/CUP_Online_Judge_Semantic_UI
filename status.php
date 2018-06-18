@@ -59,10 +59,10 @@
             <td>
                 <div id=center>{{memory_parse(row.memory)}}<br>{{time_parse(row.time)}}</div>
             </td>
-            <td><a v-if="self === row.user_id || isadmin" target=_blank :href="'showsource.php?id='+row.solution_id">{{language_name[row.language]}}</a>
+            <td><a v-if="self === row.user_id || isadmin || row.share == 1" target=_blank :href="'showsource.php?id='+row.solution_id">{{language_name[row.language]}}</a>
                 <span v-else>{{language_name[row.language]}}</span>
-                <span v-if="(self === row.user_id || isadmin) && row.problem_id"> / </span>
-                <a v-if="(self === row.user_id || isadmin) && row.problem_id" target="_blank"
+                <span v-if="(self === row.user_id || isadmin || row.share == 1) && row.problem_id"> / </span>
+                <a v-if="(self === row.user_id || isadmin || row.share == 1) && row.problem_id" target="_blank"
                    :href="'newsubmitpage.php?id='+Math.abs(row.problem_id)+'&sid='+Math.abs(row.solution_id)">Edit</a>
                 <br>
                 {{row.length}}B

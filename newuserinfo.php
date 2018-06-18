@@ -459,7 +459,6 @@ foreach ($view_userstat as $row) {
                             <?=$status["MLE"]?>,
                             <?=$status["OLE"]?>,
                             <?=$status["CE"]?>,
-                            <?=$status["TR"]?>,
                             <?=$status["PE"]?>
                         ],
                         backgroundColor: [
@@ -470,7 +469,6 @@ foreach ($view_userstat as $row) {
                             "#00b5ad",
                             "#35a0e8",
                             "#F7464A",
-                            "#E2EAE9",
                             "#D4CCC5"
                         ]
                     }
@@ -483,7 +481,6 @@ foreach ($view_userstat as $row) {
                     "Memory Limit Exceeded",
                     "Output Limit Exceeded",
                     "Compile Error",
-                    "Test Run",
                     "Presentation Error"
                 ]
             },

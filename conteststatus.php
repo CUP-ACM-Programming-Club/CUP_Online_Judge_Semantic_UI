@@ -11,6 +11,11 @@
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
+    <style>
+        .table-scroll{
+            overflow: auto
+        }
+    </style>
 </head>
 
 <body>
@@ -178,6 +183,10 @@
             </div>
         </div>
         <div class="ui attached bottom segment" v-show="current_tag == 'statistics'">
+            <h3 class="ui dividing header">
+                Result Statistics
+            </h3>
+    <div class="table-scroll">
             <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
         <thead v-cloak>
             <th>Problem</th>
@@ -192,6 +201,11 @@
             </tr>
         </tbody>
     </table>
+    </div>
+    <h3 class="ui dividing header">
+                Submit Language Statistics
+            </h3>
+    <div class="table-scroll">
     <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
         <thead v-cloak>
             <th>Problem</th>
@@ -206,6 +220,7 @@
             </tr>
         </tbody>
     </table>
+    </div>
         </div>
     </div>
 </div>
