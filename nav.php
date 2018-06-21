@@ -11,8 +11,8 @@ $suffix="";
 if($OJ_CONTEST_MODE&&!isset($_SESSION['administrator']))
 $suffix="?my";
 ?>
-<canvas class="fireworks" style="z-index:-999"></canvas>
-<div class="following bar">
+<!--<canvas class="fireworks" style="z-index:-999"></canvas>-->
+<div class="following bar topmenu" style="z-index:99">
 <div class="ui <?=isset($homepage)?"inverted":""?> borderless network secondary menu" id="navbar-large">
     <div class="ui container">
         <div class="msg header item">
@@ -67,7 +67,7 @@ $suffix="?my";
                            <a class="item <?php if($url=="whiteboard.php")echo "active" ?>" href="whiteboard.php"><i class="calendar outline icon"></i>白板(β版测试)</a>
                            <?php if(!$OJ_CONTEST_MODE||isset($_SESSION['administrator'])){ ?>
                 <a class="item tutorial" target="_blank"><i class="help circle outline icon"></i>C/C++语言参考手册</a>
-                                <a class="item" href="//wiki.cupacm.com"><i class="book icon"></i>Wiki</a>
+                                <a class="item" href="https://wiki.cupacm.com"><i class="book icon"></i>Wiki</a>
 
                 <?php } ?>
                            
@@ -92,9 +92,7 @@ $suffix="?my";
             <a class="item" href="<?php echo $path_fix ?>contestrank.php?cid=<?php echo $cid ?>">
                 <?php echo "比赛" . $MSG_RANKLIST ?>
             </a>
-            <a class="item" href="<?php echo $path_fix ?>conteststatistics.php?cid=<?php echo $cid ?>">
-                <?php echo "比赛" . $MSG_STATISTICS ?>
-            </a>
+
             <a class="item" href="<?=$path_fix?>contestclarification.php?cid=<?=$cid?>">比赛问询(开发中)</a>
         <?php } else if (isset($_GET['tid'])) {
             ?>
@@ -191,7 +189,7 @@ $suffix="?my";
                             <a class="item <?php if ($url == "vjudgeproblemset.php") echo "active"; ?>" href="/vjudgeproblemset.php">Virtual
                             Judge</a>
                 
-                <a class="item" href="//wiki.cupacm.com">Wiki</a>
+                <a class="item" href="https://wiki.cupacm.com">Wiki</a>
                 <?php if(!$OJ_CONTEST_MODE||isset($_SESSION['administrator'])){ ?>
                 <a class="item tutorial" href="cppreference/en/" target="_blank">C/C++语言参考手册</a>
                 <?php } ?>
@@ -212,9 +210,7 @@ $suffix="?my";
             <a class="item" href="<?php echo $path_fix ?>contestrank.php?cid=<?php echo $cid ?>">
                 <?php echo "比赛" . $MSG_RANKLIST ?>
             </a>
-            <a class="item" href="<?php echo $path_fix ?>conteststatistics.php?cid=<?php echo $cid ?>">
-                <?php echo "比赛" . $MSG_STATISTICS ?>
-            </a>
+
             <a class="item" href="<?=$path_fix?>contestclarification.php?cid=<?=$cid?>">比赛问询(开发中)</a>
         <?php } else if (isset($_GET['tid'])) {
             ?>
@@ -302,7 +298,7 @@ $suffix="?my";
                             <a class="item <?php if ($url == "vjudgeindex.php") echo "active"; ?>" href="/vjudgeindex.php">Virtual
                             Judge</a>
                 
-                <a class="item" href="//wiki.cupacm.com">Wiki</a>
+                <a class="item" href="https://wiki.cupacm.com">Wiki</a>
                 <?php if(!$OJ_CONTEST_MODE||isset($_SESSION['administrator'])){ ?>
                 <a class="item tutorial" href="cppreference/en/" target="_blank">C/C++语言参考手册</a>
                 <?php } ?>
@@ -322,9 +318,7 @@ $suffix="?my";
             <a class="item" href="<?php echo $path_fix ?>contestrank.php?cid=<?php echo $cid ?>">
                 <?php echo "比赛" . $MSG_RANKLIST ?>
             </a>
-            <a class="item" href="<?php echo $path_fix ?>conteststatistics.php?cid=<?php echo $cid ?>">
-                <?php echo "比赛" . $MSG_STATISTICS ?>
-            </a>
+
             <a class="item" href="<?=$path_fix?>contestclarification.php?cid=<?=$cid?>">比赛问询(开发中)</a>
         <?php } else if (isset($_GET['tid'])) {
             ?>

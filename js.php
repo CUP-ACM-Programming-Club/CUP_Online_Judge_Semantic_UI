@@ -10,7 +10,7 @@
 <!--
 <script src="/template/semantic-ui/js/webpack/index_bundle.js"></script>
 -->
-<script src="/template/semantic-ui/js/vue.js"></script>
+<script src="/template/semantic-ui/js/vue.js?ver=2.5.16"></script>
 <script src="/template/semantic-ui/js/base64.js"></script>
 <script src="/template/semantic-ui/js/utils.js"></script>
 <script src="/template/semantic-ui/js/anime.min.js"></script>
@@ -59,8 +59,21 @@
             ;
         if ($('.ui.menu .ui.dropdown').html())
             $('.ui.menu .ui.dropdown').dropdown({
-                on: 'hover'
+                on: 'hover',
+                onShow:function(e){
+                    if($(".following.bar").length > 1)
+                    $(".topmenu").css({
+                        zIndex:999
+                    })
+                },
+                onHide:function(e){
+                    if($(".following.bar").length > 1)
+                    $(".topmenu").css({
+                        zIndex:99
+                    })
+                }
             });
+        
         if ($('.ui.search.dropdown').html()) {
             $('.ui.search.dropdown').dropdown({
                 on: 'hover'
@@ -105,7 +118,6 @@
         }
 
         function lightout() {
-
             $('.following.bar').removeClass('light fixed')
             $('.fixed.menu').transition('fade out');
             //('.network.menu').removeClass('secondary');
@@ -123,8 +135,7 @@
                 refreshOnResize: true,
                 onTopPassedReverse: lightout,
                 onTopPassed: lightin
-            })
-        ;
+            });
         $('.message .close')
             .off("click")
             .on('click', function () {

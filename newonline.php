@@ -91,9 +91,7 @@ include("csrf.php");
 <!-- Placed at the end of the document so the pages load faster -->
 
 
-<div style="display:none">
     <?php include("template/$OJ_TEMPLATE/bottom.php") ?>
-</div>
 </body>
 <script>
     function detect_ip(tmp) {
@@ -307,7 +305,12 @@ include("csrf.php");
         title: "自动排序",
         content: "根据学号升序排序(开启对性能要求较高，建议开启排序后关闭)"
     })
-
+var segmentSize = parseInt($(".ui.container.padding").css("height"))
+if(segmentSize < window.innerHeight - 300) {
+$(".ui.container.padding").css({
+    height:window.innerHeight
+})
+}
     function list_online() {
         user_list.user = window.online_list;
         $online_list.user = window.online_list;

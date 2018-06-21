@@ -45,6 +45,27 @@
         .sample_output{
             color:#ad1457;
         }
+        .following.bar.title.light.fixed{
+            top:40px;
+            transition:top 0.4s;
+        }
+        .following.bar.title{
+            top:60px;
+            transition:top 0.4s;
+        }
+        .ui.vertical.center.aligned.grid {
+            padding-top: 1em;
+            padding-bottom: 2em;
+        }
+        .row.no.padding{
+            padding-top:0em;
+            padding-bottom: 0em;
+        }
+        img{
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 </head>
 <body>
@@ -54,6 +75,12 @@
     <script>
         function qsa(sel) {
             return Array.apply(null, document.querySelectorAll(sel));
+        }
+        
+        function decodeHTML(str) {
+            var doc = document.createElement("div");
+            doc.innerHTML = str;
+            return doc.innerText;
         }
 
         var loadVue = new Promise(function (resolve, reject) {
@@ -100,6 +127,8 @@
                             not_show_toolbar: false,
                             spj: Boolean(parseInt(d.spj)),
                             single_page: false,
+                            bodyOnTop: true,
+                            isRenderBodyOnTop:false,
                             source_code: source_code,
                             language_name: d.language_name,
                             prepend: d.prepend,
@@ -151,8 +180,36 @@
                         }
                     },
                     methods: {
+                        judgeLength:function(str,flag){
+                            var alphaNum = ["one","two","three","four","five","six","seven","eight"]
+                            var ans = 0;
+                            if(flag) ans = 8;
+                            var isalpha = true;
+                            _.forEach(str,function(val,index){
+                                if(!(val >= "a" && val <= "z" || val >= "A" && val <= "Z" || val == " ")) {
+                                    isalpha = false;
+                                }
+                            });
+                            if(isalpha) {
+                                ans -= str.length / 5;
+                            }
+                            return alphaNum[Math.abs(ans)-1];
+                        },
                         switch_screen: function ($event) {
                             this.single_page = !this.single_page;
+                            document.documentElement.scrollTop = 0;
+                            if(that.single_page) {
+                            $(".topmenu").css({
+                                borderBottom:"none",
+                                boxShadow:"none"
+                            });
+                        }
+                        else {
+                            $(".topmenu").css({
+                                borderBottom:"1px solid rgb(221, 221, 221)",
+                                boxShadow:"rgba(0, 0, 0, 0.04) 0px 2px 3px"
+                            });
+                        }
                         },
                         resize: function ($event) {
                             var size = $event.target.value;
@@ -495,9 +552,34 @@
             
                                   });
                                });
+                        var that = this;
+                        this.$nextTick(function(){
+                            if(!that.isRenderBodyOnTop){
+                                that.isRenderBodyOnTop = true;
+                            setTimeout(function(){
+                                $('.ui.vertical.center.aligned.segment.single')
+                        .visibility({
+                          once: false,
+                          offset: 30,
+                         observeChanges: false,
+                         continuous: false,
+                          refreshOnLoad: true,
+                          refreshOnResize: true,
+                          onTopPassedReverse: function(){
+                        that.bodyOnTop = true;
+                        },
+                        onTopPassed: function(){
+                            that.bodyOnTop = false;
+                        }
+                            });
+                            that.bodyOnTop = true;
+                    },200)
+                            }
+                        })
                     },
                     mounted: function () {
                         var that = this;
+                        this.bodyOnTop = true;
                         $(".not-compile").removeClass("not-compile");
                         $(".loading.dimmer").remove();
                         function load_editor() {
@@ -655,7 +737,7 @@
             var fonts = document.getElementById('source').style.fontSize;
             $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
         }
-        load_editor();
+                        load_editor();
                         window.editor.getSession().setValue(this.source_code);
                         $('.ui.accordion')
                             .accordion({
@@ -664,6 +746,7 @@
                         $('.ui.dropdown.selection').dropdown({
                             on: 'hover'
                         });
+                        
                         resolve();
                         if (getParameterByName("sid")) {
                             $.get("/api/status/solution?sid=" + getParameterByName("sid"), function (data) {
@@ -782,7 +865,52 @@ SHOULD BE:
         <!-- Main component for a primary marketing message or call to action -->
         <div v-show="single_page === true" class="ui container not-compile" v-cloak>
             <div class="not-compile">
-                <div class="ui vertical center aligned segment">
+                <div class="following bar title" :style="(!bodyOnTop?'opacity:1;':'opacity:0;') + 'z-index:99'">
+                <div :class="'ui vertical center aligned grid'">
+                    <div class="row no padding">
+                    <div :class="'sixteen wide center aligned column'">
+                    <h2 class="ui header" id="probid" v-text="title">
+                    </h2></div>
+                    <div class="eight wide center aligned column">
+                    <div class='ui labels'>
+                        <li class='ui label red' id="tlimit"
+                            v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
+                        <li class='ui label red' id="mlimit"
+                            v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
+                        <li class='ui label orange' id="spj" v-cloak v-show="spj">Special Judge</li>
+                        <li class='ui label grey' id="totsub"
+                            v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
+                        <li class='ui label green' id="totac"
+                            v-text="accepted"><?php echo "$MSG_SOVLED:$row->accepted" ?> </li>
+                    </div></div>
+                    </div>
+                    <div class="row no padding">
+                    <div class="column">
+                    <div class='ui buttons'>
+                        <a :href="'problemstatus.php?id='+original_id" class='ui button orange'><?= $MSG_STATUS ?></a>
+                        <a @click.prevent="switch_screen($event)" href='problem.php?<?= $_SERVER['QUERY_STRING'] ?>'
+                           class='ui button blue'>切换双屏</a>
+                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')"
+                           :href="'tutorial.php?id='+original_id" class="ui button teal">
+                            查看题解
+                        </a>
+
+                        <a class='ui button violet' v-if="iseditor||isadmin"
+                           :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
+                        <?php
+                        if (isset($_SESSION['administrator'])) {
+                            require_once("include/set_get_key.php");
+                            ?>
+                            <a class='ui button purple'
+                               :href="'admin/quixplorer/index.php?action=list&dir='+problem_id+'&order=name&srt=yes'">TestData</a>
+                            <?php
+                        }
+                        ?>
+                    </div></div>
+                    </div>
+                </div>
+                </div>
+                   <div class="ui vertical center aligned segment single" :style="bodyOnTop?'opacity:1':'opacity:0'">
                     <h2 class="ui header" id="probid" v-text="title">
                     </h2>
                     <div class='ui labels'>
@@ -819,6 +947,7 @@ SHOULD BE:
                         ?>
                     </div>
                 </div>
+
                 <h2 class='ui header hidden'><?= $MSG_Description ?></h2>
                 <div class='ui hidden' v-html="description"></div>
                 <h2 class='ui header hidden'><?= $MSG_Input ?></h2>
@@ -827,10 +956,10 @@ SHOULD BE:
                 <div class='ui hidden' v-html="output"></div>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Input ?></h2>
                 <pre class='ui bottom attached segment hidden sample_input' v-text='sampleinput'><span
-                            class=sampledata><?= ($sinput) ?></span></pre>
+                            class=sampledata></span></pre>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Output ?></h2>
                 <pre class='ui bottom attached segment hidden sample_output' v-text='sampleoutput'><span
-                            class=sampledata><?= ($soutput) ?></span></pre>
+                            class=sampledata></span></pre>
                 <h2 class='ui header hidden'><?= $MSG_HINT ?></h2>
                 <div class='ui hidden' v-html="hint"></div>
                 <h2 class='ui header hidden'><?= $MSG_Source ?></h2>

@@ -190,6 +190,11 @@ foreach ($ss as $k => $v) {
                                     } else {
                                         echo "普通用户";
                                     } ?></a>
+                                    <i class="user circle outline icon"></i><a class="group">
+                                        <?php if($_SESSION["user_id"] == "2016011253"){ ?>
+                                        系统开发/维护
+                                        <?php } ?>
+                                    </a>
                                 <?php
                                 $result = $database->select("acm_member","level", ["user_id" => $user]);
                                 if (count($result) > 0) {

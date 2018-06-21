@@ -47,19 +47,23 @@
                    <a v-if="row.sim" :href="'comparesource.php?left='+row.solution_id+'&right='+row.sim_id" v-cloak :class="answer_class[row.result]"><br>
                    {{(Boolean(row.sim) === false?'':row.sim_id+' ('+row.sim+'%)')}}
                    </a>
-                   <a :class="answer_class[row.result]" v-if="row.result !== 4 && row.pass_rate > 0.05"><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>Passed:{{(row.pass_rate*100).toString().substring(0,3)}}%</a>
+                   <a :class="answer_class[row.result]" v-if="row.result !== 4 && row.pass_rate > 0.05"><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>Passed:{{(row.pass_rate*100).toString().substring(0,4)}}%</a>
 
             </td>
             <td>
-                <div id=center>{{memory_parse(row.memory)}}<br>{{time_parse(row.time)}}</div>
-            </td>
-            <td><a v-if="self === row.user_id || isadmin" target=_blank :href="'showsource.php?'+(row.oj_name === 'local'?'':'h')+'id='+row.solution_id">{{language_name[row.oj_name.toLowerCase()][row.language]}}</a>
-                <span v-else>{{language_name[row.oj_name.toLowerCase()][row.language]}}</span>
-                <span v-if="(self === row.user_id || isadmin) && row.problem_id"> / </span>
-                <a v-if="(self === row.user_id || isadmin) && row.problem_id" target="_blank"
-                   :href="(row.oj_name === 'local'?'new':row.oj_name.toLowerCase())+'submitpage.php?cid='+row.contest_id+'&pid='+row.num+'&sid='+row.solution_id">Edit</a>
+                <div id=center>
+                <span class="boldstatus">{{memory_parse(row.memory)}}</span>
                 <br>
-                {{row.length}}B
+                <span class="boldstatus">{{time_parse(row.time)}}</span></div>
+            </td>
+            <td><a class="boldstatus" v-if="self === row.user_id || isadmin" target=_blank :href="'showsource.php?'+(row.oj_name === 'local'?'':'h')+'id='+row.solution_id">查看</a>
+                <span class="boldstatus" v-else>{{language_name[row.oj_name.toLowerCase()][row.language]}}</span>
+                <span v-if="(self === row.user_id || isadmin) && row.problem_id"> / </span>
+                <a class="boldstatus" v-if="(self === row.user_id || isadmin) && row.problem_id" target="_blank"
+                   :href="(row.oj_name === 'local'?'new':row.oj_name.toLowerCase())+'submitpage.php?cid='+row.contest_id+'&pid='+row.num+'&sid='+row.solution_id">编辑</a>
+                <br>
+                <span class="boldstatus" v-if="self === row.user_id || isadmin">{{language_name[row.oj_name.toLowerCase()][row.language]}}</span> / 
+                <span class="boldstatus">{{row.length}}B</span>
             </td>
             <td class='need_to_be_rendered' :datetime="row.in_date">{{new Date(row.in_date).toLocaleString()}}</td>
             <td>{{row.judger}}</td>

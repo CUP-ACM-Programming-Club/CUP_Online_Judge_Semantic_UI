@@ -44,8 +44,7 @@ if (isset($_SESSION['user_id'])) {
             var a = document.getElementById("user_id").value;
             var b = document.getElementById("password").value;
             var c = document.getElementById("vcode").value;
-            var asypost;
-            var arr = [];
+            var arr = {};
             var response;
             arr.user_id = a;
             arr.password = b;
@@ -57,7 +56,6 @@ if (isset($_SESSION['user_id'])) {
                 vcode: c,
                 authcode:"<?=$authcode?>"
             };
-            //$.post("/api/login/token","token="+Base64.encode(JSON.stringify(obj)));
             jsonstring = JSON.stringify(obj);
             <?php } else{?>
             var obj = {
@@ -68,24 +66,16 @@ if (isset($_SESSION['user_id'])) {
             jsonstring = JSON.stringify(obj);
             <?php }?>
             $.post("/api/login","msg=" + Base64.encode(Base64.encode(jsonstring)));
-            if (window.XMLHttpRequest) {
-                asypost = new XMLHttpRequest();
-            } else {
-                asypost = new ActiveXObject("Microsoft.XMLHTTP");
-            }
             var send={
                 msg:Base64.encode(Base64.encode(jsonstring)),
                 csrf:"<?=$token?>"
             }
             console.log(send);
             $.post("login.php",send,function(response){
-                <?php if(isset($_SESSION['administrator'])){ ?>
-                    console.log(response);
-                    <?php } ?>
                     $(".ui.fluid.large.teal.button").removeClass("loading");
                     if (response === "true") {
                         //window.session=Base64.encode(Base64.encode(jsonstring);
-                        $(".ui.error.message").html("");
+                        $(".ui.error.message").html("").hide();
                         $.post("/api/login/newpassword","user_id="+$("#user_id").val()+"&password="+$("#password").val());
                         var timetick = setTimeout(function () {
                            location.href="/";
@@ -93,24 +83,15 @@ if (isset($_SESSION['user_id'])) {
                     }
                     else if (response == "vcode false") {
                         $(".ui.error.message").html("验证码错误!").show();
+                        $(".ui.middle.aligned.center.aligned.grid .column").transition("shake")
                         document.getElementById('vcode_graph').src = 'vcode.php?' + Math.random();
                     }
                     else {
                         document.getElementById('vcode_graph').src = 'vcode.php?' + Math.random();
+                        $(".ui.middle.aligned.center.aligned.grid .column").transition("shake")
                         $(".ui.error.message").html("账号或密码错误！<a href='lostpassword.php'>找回密码</a>").show();
                     }
             })
-            /*
-            asypost.onreadystatechange = function () {
-                if (asypost.readyState === 4 && asypost.status === 200) {
-                    //response = asypost.responseText;
-                    
-                }
-            };
-            console.log(jsonstring);
-            asypost.open("POST", "login.php", true);
-            asypost.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            asypost.send("msg=" + Base64.encode(Base64.encode(jsonstring))+"&csrf=<?=$token?>");*/
         }
 
         function enterpress(e) {

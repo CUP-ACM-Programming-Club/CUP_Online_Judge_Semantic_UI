@@ -115,6 +115,7 @@
                         <a :href="'newsubmitpage.php?id='+row.problem_id+'&js'" target="_blank">
                             {{row.title}}
                         </a>
+                        <sub v-if="row.new">New</sub>
                         <div class="show_tag_controled" style="float:right;">
                     <span class="ui header" v-for="_tag in row.label">
                         <a @click="tag(_tag,$event)" v-show="show_tag"
@@ -148,7 +149,8 @@
         <h2 class="ui dividing header">
             Problem Set
             <div class="sub header" v-cloak>
-                共{{total||0}}题
+                共开放{{total||0}}题 
+                {{recent_one_month !== -1 && (!label) && (!search_tag) ? "最近一个月添加" + recent_one_month + "题" : "" }}
             </div>
         </h2>
         <div class="ui grid">
@@ -450,6 +452,7 @@
                 show_tag: localStorage.getItem("show_tag") === 'true',
                 page_cnt: query_string.page_cnt || 50,
                 total: 0,
+                recent_one_month: -1,
                 hide_currect: localStorage.getItem("hide_currect") === 'true',
                 show_label_cloud: localStorage.getItem("show_label_cloud") === 'true',
                 chart: undefined,
@@ -499,6 +502,9 @@
                         this.page_cnt = _t.step;
                         this.total = _t.total;
                         this.table = _t;
+                        if(_t.recent_one_month) {
+                            this.recent_one_month = _t.recent_one_month;
+                        }
                     }
                 }
             },

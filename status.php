@@ -57,15 +57,16 @@
             <td v-if="isadmin"><a v-if="row.contest_id" :href="'contest.php?cid='+row.contest_id">{{row.contest_id}}</a><span
                     v-else>无</span></td>
             <td>
-                <div id=center>{{memory_parse(row.memory)}}<br>{{time_parse(row.time)}}</div>
+                <div><span class="boldstatus">{{memory_parse(row.memory)}}</span><br><span class="boldstatus">{{time_parse(row.time)}}</span></div>
             </td>
-            <td><a v-if="self === row.user_id || isadmin || row.share == 1" target=_blank :href="'showsource.php?id='+row.solution_id">{{language_name[row.language]}}</a>
+            <td><a class="boldstatus" v-if="self === row.user_id || isadmin || row.share == 1" target=_blank :href="'showsource.php?id='+row.solution_id">查看</a>
                 <span v-else>{{language_name[row.language]}}</span>
                 <span v-if="(self === row.user_id || isadmin || row.share == 1) && row.problem_id"> / </span>
-                <a v-if="(self === row.user_id || isadmin || row.share == 1) && row.problem_id" target="_blank"
-                   :href="'newsubmitpage.php?id='+Math.abs(row.problem_id)+'&sid='+Math.abs(row.solution_id)">Edit</a>
+                <a class="boldstatus" v-if="(self === row.user_id || isadmin || row.share == 1) && row.problem_id" target="_blank"
+                   :href="'newsubmitpage.php?id='+Math.abs(row.problem_id)+'&sid='+Math.abs(row.solution_id)">编辑</a>
                 <br>
-                {{row.length}}B
+                <span class="boldstatus" v-if="(self === row.user_id || isadmin || row.share == 1)">{{language_name[row.language]}} / </span>
+                <span class="boldstatus">{{row.length}}B</span>
             </td>
             <td class='need_to_be_rendered' :datetime="row.in_date">{{new Date(row.in_date).toLocaleString()}}<br>{{row.judger}}</td>
         </tr>
