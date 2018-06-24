@@ -19,44 +19,80 @@
     <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+        .full.segment{
+            height:100%;
+        }
+        .black{
+            color: black;
+        }
+    </style>
 </head>
 
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php") ?>
-<div class="container">
     <!-- Main component for a primary marketing message or call to action -->
-    <div class="ui container padding">
+<div class="ui container padding" v-cloak>
         <h2 class="ui dividing header">Discuss</h2>
+        <div class="ui breadcrumb">
+        <a class="section" href="/discuss.php">讨论主页</a>
+        <i class="right angle icon divider"></i>
+        <div class="active section">Discuss ID:{{id}}</div>
+        </div>
+        <h1>{{thread_head.title}}</h1>
         <div class="ui grid">
-            <div class="row">
-                <div class="thirteen wide column">
-                    
-                </div>
-                <div class="three wide right aligned column">
-                    <a href="/discuss_add.php" target="_blank" class="ui labeled icon blue mini button">
-                        <i class="write icon"></i>
-                        Post
-                        </a>
-                </div>
-            </div>
-            <div class="row">
-                <div id="word-cloud">
-                    
-                </div>
-            </div>
+                <div class="four wide column">
+                <div class="ui link card">
+    <div class="image">
+      <img v-if="thread_head.avatar === 1" :src="'../avatar/'+thread_head.user_id+'.jpg'">
+      <img v-else src="../assets/images/wireframe/white-image.png">
     </div>
-    <table class="ui very basic center aligned table">
-        <thead>
-            <th width="5%">ID</th>
-            <th width="60%">Title</th>
-            <th>Author</th>
-            <th>Create Time</th>
-            <th>Modify Time</th>
-        </thead>
-        <tbody v-html="table">
-            
-        </tbody>
-    </table>
+    <div class="content">
+      <div class="header"><a class="black" :href="'userinfo.php?user='+thread_head.user_id" target="_blank">{{thread_head.nick}}</a></div>
+      <div class="meta">
+        <a :href="'userinfo.php?user='+thread_head.user_id" target="_blank">{{thread_head.user_id}}</a>
+      </div>
+      <div class="description">
+        {{thread_head.biography}}
+      </div>
+    </div>
+    <div class="extra content">
+      <span class="right floated">
+        
+      </span>
+      <span>
+        <i class="user icon"></i>
+        Solved {{thread_head.solved}}
+      </span>
+    </div>
+  </div>
+              </div>
+              <div class="twelve wide column">
+                 <div class="ui existing full segment" v-html="thread_head.content">
+                 </div>
+              </div>
+      </div>
+      <h3 class="ui dividing header">Comments</h3>
+      <div class="ui comments">
+      <div class="comment" v-for="row in reply">
+    <a class="avatar" :href="'userinfo.php?user='+row.user_id">
+      <img v-if="row.avatar === 1" :src="'../avatar/'+row.user_id+'.jpg'">
+      <img v-else src="../assets/images/wireframe/white-image.png">
+    </a>
+    <div class="content">
+      <a class="author" :href="'userinfo.php?user='+row.user_id">{{row.nick}}</a>
+      <div class="metadata">
+        <span class="date">5 days ago</span>
+      </div>
+      <div class="text">
+        {{row.content}}
+      </div>
+      <div class="actions">
+        <a class="reply">Reply</a>
+      </div>
+    </div>
+  </div>
+  </div>
 </div> <!-- /container -->
 <script>
     window.discussTable = new Vue({
@@ -65,8 +101,29 @@
             var query_string = parseQueryString(window.location.hash.substring(1));
             return {
                 page:parseInt(query_string.page)||0,
-                table_val:[],
-                total:0
+                table_val:{},
+                total:0,
+                id:getParameterByName("id")||0,
+            }
+        },
+        computed:{
+            table:{
+                get:function(){
+                    return this.table_val;
+                },
+                set:function(val){
+                    this.table_val = val;
+                }
+            },
+            thread_head:function(){
+                var context = {
+                    title:""
+                };
+                _.assign(context,this.table_val.discuss_header_content);
+                return context;
+            },
+            reply:function(){
+                return this.table_val.discuss;
             }
         },
         created:function(){
@@ -75,42 +132,12 @@
         mounted:function(){
             var page = this.page * 20;
             var that = this;
-            $.get("/api/discuss?page="+page,function(data){
+            $.get("/api/discuss/"+this.id+"?page="+page,function(data){
                 that.table = data;
             });
         },
         methods:{
             
-        },
-        computed:{
-            table:{
-                get:function(){
-                    var val = [];
-                    var make_tr = function(val){
-                        return ["<td>",val,"</td>"].join("");
-                    }
-                    var make_user = function(user) {
-                        return make_tr(["<a href='userinfo.php?user=",user,"' target='_blank'>",user,"</a>"].join(""));
-                    }
-                    this.table_val.forEach(function(element){
-                        var content = [];
-                        content.push("<tr>");
-                        content.push(make_tr(element.article_id));
-                        content.push(make_tr(element.context));
-                        content.push(make_user(element.user_id));
-                        content.push(make_tr((new Date(element.create_time)).toLocaleString()));
-                        content.push(make_tr((new Date(element.edit_time)).toLocaleString()));
-                        content.push("</tr>");
-                        val.push(content.join(""));
-                    })
-                    //return val.join("");
-                    return "";
-                },
-                set:function(data){
-                    this.total = parseInt(data.total);
-                    this.table_val = data.discuss;
-                }
-            }
         }
     })
 </script>

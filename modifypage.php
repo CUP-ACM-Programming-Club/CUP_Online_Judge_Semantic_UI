@@ -67,7 +67,7 @@
             <div class="three fields">
                 <div class="field">
                     <label>Old Password</label>
-                    <input name="opassword" size=20 type=password>
+                    <input name="opassword" size=20 type=password placeholder="请输入密码后更改其他信息">
                 </div>
                 <div class="field">
                     <label>New Password</label>
@@ -126,6 +126,11 @@
                     <input name="github" type="text" value="<?=$row["github"]?>">
                 </div>
             </div>
+
+                <div class="field">
+                    <label>Biography</label>
+                    <input name="biography" type="text" value="<?=$row["biography"]?>">
+                </div>
             <div class="fields">
                 <div class="field">
                     <label></label>

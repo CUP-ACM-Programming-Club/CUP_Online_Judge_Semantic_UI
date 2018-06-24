@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title><?php echo $OJ_NAME ?></title>
+    <title>Ranklist -- <?php echo $OJ_NAME ?></title>
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <style>
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 </div>
-                <div class="seven wide column">
+                <div class="seven wide column  center aligned">
                 <a :class="'ui blue mini button '+(time_stamp === 'D'?'disabled':'')" @click="timestamp('D',$event)">Day</a>
                 <a :class="'ui blue mini button '+(time_stamp === 'W'?'disabled':'')" @click="timestamp('W',$event)">Week</a>
                 <a :class="'ui blue mini button '+(time_stamp === 'M'?'disabled':'')" @click="timestamp('M',$event)">Month</a>
@@ -73,14 +73,15 @@
     <table style="width:100%" class="ui padded borderless selectable table">
     <thead>
         <tr>
-            <th width="5%" class="center head">{{_name.rank}}</th>
+            <th width="7%" class="center head">{{_name.rank}}</th>
             <th width="10%" class="center head"><b>{{_name.user}}</b></th>
             <th width="3%"></th>
-            <th width="32%"><b>{{_name.nick}}</b></th>
-            <th width="7%"><b>{{_name.accept}}</b></th>
-            <th width="7%"><b>{{_name.vjudge_accept}}</b></th>
+            <th width="15%"><b>{{_name.nick}}</b></th>
+            <th width="55%"></th>
+            <th width="10%"  class="center head"><b>{{_name.accept}}</b></th>
+            <!--<th width="7%"><b>{{_name.vjudge_accept}}</b></th>
             <th width="7%"><b>{{_name.submit}}</b></th>
-            <th width="7%"><b>{{_name.ratio}}</b></th>
+            <th width="7%"><b>{{_name.ratio}}</b></th>-->
         </tr>
     </thead>
     <tbody>
@@ -93,10 +94,11 @@
             <td>
                     {{row.nick}}
             </td>
-            <td><a :href="'status.php?user_id='+row.user_id+'&jresult=4'">{{row.solved||0}}</a></td>
-            <td><a :href="'hdu_status.php?user_id='+row.user_id+'&jresult=4'">{{row.vjudge_solved||0}}</a></td>
+            <td class="center head">{{row.biography}}</td>
+            <td class="center head"><a :href="'status.php?user_id='+row.user_id+'&jresult=4'">{{row.solved||0}}</a></td>
+            <!--<td><a :href="'hdu_status.php?user_id='+row.user_id+'&jresult=4'">{{row.vjudge_solved||0}}</a></td>
             <td><a :href="'status.php?user_id='+row.user_id">{{row.submit||0}}</a></td>
-            <td>{{(((row.solved*100/(row.submit||0)||0)).toString().substring(0,5)+"%")}}</td>
+            <td>{{(((row.solved*100/(row.submit||0)||0)).toString().substring(0,5)+"%")}}</td>-->
         </tr>
     </tbody>
 </table>

@@ -61,7 +61,7 @@
             padding-top:0em;
             padding-bottom: 0em;
         }
-        img{
+        .main.submit.layout img{
             display: block;
             margin-left: auto;
             margin-right: auto;
@@ -85,7 +85,6 @@
 
         var loadVue = new Promise(function (resolve, reject) {
             $.get("/api/problem/local" + window.location.search, function (data) {
-                console.log(data);
                 if (data['status'] == "error") {
                     alert(data['statement']);
                     return;
@@ -198,7 +197,7 @@
                         switch_screen: function ($event) {
                             this.single_page = !this.single_page;
                             document.documentElement.scrollTop = 0;
-                            if(that.single_page) {
+                            if(this.single_page) {
                             $(".topmenu").css({
                                 borderBottom:"none",
                                 boxShadow:"none"
@@ -206,8 +205,8 @@
                         }
                         else {
                             $(".topmenu").css({
-                                borderBottom:"1px solid rgb(221, 221, 221)",
-                                boxShadow:"rgba(0, 0, 0, 0.04) 0px 2px 3px"
+                                borderBottom:"",
+                                boxShadow:""
                             });
                         }
                         },
@@ -229,7 +228,7 @@
                             var test_run_result = data["test_run_result"];
                             var compile_info = data["compile_info"];
                             var tb = window.document.getElementById('result');
-                            var loader = "<img width=18 src=image/loader.gif>";
+                            var loader = "<img style='inline-block' width=18 src=image/loader.gif>";
                             var tag = "span";
                             if (state < 4) tag = "span disabled=true";
                             else tag = "a";
@@ -490,7 +489,7 @@
                                 .modal('show')
                             ;
                             if (window.handler_interval) window.clearInterval(handler_interval);
-                            var loader = "<img width=18 src=image/loader.gif>";
+                            var loader = "<img style='display:inline-block' width=18 src=image/loader.gif>";
                             var tb = window.document.getElementById('result');
                             if (editor.getValue().length < 10) return alert("too short!");
                             tb.innerHTML = loader;
@@ -755,6 +754,20 @@
                         }
                     }
                 });
+                var copy_content = new Clipboard(".copy.context",{
+                        text: function (trigger) {
+                            return $($(trigger.getAttribute("data-clipboard-target"))[1]).text();
+                        }
+                        });
+                    copy_content.on("success",function(e){
+                    $(e.trigger)
+                    .popup({
+                        title   : 'Finished',
+                    content : 'Context is in your clipboard',
+                        on      : 'click'
+                     })
+                     .popup("show");
+                    })
                 <?php if(isset($_SESSION["administrator"])) { ?>
                 window.problemsubmitter = problemsubmitter;
                 <?php } ?>
@@ -853,7 +866,7 @@ SHOULD BE:
             </div>
         </div>
     </div>
-    <div>
+    <div class="main submit layout">
         <style type="text/css">
             .code {
                 width: 50%;
@@ -865,7 +878,7 @@ SHOULD BE:
         <!-- Main component for a primary marketing message or call to action -->
         <div v-show="single_page === true" class="ui container not-compile" v-cloak>
             <div class="not-compile">
-                <div class="following bar title" :style="(!bodyOnTop?'opacity:1;':'opacity:0;') + 'z-index:99'">
+                <div class="following bar title"  v-show="!bodyOnTop" :style="(!bodyOnTop?'opacity:1;':'opacity:0;') + 'z-index:99'">
                 <div :class="'ui vertical center aligned grid'">
                     <div class="row no padding">
                     <div :class="'sixteen wide center aligned column'">
@@ -955,11 +968,15 @@ SHOULD BE:
                 <h2 class='ui header hidden'><?= $MSG_Output ?></h2>
                 <div class='ui hidden' v-html="output"></div>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Input ?></h2>
-                <pre class='ui bottom attached segment hidden sample_input' v-text='sampleinput'><span
-                            class=sampledata></span></pre>
+                <div class="ui bottom attached segment hidden sample_input">
+                <div class="ui top attached label"><a data-clipboard-target=".sample_input" class="copy context">Copy Sample Input</a></div>
+                <pre v-text='sampleinput.trim()'></pre>
+                            </div>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Output ?></h2>
-                <pre class='ui bottom attached segment hidden sample_output' v-text='sampleoutput'><span
-                            class=sampledata></span></pre>
+                <div class="ui bottom attached segment hidden">
+                    <div class="ui top attached label"><a data-clipboard-target=".sample_output" class="copy context">Copy Sample Output</a></div>
+                <pre class='sample_output' v-text='sampleoutput.trim()'></pre>
+                </div>
                 <h2 class='ui header hidden'><?= $MSG_HINT ?></h2>
                 <div class='ui hidden' v-html="hint"></div>
                 <h2 class='ui header hidden'><?= $MSG_Source ?></h2>
@@ -1020,16 +1037,23 @@ SHOULD BE:
                     </div>
                     <div class='title'><?= $MSG_Output ?><i class="dropdown icon"></i></div>
                     <div class='content' id='problem_output' v-html="output"></div>
-                    <div class='title'><?= $MSG_Sample_Input ?><i class="dropdown icon"></i></div>
+                    <div class='title'><?= $MSG_Sample_Input ?><i class="dropdown icon"></i>
+                    </div>
                     <div class='content'>
-                            <pre class='ui bottom attached segment'><span id='problem_sample_input' class='sample_input'
+                        <div class="ui bottom attached segment">
+                            <div class="ui top attached label"><a data-clipboard-target=".sample_input" class="copy context">Copy Sample Input</a></div>
+                            <pre><span id='problem_sample_input' class='sample_input'
                                                                           v-text='sampleinput'></span></pre>
+                                                                          </div>
                     </div>
                     <div class='title'><?= $MSG_Sample_Output ?><i class="dropdown icon"></i></div>
                     <div class='content'>
-                            <pre class='ui bottom attached segment'><span id='problem_sample_output'
+                    <div class="ui bottom attached segment">
+                        <div class="ui top attached label"><a data-clipboard-target=".sample_output" class="copy context">Copy Sample Output</a></div>
+                            <pre><span id='problem_sample_output'
                                                                           class='sample_output'
                                                                           v-text='sampleoutput'></span></pre>
+                            </div>
                     </div>
                     <div class='title'><?= $MSG_HINT ?><i class="dropdown icon"></i></div>
                     <div class='content' v-html="hint">
@@ -1205,7 +1229,7 @@ SHOULD BE:
                                 var tb = window.document.getElementById('result');
                                 var r = xmlhttp.responseText;
                                 var ra = r.split(",");
-                                var loader = "<img width=18 src=image/loader.gif>";
+                                var loader = "<img style='display:inline-block' width=18 src=image/loader.gif>";
                                 var tag = "span";
                                 if (ra[0] < 4) tag = "span disabled=true";
                                 else tag = "a";
@@ -1323,7 +1347,7 @@ SHOULD BE:
                             }
                         })
                     }
-
+                    
                     console.timeEnd("function");
                 </script>
                 <div id="clipcp" style="display:none"></div>

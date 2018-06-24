@@ -77,6 +77,21 @@
         <canvas id="chart-area" />
     </div>
               </div>
+              <div class="ui piled segment">
+                      <div id="bar_chart_language_legend" align="center">
+                   </div>
+                  <div id="bar-holder" style="width:100%" align="center">
+                    <canvas id="bar-area" />
+                    </div>
+              </div>
+              <div class="ui piled segment">
+                  <div id="memory_bar_chart_language_legend" align="center">
+                      
+                  </div>
+                  <div id="memory_bar_holder" style="width:100%" align="center">
+                      <canvas id="memory_bar_area" />
+                  </div>
+              </div>
           <div class="ui grid">
               <div class="eight wide column">
                   
@@ -146,7 +161,9 @@
                 current_page:parseInt(getParameterByName("page")||0),
                 language_name:[],
                 isadmin:false,
-                self:""
+                self:"",
+                time_range:{},
+                memory_range:{}
             }
         },
         computed:{
@@ -162,7 +179,9 @@
                         total_status:this.problem_submit_stat,
                         color:["black","black","black","green","red","yellow","yellow","yellow","yellow","yellow","yellow","yellow","","",""],
                         statistic_name:this.stat_name,
-                        language_name:this.language_name
+                        language_name:this.language_name,
+                        time_range:this.time_range,
+                        memory_range:this.memory_range
                     }
                 },
                 set: function(val){
@@ -174,6 +193,8 @@
                     this.language_name = val.data.language_name;
                     this.isadmin = val.data.isadmin;
                     this.owner = val.data.self;
+                    this.time_range = val.data.time_range;
+                    this.memory_range = val.data.memory_range;
                 }
             }
         },
@@ -201,6 +222,8 @@
         },
         mounted:function(){
             var that = this;
+            var current_title = $("title").text();
+            $("title").text("Status:Problem "+this.pid +" - "+current_title);
             this.current_page = Math.max(0,this.current_page-1);
             $.get("../api/problemstatus/"+this.pid+"?page="+this.current_page,function(data){
                 if(data.status == "OK") {
@@ -218,22 +241,154 @@
                 colors.push("#00b5ad");
                 colors.push("#350ae8");
                 colors.push("#E2EAE9");
+                var ncolor = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC'];
+                _.forEach(ncolor,function(val){
+                    colors.push(val);
+                })
                     var config = {
         type: 'pie',
         data: {
             datasets: [{
-                data: _.map(that.submitStatus.problem_status,(val,index)=>{return val}),
+                data: _.map(that.submitStatus.problem_status,function(val,index){return val}),
                 backgroundColor: colors,
                 label: 'Status'
             }],
-            labels: _.map(that.submitStatus.problem_status,(val,index)=>{return that.submitStatus.statistic_name[index]})
+            labels: _.map(that.submitStatus.problem_status,function(val,index){return that.submitStatus.statistic_name[index]})
         },
         options: {
             responsive: true
         }
     };
+                var lang = {};
+                var labels = {};
+                _.forEach(that.submitStatus.time_range,function(val,index){
+                    labels[val.diff] = true;
+                    lang[val.language] = {};
+                })
+                labels = _.map(labels,function(val,index){
+                    var arr = index.split("-");
+                    return arr[0] + "ms - " + arr[1] + "ms";
+                });
+                labels.sort(function(a,b){
+                    var s = parseFloat(a.split("-")[0]);
+                    var t = parseFloat(b.split("-")[0]);
+                    return s-t;
+                })
+                _.forEach(lang,function(val,index){
+                    _.forEach(labels,function(v,idx){
+                        lang[index][v] = 0;
+                    })
+                })
+                
+                _.forEach(that.submitStatus.time_range,function(val,index){
+                    var arr = val.diff.split("-");
+                    var diffstr =  arr[0] + "ms - " + arr[1] + "ms";
+                    lang[val.language][diffstr] = val.total;
+                })
+                var _colors = _.map(colors,function(val){return val;});
+                var config2 = {
+                    type: 'bar',
+                    labels:labels,
+                    datasets:_.map(lang,function(val,index){
+                            return {
+                                label: that.submitStatus.language_name[index],
+                                backgroundColor: _colors.shift(),
+                                data:_.values(val)
+                        }
+                    })
+                }
+                var mlabels = {};
+                var mlang = {};
+                _colors = _.map(colors,function(val){return val;});
+                _.forEach(that.submitStatus.memory_range,function(val,index){
+                    mlabels[val.diff] = true;
+                    mlang[val.language] = {};
+                })
+                mlabels = _.map(mlabels,function(val,index){
+                    var arr = index.split("-");
+                    arr[0] = (parseFloat(arr[0]) / 1024).toFixed(2);
+                    arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
+                    return arr[0] + "MB - " + arr[1] + "MB";
+                })
+                mlabels.sort(function(a,b){
+                    var s = parseFloat(a.split("-")[0]);
+                    var t = parseFloat(b.split("-")[0]);
+                    return s - t;
+                })
+                _.forEach(mlang,function(val,index){
+                    _.forEach(mlabels,function(v,idx){
+                        mlang[index][v] = 0;
+                    })
+                })
+                
+                _.forEach(that.submitStatus.memory_range,function(val,index){
+                    var arr = val.diff.split("-");
+                    arr[0] = (parseFloat(arr[0]) / 1024).toFixed(2);
+                    arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
+                    var diffstr =  arr[0] + "MB - " + arr[1] + "MB";
+                    mlang[val.language][diffstr] = val.total;
+                })
+                var config3 = {
+                    type: 'bar',
+                    labels:mlabels,
+                    datasets:_.map(mlang,function(val,index){
+                            return {
+                                label: that.submitStatus.language_name[index],
+                                backgroundColor: _colors.shift(),
+                                data:_.values(val)
+                        }
+                    })
+                }
                 var ctx = document.getElementById("chart-area").getContext("2d");
                 window.myPie = new Chart(ctx, config);
+                var btx = document.getElementById("bar-area").getContext("2d");
+                var mtx = document.getElementById("memory_bar_area").getContext("2d");
+                window.myBar = new Chart(btx, {
+				type: 'bar',
+				data: config2,
+				options: {
+					title: {
+						display: true,
+						text: 'AC代码运行用时'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: true
+					},
+					responsive: true,
+					scales: {
+						xAxes: [{
+							stacked: true,
+						}],
+						yAxes: [{
+							stacked: true
+						}]
+					}
+				}
+			});
+			window.myMemory = new Chart(mtx, {
+				type: 'bar',
+				data: config3,
+				options: {
+					title: {
+						display: true,
+						text: 'AC代码内存使用'
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false
+					},
+					responsive: true,
+					scales: {
+						xAxes: [{
+							stacked: true,
+						}],
+						yAxes: [{
+							stacked: true
+						}]
+					}
+				}
+			});
             })
         }
     })

@@ -99,7 +99,7 @@
                         var content = [];
                         content.push("<tr>");
                         content.push(make_tr(element.article_id));
-                        content.push(make_context(element.article_id,element.context));
+                        content.push(make_context(element.article_id,element.title));
                         content.push(make_user(element.user_id));
                         content.push(make_tr((new Date(element.create_time)).toLocaleString()));
                         content.push(make_tr((new Date(element.edit_time)).toLocaleString()));
