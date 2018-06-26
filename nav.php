@@ -12,7 +12,7 @@ if($OJ_CONTEST_MODE&&!isset($_SESSION['administrator']))
 $suffix="?my";
 ?>
 <!--<canvas class="fireworks" style="z-index:-999"></canvas>-->
-<div class="following bar topmenu" style="z-index:99">
+<div class="following bar topmenu" style="z-index:900">
 <div class="ui <?=isset($homepage)?"inverted":""?> borderless network secondary menu" id="navbar-large">
     <div class="ui container">
         <div class="msg header item">

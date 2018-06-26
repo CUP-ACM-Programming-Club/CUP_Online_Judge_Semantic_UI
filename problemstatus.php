@@ -267,7 +267,10 @@
                 })
                 labels = _.map(labels,function(val,index){
                     var arr = index.split("-");
-                    return arr[0] + "ms - " + arr[1] + "ms";
+                    var str = arr[0] + "ms";
+                    if(arr.length > 1)
+                        str += " - " + arr[1] + "ms";
+                    return str;
                 });
                 labels.sort(function(a,b){
                     var s = parseFloat(a.split("-")[0]);
@@ -282,7 +285,10 @@
                 
                 _.forEach(that.submitStatus.time_range,function(val,index){
                     var arr = val.diff.split("-");
-                    var diffstr =  arr[0] + "ms - " + arr[1] + "ms";
+                    var diffstr =  arr[0] + "ms";
+                    if(arr.length > 1) {
+                        diffstr += " - " + arr[1] + "ms";
+                    }
                     lang[val.language][diffstr] = val.total;
                 })
                 var _colors = _.map(colors,function(val){return val;});
@@ -307,8 +313,12 @@
                 mlabels = _.map(mlabels,function(val,index){
                     var arr = index.split("-");
                     arr[0] = (parseFloat(arr[0]) / 1024).toFixed(2);
-                    arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
-                    return arr[0] + "MB - " + arr[1] + "MB";
+                    if(arr.length > 1)
+                        arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
+                    var str = arr[0] + "MB";
+                    if(arr.length > 1)
+                        str += " - " + arr[1] + "MB";
+                    return str;
                 })
                 mlabels.sort(function(a,b){
                     var s = parseFloat(a.split("-")[0]);
@@ -324,8 +334,11 @@
                 _.forEach(that.submitStatus.memory_range,function(val,index){
                     var arr = val.diff.split("-");
                     arr[0] = (parseFloat(arr[0]) / 1024).toFixed(2);
-                    arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
-                    var diffstr =  arr[0] + "MB - " + arr[1] + "MB";
+                    if (arr.length > 1)
+                        arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
+                    var diffstr =  arr[0] + "MB";
+                    if (arr.length > 1)
+                        diffstr +=  " - " + arr[1] + "MB";
                     mlang[val.language][diffstr] = val.total;
                 })
                 var config3 = {

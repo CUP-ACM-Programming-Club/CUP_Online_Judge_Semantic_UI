@@ -308,7 +308,7 @@ include("csrf.php");
 var segmentSize = parseInt($(".ui.container.padding").css("height"))
 if(segmentSize < window.innerHeight - 300) {
 $(".ui.container.padding").css({
-    height:window.innerHeight
+    minHeight:window.innerHeight
 })
 }
     function list_online() {

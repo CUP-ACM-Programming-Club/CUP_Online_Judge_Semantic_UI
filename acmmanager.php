@@ -21,13 +21,31 @@
 <?php include("template/$OJ_TEMPLATE/nav.php");?>
 <div class="pusher">
     <!-- Main component for a primary marketing message or call to action -->
-    <div class="padding ui container">
-        <div class="ui three column grid center aligned">
-            <div class="fifteen wide column center aligned">
-                <h2>ACM Rating Board</h2>
-                <h4>10分钟更新一次榜单</h4>
-                <h4>数据暂不完整</h4>
+    <div class="padding container">
+                <h2 class="ui header center aligned">ACM Rating Board</h2>
+                <h4 class="ui header center aligned">10分钟更新一次榜单</h4>
+        <div class="ui two column grid center aligned">
+            <div class="eight wide column center aligned">
+                
                 <?php echo $view_table; ?>
+            </div>
+            <div class="seven wide column center aligned">
+                <table id="acmsubmit" class="ui fixed single line celled table center aligned" v-cloak>
+                    <thead>
+                        <th width="20%">用户名</th>
+                        <th width="20%">昵称</th>
+                        <th>题目</th>
+                        <th>提交时间</th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="row in table">
+                            <td>{{row.user_id}}</td>
+                            <td><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{row.nick}}</a></td>
+                            <td><a target="_blank" :href="getProblemSource(row.oj_name,row.problem_id)">{{row.oj_name+" "+row.problem_id}}</a></td>
+                            <td>{{new Date(row.time).toLocaleString()}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -38,6 +56,52 @@
 <!-- Placed at the end of the document so the pages load faster -->
 
 <script language="javascript" type="text/javascript" src="include/jquery.flot.js"></script>
-
+<script>
+$.get("../api/acmsubmit",function(d){
+    var acmsubmit = window.acm = new Vue({
+        el:"#acmsubmit",
+        data:{
+             table:d.data
+        },
+        computed:{
+            tables:{
+                get:function(){
+                    return {
+                        list:this.table
+                    }
+                },
+                set:function(val){
+                    this.table = val.splice(0);
+                }
+            }
+        },
+        methods:{
+            getProblemSource:function(oj,id) {
+                switch (oj.toUpperCase()) {
+                    case "LOCAL":
+                        return "/newsubmitpage.php?id="+id;
+                    case "HDU":
+                        return "http://acm.hdu.edu.cn/showproblem.php?pid="+id;
+                    case "POJ":
+                        return "http://poj.org/problem?id="+id;
+                    case "JSK":
+                        return "https://nanti.jisuanke.com/t/"+id;
+                    case "HUSTOJ_UPC":
+                        return "http://exam.upc.edu.cn/problem.php?id="+id;
+                    case "UVA":
+                        return "/uvasubmitpage.php?id="+id;
+                    case "ATCODER":
+                        return "https://vjudge.net/problem/AtCoder-"+id;
+                    default:
+                        return "javascript:void(0);";
+                }
+            }
+        },
+        mounted:function(){
+        }
+    })
+})
+    
+</script>
 </body>
 </html>
