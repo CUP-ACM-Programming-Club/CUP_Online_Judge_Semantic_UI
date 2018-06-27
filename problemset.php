@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>
     <!-- Site Properties -->
-    <title><?= $OJ_NAME ?> -- Problem Set</title>
-    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
+    <title>Problem Set -- <?= $OJ_NAME ?></title>
+    <?php include("template/semantic-ui/js.php"); ?>
     <script src="/js/dist/g2.min.js"></script>
     <script src="/js/dist/data-set.min.js"></script>
     <style>
@@ -75,18 +75,20 @@
             <!--<th width='2%'></th>-->
             <th width='10%' @click="sort('problem_id',$event)">
                 <a><i v-show="order_target == 'problem_id'"
-                      :class="'angle icon '+(order?'down':'up')"></i><?php echo $MSG_PROBLEM_ID ?>
-                      <i v-show="order_target == 'problem_id'"
-                      :class="'angle icon '+(order?'down':'up')" style="opacity: 0"></i></a></th>
-            <th width='60%' class="left aligned"><?php echo $MSG_TITLE ?></th>
-            <th width='13%'>
+                      :class="'sort numeric icon '+(order?'down':'up')"></i>
+                      <i v-show="order_target != 'problem_id'"
+                      :class="'sort numeric icon '+(order?'down':'up')" style="opacity: 0"></i>
+                      <?php echo $MSG_PROBLEM_ID ?>
+                      </a></th>
+            <th width='56%' class="left aligned"><?php echo $MSG_TITLE ?></th>
+            <th width='15%'>
                 <a @click="sort('accepted',$event,1)"><i v-show="order_target == 'accepted'"
-                                                         :class="'angle icon '+(order?'down':'up')"></i>正确
+                                                         :class="'sort numeric icon '+(order?'down':'up')"></i>正确
                 </a> / <a @click="sort('submit',$event,1)"><i v-show="order_target == 'submit'"
-                                                              :class="'angle icon '+(order?'down':'up')"></i><?= $MSG_SUBMIT ?>
+                                                              :class="'sort numeric icon '+(order?'down':'up')"></i><?= $MSG_SUBMIT ?>
                 </a></th>
-            <th style="cursor:hand" width='8%'><a @click="sort('present',$event,1)"><i
-                            v-show="order_target == 'present'" :class="'angle icon '+(order?'down':'up')"></i>正确率</a>
+            <th style="cursor:hand" width='10%'><a @click="sort('present',$event,1)"><i
+                            v-show="order_target == 'present'" :class="'sort numeric icon '+(order?'down':'up')"></i>正确率</a>
             </th>
         </tr>
         </thead>
@@ -103,12 +105,10 @@
                 <!--<td>
                 </td>-->
                 <td>
-                    <div class="center">
-                        {{row.problem_id}}
                         <i class="checkmark icon" v-if="row.ac == 1"></i>
                         <i class="remove icon" v-else-if="row.ac == 0"></i>
                         <i class="checkmark icon" style="opacity: 0" v-else></i>
-                    </div>
+                        {{row.problem_id}}
                 </td>
                 <td>
                     <div class="left aligned">
@@ -430,7 +430,11 @@
             $('.ui.sticky.element')
                 .sticky({
                     context: '#problemset',
-                    offset: 40
+                    offset: 40,
+                observeChanges: false,
+                continuous: false,
+                refreshOnLoad: true,
+                refreshOnResize: true,
                 })
             ;
         },

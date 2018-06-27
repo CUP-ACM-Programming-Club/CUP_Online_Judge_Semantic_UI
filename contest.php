@@ -28,6 +28,9 @@ $pass_st=["negative","","positive"];
 
     <!-- Main component for a primary marketing message or call to action -->
     <div class="padding ui container">
+        <h2 class="ui dividing header">
+            Contest Problem Set
+        </h2>
         <div class="ui grid">
             <div class="row">
                 <div class="eleven wide column">
@@ -67,7 +70,7 @@ $pass_st=["negative","","positive"];
             <div>
                 <div class="ui raised segment">
                     <h1></h1>
-                    <h2 class="ui header" style="text-align:center"> <i class="empty star icon"></i>Contest&nbsp;<?php echo $view_cid?></h2>
+                    <h2 class="ui header" style="text-align:center"> <i class="star outline icon"></i>Contest&nbsp;<?php echo $view_cid?></h2>
   <h2 class="ui header" style="text-align:center"><?php echo $view_title ?></h2>
   <center>
  <p><?php echo $view_description?></p>
