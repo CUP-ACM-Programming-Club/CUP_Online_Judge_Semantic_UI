@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title><?php echo $OJ_NAME ?> -- Status</title>
+    <title>Status -- <?=$OJ_NAME ?></title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
@@ -51,7 +51,7 @@
                    <a v-if="row.sim" :href="'comparesource.php?left='+row.solution_id+'&right='+row.sim_id" v-cloak :class="answer_class[row.result]">
                    {{(Boolean(row.sim) === false?'':row.sim_id+' ('+row.sim+'%)')}}
                    </a>
-                   <a :class="answer_class[row.result]" v-if="row.result !== 4 && row.pass_rate > 0.05"><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>Passed:{{(row.pass_rate*100).toString().substring(0,3)}}%</a>
+                   <a :class="answer_class[row.result]" v-if="row.result !== 4 && row.pass_rate > 0.05"><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>Passed:{{(row.pass_rate*100).toFixed(1)}}%</a>
 
             </td>
             <td v-if="isadmin"><a v-if="row.contest_id" :href="'contest.php?cid='+row.contest_id">{{row.contest_id}}</a><span
@@ -68,7 +68,7 @@
                 <span class="boldstatus" v-if="(self === row.user_id || isadmin || row.share == 1)">{{language_name[row.language]}} / </span>
                 <span class="boldstatus">{{row.length}}B</span>
             </td>
-            <td class='need_to_be_rendered' :datetime="row.in_date">{{new Date(row.in_date).toLocaleString()}}<br>{{row.judger}}</td>
+            <td class="need_popup" :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p>'">{{new Date(row.in_date).toLocaleString()}}<br>{{row.judger}}</td>
         </tr>
         </tbody>
     </table>
@@ -330,6 +330,50 @@
                     time /= 1000;
                 }
                 return time.toString().substring(0, 5) + unit[cnt];
+            },
+            detect_place: function(ip) {
+                var tmp = {
+                    intranet_ip:ip,
+                    place:""
+                };
+                if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰有线";
+                }
+                else if(tmp.intranet_ip == "202.204.193.82") {
+                    tmp.place = "网络中心出口";
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
+                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
+                    tmp.place = "机房";
+                }
+                else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰公寓Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.102\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "第三教学楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.103\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "地质楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.1[0-9]{2}\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "其他Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/172\.16\.[\s\S]+/)) {
+                    tmp.place = "VPN";
+                }
+                else if (tmp.intranet_ip && tmp.ip && tmp.intranet_ip != tmp.ip) {
+                    tmp.place = "外网";
+                }
+                else if (tmp.intranet_ip.match(/2001:[\s\S]+/)) {
+                    tmp.place = "IPv6";
+                }
+                else if (tmp.intranet_ip.match(/10\.3\.[\s\S]+/)) {
+                    tmp.place = "地质楼";
+                }
+                else {
+                    tmp.place = "未知";
+                }
+                return tmp.place;
             }
         },
         computed: {
@@ -493,6 +537,12 @@
                     that.dim = false;
                     that.search_func(data);
                 })
+        },
+        updated: function() {
+            $(".need_popup").popup({
+                    on: 'hover',
+                    positon: "top center"
+                });
         },
         mounted: function () {
             $.get("../api/status/graph",function(data){
