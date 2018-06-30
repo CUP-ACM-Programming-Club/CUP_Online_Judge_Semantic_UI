@@ -264,6 +264,8 @@
                             var pass_point = data["pass_point"];
                             var time = data["time"];
                             var memory = data["memory"];
+                            var sim = data.sim;
+                            var sim_s_id = data.sim_s_id;
                             var pass_rate = data["pass_rate"] * 100;
                             if (status > 3) {
                                 count = 0;
@@ -296,7 +298,11 @@
                             }
                             else if (status == 4) {
                                 //count=0;
-                                $("#progess_text").text(judge_result[status] + " 内存使用:" + memory + "KB 运行时间:" + time + "ms");
+                                var str = judge_result[status] + " 内存使用:" + memory + "KB 运行时间:" + time + "ms";
+                                if(sim) {
+                                    str += " 触发判重 与运行号: "+sim_s_id+"代码重复 重复率:"+sim+"%";
+                                }
+                                $("#progess_text").text(str);
                                 $('#progress').progress({
                                     percent: 100
                                 });

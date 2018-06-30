@@ -31,7 +31,7 @@
                 <?php echo $view_table; ?>
             </div>
             <div class="ten wide column center aligned">
-                <table id="acmsubmit" class="ui fixed single line celled table center aligned" v-cloak>
+                <table id="acmsubmit" class="ui fixed single line selectable celled table center aligned" v-cloak>
                     <thead>
                         <th width="18%" v-if="!current_person">用户名</th>
                         <th v-if="!current_person" width="13%">昵称</th>

@@ -39,7 +39,7 @@
             <td><a :href="'userinfo.php?user='+row.user_id">{{row.user_id}}<br>{{row.nick}}</a>
             </td>
             <td>
-                <div class=center><a :href="(row.oj_name === 'local'?'new':row.oj_name.toLowerCase())+'submitpage.php?cid='+row.contest_id+'&pid='+row.num">{{end?((row.oj_name === "local"?"":row.oj_name.toUpperCase())+row.problem_id):(problem_alpha[row.num])}}</a>
+                <div class=center><a :href="(row.oj_name === 'local'?'new':(!row.oj_name?'new':row.oj_name.toLowerCase()))+'submitpage.php?cid='+row.contest_id+'&pid='+row.num">{{end?((row.oj_name === "local"?"":row.oj_name.toUpperCase())+row.problem_id):(problem_alpha[row.num])}}</a>
                 </div>
             </td>
             <td><a :href="(row.result == 11?'ce':'re')+'info.php?sid='+row.solution_id"
@@ -56,13 +56,13 @@
                 <br>
                 <span class="boldstatus">{{time_parse(row.time)}}</span></div>
             </td>
-            <td><a class="boldstatus" v-if="self === row.user_id || isadmin" target=_blank :href="'showsource.php?'+(row.oj_name === 'local'?'':'h')+'id='+row.solution_id">查看</a>
-                <span class="boldstatus" v-else>{{language_name[row.oj_name.toLowerCase()][row.language]}}</span>
+            <td><a class="boldstatus" v-if="self === row.user_id || isadmin" target=_blank :href="'showsource.php?'+((!row.oj_name || row.oj_name === 'local')?'':'h')+'id='+row.solution_id">查看</a>
+                <span class="boldstatus" v-else>{{language_name[(!row.oj_name?'local':row.oj_name.toLowerCase())][row.language]}}</span>
                 <span v-if="(self === row.user_id || isadmin) && row.problem_id"> / </span>
                 <a class="boldstatus" v-if="(self === row.user_id || isadmin) && row.problem_id" target="_blank"
-                   :href="(row.oj_name === 'local'?'new':row.oj_name.toLowerCase())+'submitpage.php?cid='+row.contest_id+'&pid='+row.num+'&sid='+row.solution_id">编辑</a>
+                   :href="(row.oj_name === 'local'?'new':(!row.oj_name?'local':row.oj_name.toLowerCase()))+'submitpage.php?cid='+row.contest_id+'&pid='+row.num+'&sid='+row.solution_id">编辑</a>
                 <br>
-                <span class="boldstatus" v-if="self === row.user_id || isadmin">{{language_name[row.oj_name.toLowerCase()][row.language]}}</span> / 
+                <span class="boldstatus" v-if="self === row.user_id || isadmin">{{language_name[(!row.oj_name?'local':row.oj_name.toLowerCase())][row.language]}}</span> / 
                 <span class="boldstatus">{{row.length}}B</span>
             </td>
             <td>{{new Date(row.in_date).toLocaleString()}}</td>
@@ -376,6 +376,9 @@
                 return time.toString().substring(0, 5) + unit[cnt];
             },
             detect_place: function(ip) {
+                if(!ip) {
+                    return "未知";
+                }
                 var tmp = {
                     intranet_ip:ip,
                     place:""
@@ -627,18 +630,23 @@
             },
             submit: function (data) {
                 var obj = {};
+                if((!this.user_id || this.user_id === data.user_id)&&(!this.problem_result||data.val.result === this.problem_result) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt) {
                 obj.problem_id = Math.abs(data.val.id);
                 obj.solution_id = data.submission_id;
                 obj.nick = data.nick;
                 obj.user_id = data.user_id;
+                obj.contest_id = parseInt(data.contest_id);
+                obj.num = parseInt(data.num);
                 obj.length = data.val.source.length;
+                obj.sim = false;
                 obj.language = data.val.language;
                 obj.memory = obj.time = 0;
                 obj.in_date = new Date().toISOString();
-                obj.judger = "0号机";
+                obj.judger = "鹤望兰号";
                 obj.result = 0;
                 this.problem_list.pop();
                 this.problem_list.unshift(obj);
+                }
             },
             update: function (data) {
                 var solution_id = data.solution_id;
@@ -646,12 +654,20 @@
                 var time = data.time;
                 var memory = data.memory;
                 var pass_rate = data.pass_rate;
+                var contest_id = parseInt(data.contest_id);
+                var num = parseInt(data.num);
+                var sim = parseInt(data.sim);
+                var sim_s_id = parseInt(data.sim_s_id);
                 for (let i of this.problem_list) {
                     if (i.solution_id == solution_id) {
                         i.result = status;
                         i.time = time;
                         i.memory = memory;
                         i.pass_rate = pass_rate;
+                        i.contest_id = contest_id;
+                        i.num = num;
+                        i.sim = sim;
+                        i.sim_id = sim_s_id;
                         return;
                     }
                 }

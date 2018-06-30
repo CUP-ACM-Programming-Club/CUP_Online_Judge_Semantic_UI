@@ -22,7 +22,7 @@
             <th><div class="ui grid">
             <div class="three wide column"></div><div class="twelve wide column">{{target.user}}</div></div></th>
             <th>{{target.problem_id}}</th>
-            <th width="13%">{{target.result}}</th>
+            <th width="14%">{{target.result}}</th>
             <th v-if="isadmin">{{target.contest_id}}</th>
             <th>{{target.memory}}/{{target.time}}</th>
             <th>{{target.language}}/{{target.length}}</th>
@@ -332,6 +332,9 @@
                 return time.toString().substring(0, 5) + unit[cnt];
             },
             detect_place: function(ip) {
+                if(!ip) {
+                    return "未知";
+                }
                 var tmp = {
                     intranet_ip:ip,
                     place:""
@@ -483,6 +486,7 @@
                 })
             },
             submit: function (data) {
+                if((!this.user_id || this.user_id === data.user_id) && (this.problem_result === -1) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt) {
                 var obj = {};
                 obj.problem_id = Math.abs(data.val.id);
                 obj.solution_id = data.submission_id;
@@ -492,12 +496,13 @@
                 obj.language = data.val.language;
                 obj.memory = obj.time = 0;
                 obj.in_date = new Date().toISOString();
-                obj.judger = "0号机";
+                obj.judger = "鹤望兰号";
                 obj.result = 0
                 obj.sim = false;
                 obj.sim_id = null;
                 this.problem_list.pop();
                 this.problem_list.unshift(obj);
+                }
             },
             update: function (data) {
                 var solution_id = data.solution_id;
@@ -505,6 +510,7 @@
                 var time = data.time;
                 var memory = data.memory;
                 var pass_rate = data.pass_rate;
+                var sim = data.sim;
                 var that = this;
                 _.forEach(this.problem_list,function(val,key){
                     var i = that.problem_list[key];
@@ -512,8 +518,8 @@
                         i.result = status;
                         i.time = time;
                         i.memory = memory;
-                        i.sim = false;
-                        i.sim_id = null;
+                        i.sim = data.sim;
+                        i.sim_id = data.sim_s_id;
                         i.pass_rate = pass_rate;
                         return;
                     }
