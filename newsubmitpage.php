@@ -11,20 +11,17 @@
     <title>
     </title>
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>
-    <link href="/css/github-markdown.min.css" rel="stylesheet" type="text/css">
-    <link href="/js/styles/github.min.css" rel="stylesheet" type="text/css">
-    <link href="/template/semantic-ui/css/katex.min.css" rel="stylesheet">
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
     <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-language_tools.js" type="text/javascript"
             charset="utf-8"></script>
+    <script src="/js/markdown-it.js?ver=1.0.0"></script>
 
     <script src="ace-builds/src-min-noconflict/ext-error_marker.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-statusbar.js?ver=1.0" type="text/javascript"
             charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-emmet.js" type="text/javascript" charset="utf-8"></script>
-
     <script src="template/semantic-ui/js/cookie.js"></script>
     <script src="ace-builds/src-min-noconflict/ext-static_highlight.js"></script>
     <style>
@@ -69,7 +66,7 @@
     </style>
 </head>
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<?php include("template/semantic-ui/nav.php"); ?>
 
 <div class="main screen" v-cloak>
     <script>
@@ -143,13 +140,21 @@
                             confirm_text: "",
                             submitDisabled: false,
                             resume_time: 0,
-                            finished:false
+                            finished:false,
+                            current_prepend:"",
+                            current_append:""
                         };
                         if (id) {
                             _data.problem_id = d.problem_id;
                         }
                         else {
                             _data.problem_id = String.fromCharCode(parseInt(pid) + "A".charCodeAt(0));
+                        }
+                        if(_data.prepend && _data.prepend[_data.selected_language]) {
+                            _data.current_prepend = _data.prepend[_data.selected_language];
+                        }
+                        if(_data.append && _data.append[_data.selected_language]) {
+                            _data.current_append = _data.append[_data.selected_language];
                         }
                         $("title").html(_data.problem_id + ":" + _data._title + " -- CUP Online Judge");
                         return _data;
@@ -178,7 +183,111 @@
                             return result;
                         }
                     },
+                    watch: {
+                        selected_language: function(newVal,oldVal) {
+                            if(newVal === oldVal) {
+                                return;
+                            }
+                            this.initHighlight();
+                            var $value = newVal;
+                            localStorage.setItem("lastlang", $value);
+                            $("#language").dropdown("set selected", $value.toString())
+                            this.selected_language = $value;
+                            var editor = window.editor;
+                            var langn = $value;
+                            var file_n = language_ext[langn];
+                            editor.getSession().setMode("ace/mode/" + language[langn]);
+                            var prepend = this.prepend;
+                            var append = this.append;
+                            if(prepend && prepend[newVal]!==this.current_prepend) {
+                                console.log("change");
+                                this.current_prepend = prepend[newVal];
+                            }
+                            if(append && append[newVal]!==this.current_append) {
+                                this.current_append = append[newVal];
+                            }
+                        },
+                        current_append: function(newVal,oldVal) {
+                            this.initHighlight();
+                            var highlight = this.highlight;
+                            var dom = this.aceDom;
+                            this.$nextTick(function(){
+                                _.forEach(qsa(".append.code"),function(val,index){
+                                    highlight(val, {
+                                mode: val.getAttribute("ace-mode"),
+                                theme: val.getAttribute("ace-theme"),
+                                startLineNumber: 1,
+                                showGutter: val.getAttribute("ace-gutter"),
+                                trim: true
+                            }, function (highlighted) {});
+                                });
+                            })
+                            
+                        },
+                        current_prepend: function(newVal,oldVal) {
+                            this.initHighlight();
+                            var highlight = this.highlight;
+                            var dom = this.aceDom;
+                            this.$nextTick(function(){
+                                _.forEach(qsa(".prepend.code"),function(val,index){
+                                    highlight(val, {
+                                mode: val.getAttribute("ace-mode"),
+                                theme: val.getAttribute("ace-theme"),
+                                startLineNumber: 1,
+                                showGutter: val.getAttribute("ace-gutter"),
+                                trim: true
+                            }, function (highlighted) {});
+                                });
+                            })
+                            
+                        }
+                    }
+                    ,
                     methods: {
+                        initHighlight:function(){
+                            if(!this.highlight) {
+                                this.highlight = ace.require("ace/ext/static_highlight");
+                            }
+                            if(!this.aceDom) {
+                                this.aceDom = ace.require("ace/lib/dom");
+                            }
+                        },
+                        flush_theme:function(){
+                            var that = this;
+                            this.initHighlight();
+                            var highlight = this.highlight;
+                            var dom = this.aceDom;
+                            this.current_prepend = "";
+                            this.current_append = "";
+                            this.$forceUpdate();
+                            this.$nextTick(function(){
+                            that.current_prepend = that.prepend && 
+                            that.prepend[that.selected_language] ?that.prepend[that.selected_language] : "";
+                            that.current_append = that.append && that.append[that.selected_language]?that.append[that.selected_language]:"";
+                            that.$forceUpdate();
+                            that.$nextTick(function(){
+                                qsa(".prepend.code").forEach(function (codeEl) {
+                                  highlight(codeEl, {
+                    mode: codeEl.getAttribute("ace-mode"),
+                    theme: codeEl.getAttribute("ace-theme"),
+                    startLineNumber: 1,
+                    showGutter: codeEl.getAttribute("ace-gutter"),
+                    trim: true
+                }, function (highlighted) {});
+            });
+                                qsa(".append.code").forEach(function (codeEl) {
+                highlight(codeEl, {
+                    mode: codeEl.getAttribute("ace-mode"),
+                    theme: codeEl.getAttribute("ace-theme"),
+                    startLineNumber: 1,
+                    showGutter: codeEl.getAttribute("ace-gutter"),
+                    trim: true
+                }, function (highlighted) {});
+            });
+                            })
+                            })
+                        
+                        },
                         judgeLength:function(str,flag){
                             var alphaNum = ["one","two","three","four","five","six","seven","eight"]
                             var ans = 0;
@@ -355,35 +464,7 @@
                                 $("#progress").progress('set warning');
                             }
                         },
-                        reloadtemplate: function ($event, _value) {
-                            var $value;
-                            if ($event) {
-                                $value = $event.target.value;
-                            }
-                            else {
-                                $value = _value;
-                            }
-                            localStorage.setItem("lastlang", $value);
-                            $("#language").dropdown("set selected", $value.toString())
-                            this.selected_language = $value;
-                            var editor = window.editor;
-                            var langn = $value;
-                            var file_n = language_ext[langn];
-                            editor.getSession().setMode("ace/mode/" + language[langn]);
-                            var highlight = ace.require("ace/ext/static_highlight")
-                            var dom = ace.require("ace/lib/dom")
-                            qsa(".code").forEach(function (codeEl) {
-                                highlight(codeEl, {
-                                mode: codeEl.getAttribute("ace-mode"),
-                                theme: codeEl.getAttribute("ace-theme"),
-                                startLineNumber: 1,
-                                showGutter: codeEl.getAttribute("ace-gutter"),
-                                trim: true
-                            }, function (highlighted) {
-            
-                                  });
-                               });
-                        },
+                        
                         do_submit: function () {
                             if(!window.connected) {
                                 alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
@@ -544,24 +625,10 @@
                         }
                     },
                     updated:function(){
-                        var highlight = ace.require("ace/ext/static_highlight")
-                            var dom = ace.require("ace/lib/dom")
-                            qsa(".code").forEach(function (codeEl) {
-                                highlight(codeEl, {
-                                mode: codeEl.getAttribute("ace-mode"),
-                                theme: codeEl.getAttribute("ace-theme"),
-                                startLineNumber: 1,
-                                showGutter: codeEl.getAttribute("ace-gutter"),
-                                trim: true
-                            }, function (highlighted) {
-            
-                                  });
-                               });
                         var that = this;
                         this.$nextTick(function(){
-                            if(!that.isRenderBodyOnTop){
+                            if(that.single_page && !that.isRenderBodyOnTop){
                                 that.isRenderBodyOnTop = true;
-                            setTimeout(function(){
                                 $('.ui.vertical.center.aligned.segment.single')
                         .visibility({
                           once: false,
@@ -578,12 +645,15 @@
                         }
                             });
                             that.bodyOnTop = true;
-                    },200)
                             }
                         })
                     },
                     mounted: function () {
                         var that = this;
+                        this.description = markdownIt.render(this.description);
+                        this.input = markdownIt.render(this.input);
+                        this.output = markdownIt.render(this.output);
+                        this.hint = markdownIt.render(this.hint);
                         this.bodyOnTop = true;
                         $(".not-compile").removeClass("not-compile");
                         $(".loading.dimmer").remove();
@@ -599,49 +669,15 @@
                 qsa(".code").forEach(function (codeEl) {
                     codeEl.setAttribute("ace-theme", localStorage.getItem('theme'));
                 });
-                <?php if(!isset($is_vjudge) || (isset($is_vjudge) && !$is_vjudge)){  ?>
-                $(document).ready(function () {
-                    console.log("页面加载完毕，进行AJAX POST请求");
-                    var file_n = language_ext[document.getElementById('language').value];
-                    var qstring = getParameterByName;
-                    $.post("getfile.php?ajax",
-                        {
-                            file_name: file_n,
-                            id: qstring("id"),
-                            cid: qstring("cid"),
-                            pid: qstring("pid"),
-                            csrf: "<?=$token?>"
-                        }, function (data) {
-                            console.log("POST请求得到响应");
-                            var res = JSON.parse(data);
-                            if (res["empty"] == false) {
-                                console.log(res);
-                                prepend_file_context = res["prepend"];
-                                append_file_context = res["append"];
-                                var empty = res["empty"];
-                                if (empty != "true") {
-                                    $("#prepend").text(prepend_file_context);
-                                    $("#prepend_hide").text(prepend_file_context);
-                                    $("#append").text(append_file_context);
-                                    $("#append_hide").text(append_file_context);
-                                }
-                                setTimeout(function () {
-                                    console.log("刷新前后置代码主题");
-                                    flush_theme();
-                                }, 0);
-                            }
-                        });
-                    setTimeout(function () {
+                setTimeout(function () {
                         console.log("刷新前后置代码主题");
-                        flush_theme();
+                        that.flush_theme();
                     }, 0);
-                });
-                <?php } ?>
             }
             else {
                 editor.setTheme("ace/theme/monokai");
                 console.log("使用默认主题作为前后置代码主题");
-                flush_theme();
+                that.flush_theme();
             }
             editor.setOptions({
                 enableBasicAutocompletion: true,
@@ -697,18 +733,6 @@
                 }
             }
             $("#theme").on('change', function () {
-                var prepend_code = "";
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
-                {?>
-                prepend_code = document.getElementById('prepend_hide').innerHTML;
-                console.log("成功设置前置代码");
-                <?php } ?>
-                var append_code = "";
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
-                {?>
-                append_code = document.getElementById('append_hide').innerHTML;
-                console.log("成功设置后置代码");
-                <?php } ?>
                 var this_theme = this.value;
                 localStorage.setItem('theme', this.value);
                 console.log("设置主题成功！主题为:" + this.value);
@@ -718,23 +742,7 @@
                 qsa(".code").forEach(function (codeEl) {
                     codeEl.setAttribute("ace-theme", this_theme);
                 });
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($prepend_file))
-                {
-                ?>
-                document.getElementById('prepend').innerHTML = prepend_code;
-                console.log("加入前置代码");
-                <?php
-
-                } ?>
-                <?php if(isset($OJ_APPENDCODE) && $OJ_APPENDCODE && file_exists($append_file))
-                {
-                ?>
-                document.getElementById('append').innerHTML = append_code;
-                console.log("加入后置代码");
-                <?php
-
-                } ?>
-                flush_theme();
+                that.flush_theme();
                 setTimeout(function () {
                     $("#total_control").height($("#right-side").height());
                 }, 0);
@@ -755,7 +763,8 @@
                         resolve();
                         if (getParameterByName("sid")) {
                             $.get("/api/status/solution?sid=" + getParameterByName("sid"), function (data) {
-                                that.reloadtemplate(null, data.data.language)
+                                that.selected_language = parseInt(data.data.language);
+                                // that.reloadtemplate(null, data.data.language)
                             })
                         }
                     }
@@ -812,9 +821,6 @@
                     });
                 }
             });
-        if (isMobile.any()) {
-            location.href = "problem.php?<?=$_SERVER['QUERY_STRING']?>";
-        }
         var judge_result = [<?php
             foreach ($judge_result as $result) {
                 echo "'$result',";
@@ -1076,7 +1082,7 @@ SHOULD BE:
                 </div>
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
-                <script src="template/semantic-ui/js/editor_config.js"></script>
+                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.5"></script>
                 <textarea style="display:none" cols=40 rows=5 name="input_text"
                           id="ipt" class="sample_input"><?php echo $view_sample_input ?></textarea>
                 <div id="modeBar" style="margin: 0;
@@ -1086,8 +1092,7 @@ SHOULD BE:
         color: black;width:100%;text-align:right" class="ui menu borderless">
                     <div class="item not-compile">
                         <select class="not-compile" v-cloak :class="'ui dropdown selection'" id="language"
-                                name="language"
-                                @change="reloadtemplate($event)" v-model="selected_language">
+                                name="language" v-model="selected_language">
                             <option v-for="language in lang_list" :value="language.num">{{language.name}}</option>
                         </select>
                         <a
@@ -1147,19 +1152,19 @@ SHOULD BE:
                             </select></div>
                     </div>
                 </div>
-                <div v-if="prepend" class="code"
+                <div v-if="prepend" class="prepend code"
                      style="width: 100%;padding:0px;line-height:1.2;text-align:left;margin-bottom:0px;"
                      :ace-mode="'ace/mode/'+language_template[selected_language]"
                      ace-theme="ace/theme/monokai"
-                     id="prepend" v-text="prepend[selected_language]">
+                     id="prepend" v-text="current_prepend">
                 </div>
                 <div style="width:100%;height:460px" :style="{width:'100%',height:'460px',fontSize:fontSize+'px'}"
                      cols=180 rows=20
                      id="source"></div>
-                <div v-if="append" id="append" class="code"
+                <div v-if="append" id="append" class="append code"
                      style="width: 100%; padding:0px; line-height:1.2;text-align:left;margin-bottom:0px;"
                      :ace-mode="'ace/mode/'+language_template[selected_language]"
-                     ace-theme="ace/theme/monokai" v-text="append[selected_language]">
+                     ace-theme="ace/theme/monokai" v-text="current_append">
                 </div>
                 <div id="statusBar" style="margin: 0;
         padding: 0;
@@ -1203,156 +1208,7 @@ SHOULD BE:
                     var sid = 0;
                     var i = 0;
                     var using_blockly = false;
-                    var judge_result = [<?php
-                        foreach ($judge_result as $result) {
-                            echo "'$result',";
-                        }
-                        ?>''];
-                    var judge_style = [<?php
-                        foreach ($judge_style as $style) {
-                            echo "'$style',";
-                        }
-                        ?>''];
-
-
-                    function print_result(solution_id) {
-                        sid = solution_id;
-                        $("#out").load("status-ajax.php?tr=1&solution_id=" + solution_id);
-                    }
-
-
-                    function fresh_result(solution_id) {
-                        sid = solution_id;
-                        var xmlhttp;
-                        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-                            xmlhttp = new XMLHttpRequest();
-                        }
-                        else {// code for IE6, IE5
-                            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-                        }
-                        xmlhttp.onreadystatechange = function () {
-                            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                                var tb = window.document.getElementById('result');
-                                var r = xmlhttp.responseText;
-                                var ra = r.split(",");
-                                var loader = "<img style='display:inline-block' width=18 src=image/loader.gif>";
-                                var tag = "span";
-                                if (ra[0] < 4) tag = "span disabled=true";
-                                else tag = "a";
-                                {
-                                    if (ra[0] == 11) {
-                                        tb.innerHTML = "<" + tag + " href='ceinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[ra[0]] + "</" + tag + ">";
-                                        tb.className = "ui button " + judge_color[ra[0]];
-                                    }
-                                    else {
-                                        tb.innerHTML = "<" + tag + " href='reinfo.php?sid=" + solution_id + "' class='badge badge-info' target=_blank>" + judge_result[ra[0]] + "</" + tag + ">";
-                                        tb.className = "ui button " + judge_color[ra[0]];
-                                    }
-                                }
-                                if (ra[0] < 4) tb.innerHTML += loader;
-                                tb.innerHTML += "Memory:" + ra[1] + "kb&nbsp;&nbsp;";
-                                tb.innerHTML += "Time:" + ra[2] + "ms";
-                                if (ra[0] < 4)
-                                    window.setTimeout("fresh_result(" + solution_id + ")", 2000);
-                                else {
-                                    window.setTimeout("print_result(" + solution_id + ")", 2000);
-                                    count = 1;
-                                }
-                            }
-                        }
-                        xmlhttp.open("GET", "status-ajax.php?solution_id=" + solution_id, true);
-                        xmlhttp.send();
-                    }
-
                     var count = 0;
-
-
-                    function frush_result(runner_id) {
-                        $.get("status-ajax.php?solution_id=" + runner_id, function (data) {
-                            if (data == "<!-csrf check failed->") {
-                                $("#progess_text").text("未通过安全检测，请刷新页面");
-                                // setTimeout("frush_result(" + runner_id + ")", 250);
-                                $('#progress').progress({
-                                    percent: 100
-                                });
-                                return;
-                            }
-                            var res = data.split(',');
-                            var status = parseInt(res[0]);
-
-                            if (status == 0) {
-                                $("#progess_text").text(judge_result[status]);
-                                setTimeout("frush_result(" + runner_id + ")", 250);
-                                $('#progress').progress({
-                                    percent: 20
-                                });
-                            }
-                            else if (status == 2) {
-                                $("#progess_text").text(judge_result[status]);
-                                setTimeout("frush_result(" + runner_id + ")", 250);
-                                $('#progress').progress({
-                                    percent: 40
-                                });
-                            }
-                            else if (status == 3) {
-                                $("#progess_text").text(judge_result[status] + " 已通过测试点:" + res[3]);
-                                setTimeout("frush_result(" + runner_id + ")", 250);
-                                $('#progress').progress({
-                                    percent: 40
-                                });
-                            }
-                            else if (status == 4) {
-                                count = 0;
-                                $("#progess_text").text(judge_result[status] + " 内存使用:" + res[1] + "KB 运行时间:" + res[2] + "ms");
-                                $('#progress').progress({
-                                    percent: 100
-                                });
-                                $("#progress").progress('set success');
-                                if(getParameterByName("cid") && parseInt(getParameterByName("cid"))>1000) {
-                                $.get("contest_problem_ajax.php?cid="+getParameterByName("cid"), function (data) {
-                                    var json = JSON.parse(data);
-                                    console.log(json);
-                                    setTimeout(function () {
-                                        $(".mainwindow").html("").animate({width: 0, borderRadius: 0, padding: 0});
-                                    }, 500);
-                                    var str = "<a class='item'><h3>剩下未完成的题目</h3></a>";
-                                    if (json.length == 0) {
-                                        str += "<a class='item'><h2>恭喜AK</h2>";
-                                    }
-                                    else {
-                                        console.log(typeof json);
-                                        json.sort(function (a, b) {
-                                            if (a['num'] > b['num']) return 1;
-                                            else if (a['num'] == b['num']) return 0;
-                                            else return -1;
-                                        })
-                                    }
-                                    for (i in json) {
-                                        str += "<a class='item' href='" + json[i]['url'] + "'><div class='ui small teal label'>通过:&nbsp;" + json[i]['accept'] + "</div><div class='ui small label'>提交:&nbsp;" + json[i]['submit'] + "</div>" + json[i]['num'] + " . " + json[i]['title'] + "</a>";
-                                    }
-                                    $(".ui.massive.vertical.menu").html(str).fadeIn();
-                                    // console.log(json);
-                                })
-                                }
-                            }
-                            else if (status == 5 || status == 6) {
-                                count = 0;
-                                $("#progess_text").text("在第" + (parseInt(res[3]) + 1) + "个测试点发生 " + judge_result[status]);
-                                $('#progress').progress({
-                                    percent: 100
-                                });
-                                $("#progress").progress('set error');
-                            }
-                            else {
-                                count = 0;
-                                $("#progess_text").text("在第" + (parseInt(res[3]) + 1) + "个测试点发生 " + judge_result[status]);
-                                $('#progress').progress({
-                                    percent: 100
-                                });
-                                $("#progress").progress('set warning');
-                            }
-                        })
-                    }
                     
                     console.timeEnd("function");
                 </script>

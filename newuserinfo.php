@@ -15,7 +15,7 @@ foreach ($ss as $k => $v) {
     foreach ($v['problem'] as $s => $e) {
         //echo var_dump($v['problem']);
         $result = $database->count("vjudge_solution", ["user_id" => $user_mysql, "result" => 4, "problem_id" => $e['problem_id'], "oj_name" => $e['oj_name']]);
-        $result += $database->count("vjudge_record", ["user_id" => $user_mysql, "problem_id" => $e['problem_id'], "oj_name" => $e['oj_name']]);
+        $result += $database->count("vjudge_record", ["user_id" => $user_mysql, "problem_id" => $e['problem_id'], "oj_name" => $e['oj_name'],"result"=>4]);
         //echo $result;
         $ss[$k]['problem'][$s]['ac'] = $result > 0 ? 1 : 0;
     }
@@ -301,7 +301,7 @@ foreach ($ss as $k => $v) {
                                                             }
                                                             <?php
                                                             $result = array_unique($database->select("vjudge_solution", "problem_id", ["user_id" => $user_mysql, "result" => 4, "oj_name" => "HDU", "ORDER" => ["problem_id" => "ASC"]]));
-                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "HDU"]);
+                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "HDU","result"=>4]);
                                                             foreach ($datas as $v) {
                                                                 array_push($result, $v);
                                                             }
@@ -319,7 +319,7 @@ foreach ($ss as $k => $v) {
                                                         <script language='javascript'>
                                                             <?php
                                                             $result = array_unique($database->select("vjudge_solution", "problem_id", ["user_id" => $user_mysql, "result" => 4, "oj_name" => "POJ", "ORDER" => ["problem_id" => "ASC"]]));
-                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "POJ"]);
+                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "POJ","result"=>4]);
                                                             foreach ($datas as $v) {
                                                                 array_push($result, $v);
                                                             }
@@ -337,7 +337,7 @@ foreach ($ss as $k => $v) {
                                                         <script language='javascript'>
                                                         <?php 
                                                         $result = array_unique($database->select("vjudge_solution", "problem_id", ["user_id" => $user_mysql, "result" => 4, "oj_name" => "UVA", "ORDER" => ["problem_id" => "ASC"]]));
-                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "UVA"]);
+                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "UVA","result"=>4]);
                                                             foreach ($datas as $v) {
                                                                 array_push($result, $v);
                                                             }
@@ -357,10 +357,10 @@ foreach ($ss as $k => $v) {
                                                                 document.write("<a href='javascript:void(0)'>" + id + " </a>");
                                                             }
                                                             <?php
-                                                            $result = $database->select("vjudge_record", ["oj_name", "problem_id"], ["user_id" => $user_mysql, "oj_name[!]" => ["POJ", "HDU","UVA"]]);
+                                                            $result = $database->select("vjudge_record", ["oj_name", "problem_id"], ["user_id" => $user_mysql, "oj_name[!]" => ["POJ", "HDU","UVA"],"result"=>4]);
                                                             sort($result);
                                                             foreach ($result as $v) {
-                                                                echo "p('" . $v["oj_name"] . " " . $v["problem_id"] . "');";
+                                                                echo "p('" . $v["oj_name"] . " " . (is_numeric($v["problem_id"])?abs(intval($v["problem_id"])):$v["problem_id"]) . "');";
                                                             }
                                                             ?>
                                                         </script>

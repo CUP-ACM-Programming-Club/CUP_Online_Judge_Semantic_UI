@@ -67,7 +67,7 @@
         <?php if (true||preg_match('/10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/', $user_IP)) { ?>
             <div class="html ui top attached segment">
             <form action="register.php" method="post" class="ui large form">
-            <br><br>
+            <h4>根据要求，请实名注册账号，非法账号将定期删除，严重者封禁IP</h4>
                 <div class="ui form">
                     <div class="two fields">
                         <div class="field">

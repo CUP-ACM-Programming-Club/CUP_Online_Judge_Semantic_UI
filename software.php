@@ -113,6 +113,18 @@
             </div>
         </div>
     </div>
+    <div class="ui section divider"></div>
+    <div class="ui one column grid">
+        <div class="column">
+            <h2 class="ui header">
+                <i class="terminal icon"></i>
+                <div class="content">
+                    编译环境
+                    <div class="sub header">使用更加符合运行环境的编译套件</div>
+                </div>
+            </h2>
+        </div>
+    </div>
 </div>
 <?php include("template/$OJ_TEMPLATE/bottom.php") ?>
 <script>

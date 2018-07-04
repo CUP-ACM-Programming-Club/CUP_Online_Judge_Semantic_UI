@@ -23,9 +23,8 @@
 
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php") ?>
-<div class="container">
     <!-- Main component for a primary marketing message or call to action -->
-    <div class="ui container padding">
+    <div class="ui container padding" style="min-height:400px">
         <h2 class="ui dividing header">Discuss</h2>
         <div class="ui grid">
             <div class="row">
@@ -33,7 +32,7 @@
                     
                 </div>
                 <div class="three wide right aligned column">
-                    <a href="/discuss_add.php" target="_blank" class="ui labeled icon blue mini button">
+                    <a href="/newdiscusspost.php" target="_blank" class="ui labeled icon blue mini button">
                         <i class="write icon"></i>
                         Post
                         </a>
@@ -45,16 +44,24 @@
                 </div>
             </div>
     </div>
-    <table class="ui very basic center aligned table">
+    <table class="ui very basic center aligned table" v-cloak>
         <thead>
             <th width="5%">ID</th>
-            <th width="60%">Title</th>
+            <th width="40%">Title</th>
             <th>Author</th>
             <th>Create Time</th>
             <th>Modify Time</th>
+            <th>Latest Post</th>
         </thead>
-        <tbody v-html="table">
-            
+        <tbody>
+            <tr v-for="row in table">
+                <td>{{row.article_id}}</td>
+                <td><a :href="'discusscontext.php?id='+row.article_id" target='_blank'>{{row.title}}</a></td>
+                <td><a :href="'userinfo.php?user='+row.user_id" target='_blank'>{{row.user_id}}</a></td>
+                <td>{{new Date(row.create_time).toLocaleString()}}</td>
+                <td>{{new Date(row.edit_time).toLocaleString()}}</td>
+                <td>{{new Date(row.last_post).toLocaleString()}}</td>
+            </tr>
         </tbody>
     </table>
 </div> <!-- /container -->
@@ -78,6 +85,9 @@
             $.get("/api/discuss?page="+page,function(data){
                 that.table = data;
             });
+            $.get("/api/discuss?page="+page,function(data){
+                that.table = data;
+            });
         },
         methods:{
             
@@ -85,28 +95,7 @@
         computed:{
             table:{
                 get:function(){
-                    var val = [];
-                    var make_tr = function(val){
-                        return ["<td>",val,"</td>"].join("");
-                    }
-                    var make_user = function(user) {
-                        return make_tr(["<a href='userinfo.php?user=",user,"' target='_blank'>",user,"</a>"].join(""));
-                    }
-                    var make_context = function(id,context) {
-                        return make_tr(["<a href='discusscontext.php?id=",id,"' target='_blank'>",context,"</a>"].join(""));
-                    }
-                    this.table_val.forEach(function(element){
-                        var content = [];
-                        content.push("<tr>");
-                        content.push(make_tr(element.article_id));
-                        content.push(make_context(element.article_id,element.title));
-                        content.push(make_user(element.user_id));
-                        content.push(make_tr((new Date(element.create_time)).toLocaleString()));
-                        content.push(make_tr((new Date(element.edit_time)).toLocaleString()));
-                        content.push("</tr>");
-                        val.push(content.join(""));
-                    })
-                    return val.join("");
+                    return this.table_val;
                 },
                 set:function(data){
                     this.total = parseInt(data.total);
@@ -117,6 +106,6 @@
     })
 </script>
 
-    <?php include("template/$OJ_TEMPLATE/bottom.php") ?>
+    <?php include("template/semantic-ui/bottom.php") ?>
 </body>
 </html>

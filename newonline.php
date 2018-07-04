@@ -127,6 +127,9 @@ include("csrf.php");
                 else if (tmp.intranet_ip.match(/10\.3\.[\s\S]+/)) {
                     tmp.place = "地质楼";
                 }
+                else if (tmp.intranet_ip.match(/10\.200\.33\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰机房六楼";
+                }
                 else {
                     tmp.place = "未知";
                 }
@@ -154,6 +157,9 @@ include("csrf.php");
                 }
                 else if (tmp.intranet_ip.match(/172\.16\.[\s\S]+/)) {
                     tmp.place = "VPN";
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.33\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰机房六楼";
                 }
                 else if (tmp.intranet_ip && tmp.ip && tmp.intranet_ip != tmp.ip) {
                     tmp.place = "外网";

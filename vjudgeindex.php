@@ -16,6 +16,9 @@ $homepage="";
     <title><?= $OJ_NAME ?> -- HomePage</title>
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <script src="template/<?= $OJ_TEMPLATE ?>/js/countdown.js"></script>
+    <script>
+        var homepage = true;
+    </script>
     <style>
         a{
             cursor: pointer;

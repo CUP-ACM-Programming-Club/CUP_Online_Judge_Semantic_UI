@@ -432,7 +432,6 @@
                     context: '#problemset',
                     offset: 40,
                 observeChanges: false,
-                continuous: false,
                 refreshOnLoad: true,
                 refreshOnResize: true,
                 })

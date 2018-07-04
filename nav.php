@@ -5,7 +5,7 @@ $dir = basename(getcwd());
 require_once("template/$OJ_TEMPLATE/profile.php");
 $path_fix = "";
 $ACTIVE = "class='active'";
-$acmmanager = false&&preg_match('/acmman/', $url);
+$acmmanager = false;
 $vjudge = preg_match("/vjudge/", $url) || preg_match("/hdu/", $url) || preg_match("/poj/", $url)||isset($oj_signal);
 $suffix="";
 if($OJ_CONTEST_MODE&&!isset($_SESSION['administrator']))
@@ -13,7 +13,7 @@ $suffix="?my";
 ?>
 <!--<canvas class="fireworks" style="z-index:-999"></canvas>-->
 <div class="following bar topmenu" style="z-index:900">
-<div class="ui <?=isset($homepage)?"inverted":""?> borderless network secondary menu" id="navbar-large">
+<div class="ui borderless network secondary menu" id="navbar-large">
     <div class="ui container">
         <div class="msg header item">
             <?php if(!isset($homepage)){ ?>
@@ -35,15 +35,15 @@ $suffix="?my";
             <i class="dropdown icon"></i>
             <div class="menu">
                 <?php } ?>
-                <a class="item <?php if ($url == "faqs.php") echo "active"; ?>" href="faqs.php"><i class="help icon"></i><?= $MSG_FAQ ?></a>
-                <a class="item <?php if ($url == "problemset.php") echo "active"; ?>"
+                <a class="item" href="faqs.php"><i class="help icon"></i><?= $MSG_FAQ ?></a>
+                <a class="item"
                    href="problemset.php"><i class="browser icon"></i><?= $MSG_PROBLEM ?></a>
-                <a class="item <?php if ($url == "status.php") echo "active"; ?>"
+                <a class="item"
                    href="status.php"><i class="tasks icon"></i><?= $MSG_STATUS ?></a>
-                <a class="item <?php if ($url == "ranklist.php") echo "active"; ?>"
-                   href="<?php echo $path_fix ?>ranklist.php"><i class="trophy icon"></i><?= $MSG_RANKLIST ?></a>
+                <a class="item"
+                   href="ranklist.php"><i class="trophy icon"></i><?= $MSG_RANKLIST ?></a>
                    <?php if(isset($_SESSION["user_id"])) { ?>
-                   <a class="item <?=$url == "discuss.php"?"active":""?>" href="discuss.php"><i class="comment alternate icon"></i>讨论</a>
+                   <a class="item" href="discuss.php"><i class="comment alternate icon"></i>讨论</a>
                    <?php } ?>
                 <div
                     class="<?php if (!(isset($_GET['cid']) || isset($_GET['tid']) || $vjudge || $acmmanager)) echo 'ui dropdown' ?> item"
@@ -56,17 +56,17 @@ $suffix="?my";
                         <i class="dropdown icon"></i>
                     <?php } ?>
                     <div class="menu">
-                        <a class="item <?php if ($url == "contest.php") echo "active"; ?>"
+                        <a class="item"
                            href="contest.php<?=$suffix?>"><i class="puzzle icon"></i><?= $MSG_CONTEST ?></a>
-                        <a class="item <?php if ($url == "specialsubject.php") echo "active"; ?>"
+                        <a class="item"
                            href="specialsubject.php"><i class="rocket icon"></i><?= $MSG_SPECIALSUBJECT ?></a>
-                        <a class="item <?php if ($url == "recent-contest.php") echo "active"; ?>"
+                        <a class="item"
                            href="recent-contest.php"><i class="sitemap icon"></i><?= $MSG_RECENT_CONTEST ?></a>
-                           <a class="item <?php if ($url == "acmmanager.php") echo "active"; ?>" href="acmmanager.php"><i class="road icon"></i>ACM管理系统</a>
-                           <a class="item <?php if($url=="software.php")echo "active"; ?>" href="software.php"><i class="plug icon"></i>常用软件</a>
-                           <a class="item <?php if($url=="whiteboard.php")echo "active" ?>" href="whiteboard.php"><i class="calendar outline icon"></i>白板(β版测试)</a>
+                           <a class="item" href="acmmanager.php"><i class="road icon"></i>ACM管理系统</a>
+                           <a class="item" href="software.php"><i class="plug icon"></i>常用软件</a>
+                           <a class="item" href="whiteboard.php"><i class="calendar outline icon"></i>白板(β版测试)</a>
                            <?php if(!$OJ_CONTEST_MODE||isset($_SESSION['administrator'])){ ?>
-                <a class="item tutorial" target="_blank"><i class="help circle outline icon"></i>C/C++语言参考手册</a>
+                <a class="item tutorial" target="_blank"><i class="question circle outline icon"></i>C/C++语言参考手册</a>
                                 <a class="item" href="https://wiki.cupacm.com"><i class="book icon"></i>Wiki</a>
 
                 <?php } ?>
@@ -74,7 +74,7 @@ $suffix="?my";
                         
                     </div>
                 </div>
-                <a class="item <?php if ($url == "vjudgeindex.php") echo "active"; ?>" href="/vjudgeindex.php"><i class="lab icon"></i>Virtual
+                <a class="item" href="/vjudgeindex.php"><i class="lab icon"></i>Virtual
                             Judge</a>
                 
                 <?php if (isset($_GET['cid']) || isset($_GET['tid']) || $vjudge || $acmmanager){ ?>  </div>
@@ -108,18 +108,18 @@ $suffix="?my";
             </a>
         <?php } else if ($vjudge) {
             ?>
-            <a class="item <?php if ($url == "vjudgeproblemset.php") echo "active"; ?>" href="<?php echo $path_fix ?>vjudgeproblemset.php"><i class="browser icon"></i>
+            <a class="item" href="<?php echo $path_fix ?>vjudgeproblemset.php"><i class="browser icon"></i>
                 <?php echo $MSG_PROBLEMS ?>
             </a>
-            <a class="item <?php if ($url == "hdu_status.php") echo "active"; ?>" href="hdu_status.php"><i class="tasks icon"></i>
+            <a class="item" href="hdu_status.php"><i class="tasks icon"></i>
                 <?php echo $MSG_STATUS ?>
             </a>
-            <a class="item <?php if ($url == "vjudgeranklist.php") echo "active"; ?>"
+            <a class="item"
                    href="<?php echo $path_fix ?>vjudgeranklist.php"><i class="trophy icon"></i><?= $MSG_RANKLIST ?></a>
         <?php } ?>
         <div class="right menu">
             <?php if (isset($_SESSION['user_id'])) { ?>
-            <a v-html="message" class="item <?php if ($url == "newonline.php") echo "active"; ?> online_num" v-cloak
+            <a v-html="message" class="item online_num" v-cloak
                href="<?php if (!isset($_SESSION['administrator'])) { ?>javascript:void(0)<?php } else { ?>newonline.php<?php } ?>"><i class="remove icon"></i></a><?php } ?>
             <?php if (isset($_SESSION["user_id"])) { ?>
                 <div class="ui dropdown item detail" tabindex="0">
@@ -137,7 +137,7 @@ $suffix="?my";
         </div>
     </div>
 </div>
-<div class="ui <?=isset($homepage)?"inverted":""?> borderless network secondary menu" id="navbar-small">
+<div class="ui borderless network secondary menu" id="navbar-small">
     <div class="ui container">
         <div class="msg header item">
             <?php if(!isset($homepage)){ ?>
@@ -159,12 +159,12 @@ $suffix="?my";
             <i class="dropdown icon"></i>
             <div class="menu">
                 <?php } ?>
-                <a class="item <?php if ($url == "faqs.php") echo "active"; ?>" href="faqs.php"><?= $MSG_FAQ ?></a>
-                <a class="item <?php if ($url == "problemset.php") echo "active"; ?>"
+                <a class="item" href="faqs.php"><?= $MSG_FAQ ?></a>
+                <a class="item"
                    href="problemset.php"><?= $MSG_PROBLEM ?></a>
-                <a class="item <?php if ($url == "status.php") echo "active"; ?>"
+                <a class="item"
                    href="status.php"><?= $MSG_STATUS ?></a>
-                <a class="item <?php if ($url == "ranklist.php") echo "active"; ?>"
+                <a class="item"
                    href="<?php echo $path_fix ?>ranklist.php"><?= $MSG_RANKLIST ?></a>
                 <div
                     class="<?php if (!(isset($_GET['cid']) || isset($_GET['tid']) || $vjudge || $acmmanager)) echo 'ui dropdown' ?> item"
@@ -177,16 +177,16 @@ $suffix="?my";
                         <i class="dropdown icon"></i>
                     <?php } ?>
                     <div class="menu">
-                        <a class="item <?php if ($url == "contest.php") echo "active"; ?>"
+                        <a class="item"
                            href="contest.php<?=$suffix?>"><?= $MSG_CONTEST ?></a>
-                        <a class="item <?php if ($url == "specialsubject.php") echo "active"; ?>"
+                        <a class="item"
                            href="specialsubject.php"><?= $MSG_SPECIALSUBJECT ?></a>
-                        <a class="item <?php if ($url == "recent-contest.php") echo "active"; ?>"
+                        <a class="item"
                            href="recent-contest.php"><?= $MSG_RECENT_CONTEST ?></a>
-                           <a class="item <?php if ($url == "acmmanager.php") echo "active"; ?>" href="acmmanager.php">ACM管理系统</a>
-                           <a class="item <?php if($url=="software.php")echo "active"; ?>" href="software.php">常用软件</a>
-                           <a class="item <?php if($url=="whiteboard.php")echo "active" ?>" href="whiteboard.php">白板(β版测试)</a>
-                            <a class="item <?php if ($url == "vjudgeproblemset.php") echo "active"; ?>" href="/vjudgeproblemset.php">Virtual
+                           <a class="item" href="acmmanager.php">ACM管理系统</a>
+                           <a class="item" href="software.php">常用软件</a>
+                           <a class="item" href="whiteboard.php">白板(β版测试)</a>
+                            <a class="item" href="/vjudgeproblemset.php">Virtual
                             Judge</a>
                 
                 <a class="item" href="https://wiki.cupacm.com">Wiki</a>
@@ -226,18 +226,18 @@ $suffix="?my";
             </a>
         <?php } else if ($vjudge) {
             ?>
-            <a class="item <?php if ($url == "vjudgeproblemset.php") echo "active"; ?>" href="<?php echo $path_fix ?>vjudgeproblemset.php">
+            <a class="item" href="<?php echo $path_fix ?>vjudgeproblemset.php">
                 <?php echo $MSG_PROBLEMS ?>
             </a>
-            <a class="item <?php if ($url == "hdu_status.php") echo "active"; ?>" href="hdu_status.php">
+            <a class="item" href="hdu_status.php">
                 <?php echo $MSG_STATUS ?>
             </a>
-            <a class="item <?php if ($url == "vjudgeranklist.php") echo "active"; ?>"
+            <a class="item"
                    href="<?php echo $path_fix ?>vjudgeranklist.php"><?= $MSG_RANKLIST ?></a>
         <?php } ?>
         <div class="right menu">
             <?php if (isset($_SESSION['user_id'])) { ?>
-            <a v-html="message" class="item <?php if ($url == "newonline.php") echo "active"; ?> online_num1" v-cloak
+            <a v-html="message" class="item online_num1" v-cloak
                href="<?php if (!isset($_SESSION['administrator'])) { ?>javascript:void(0)<?php } else { ?>newonline.php<?php } ?>"></a><?php } ?>
             <?php if (isset($_SESSION["user_id"])) { ?>
                 <div class="ui dropdown item detail" tabindex="0">
@@ -255,7 +255,7 @@ $suffix="?my";
         </div>
     </div>
 </div>
-<div class="ui <?=isset($homepage)?"inverted":""?> borderless network secondary menu" id="navbar-nano">
+<div class="ui borderless network secondary menu" id="navbar-nano">
     <div class="ui container">
         <div class="msg header item">
             <?php if(!isset($homepage)){ ?>
@@ -275,27 +275,27 @@ $suffix="?my";
             <div class="text">通用</div>
             <i class="dropdown icon"></i>
             <div class="menu">
-                <a class="item <?php if ($url == "faqs.php") echo "active"; ?>" href="faqs.php"><?= $MSG_FAQ ?></a>
-                <a class="item <?php if ($url == "problemset.php") echo "active"; ?>"
+                <a class="item" href="faqs.php"><?= $MSG_FAQ ?></a>
+                <a class="item"
                    href="problemset.php"><?= $MSG_PROBLEM ?></a>
-                <a class="item <?php if ($url == "status.php") echo "active"; ?>"
+                <a class="item"
                    href="status.php"><?= $MSG_STATUS ?></a>
-                <a class="item <?php if ($url == "ranklist.php") echo "active"; ?>"
+                <a class="item"
                    href="<?php echo $path_fix ?>ranklist.php"><?= $MSG_RANKLIST ?></a>
                 <div class="item" tabindex="0">
                         <i class="right dropdown icon"></i>
                     <div class="text">其他</div>
                     <div class="menu">
-                        <a class="item <?php if ($url == "contest.php") echo "active"; ?>"
+                        <a class="item"
                            href="contest.php<?=$suffix?>"><?= $MSG_CONTEST ?></a>
-                        <a class="item <?php if ($url == "specialsubject.php") echo "active"; ?>"
+                        <a class="item"
                            href="specialsubject.php"><?= $MSG_SPECIALSUBJECT ?></a>
-                        <a class="item <?php if ($url == "recent-contest.php") echo "active"; ?>"
+                        <a class="item"
                            href="recent-contest.php"><?= $MSG_RECENT_CONTEST ?></a>
-                           <a class="item <?php if ($url == "acmmanager.php") echo "active"; ?>" href="acmmanager.php">ACM管理系统</a>
-                           <a class="item <?php if($url=="software.php")echo "active"; ?>" href="software.php">常用软件</a>
-                           <a class="item <?php if($url=="whiteboard.php")echo "active" ?>" href="whiteboard.php">白板(β版测试)</a>
-                            <a class="item <?php if ($url == "vjudgeindex.php") echo "active"; ?>" href="/vjudgeindex.php">Virtual
+                           <a class="item" href="acmmanager.php">ACM管理系统</a>
+                           <a class="item" href="software.php">常用软件</a>
+                           <a class="item" href="whiteboard.php">白板(β版测试)</a>
+                            <a class="item" href="/vjudgeindex.php">Virtual
                             Judge</a>
                 
                 <a class="item" href="https://wiki.cupacm.com">Wiki</a>
@@ -334,18 +334,18 @@ $suffix="?my";
             </a>
         <?php } else if ($vjudge) {
             ?>
-            <a class="item <?php if ($url == "vjudgeproblemset.php") echo "active"; ?>" href="<?php echo $path_fix ?>vjudgeproblemset.php">
+            <a class="item" href="<?php echo $path_fix ?>vjudgeproblemset.php">
                 <?php echo $MSG_PROBLEMS ?>
             </a>
-            <a class="item <?php if ($url == "hdu_status.php") echo "active"; ?>" href="hdu_status.php">
+            <a class="item" href="hdu_status.php">
                 <?php echo $MSG_STATUS ?>
             </a>
-            <a class="item <?php if ($url == "vjudgeranklist.php") echo "active"; ?>"
+            <a class="item"
                    href="<?php echo $path_fix ?>vjudgeranklist.php"><?= $MSG_RANKLIST ?></a>
         <?php } ?>
         <div class="right menu">
             <?php if (isset($_SESSION['user_id'])) { ?>
-            <a v-html="message" class="item <?php if ($url == "newonline.php") echo "active"; ?> online_num2" v-cloak
+            <a v-html="message" class="item online_num2" v-cloak
                href="<?php if (!isset($_SESSION['administrator'])) { ?>javascript:void(0)<?php } else { ?>newonline.php<?php } ?>"></a><?php } ?>
             <?php if (isset($_SESSION["user_id"])) { ?>
                 <div class="ui dropdown item detail" tabindex="0">
@@ -403,14 +403,19 @@ $suffix="?my";
     onApprove : function() {
       location.href = "/cppreference/en";
     }
-  })
-;
-$(".tutorial")
+  });
+ setTimeout(function() {
+     $(".tutorial")
 .on("click",function(e){
     e.preventDefault();
     $(".ui.test.modal").modal('show')
-
 })
+ }, 500);
+      
+$("a[href='"+location.pathname.substring(1)+"']").addClass("active");
+if(typeof homepage !== "undefined") {
+    $(".ui.borderless.network.secondary.menu").addClass("inverted");
+}
   </script>
 <script src="template/<?php echo $OJ_TEMPLATE ?>/js/cookie.js"></script>
 <script src="template/<?php echo $OJ_TEMPLATE ?>/js/platform.js?ver=1.0.1"></script>

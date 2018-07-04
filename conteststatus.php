@@ -89,7 +89,18 @@
                     <div class="four fields">
                         <div class="field">
                             <label> <?php echo $MSG_PROBLEM_ID ?></label>
-                            <input v-model="problem_id" class="form-control" type=text size=4 name=problem_id>
+                            <div class="ui fluid search dropdown selection" size="1">
+                                <input v-model="problem_id" @change="problem_id=$event.target.value"
+                                       type="hidden" name="problem_id">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">All</div>
+                                <div class="menu">
+                                    <div class='item' data-value=''>未选择</div>
+                                    <div v-for="i in Array.from(Array(total).keys())" class="item" :data-value="String.fromCharCode('A'.charCodeAt(0)+i)">
+                                        {{String.fromCharCode('A'.charCodeAt(0)+i)}}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="field">
                             <label><?php echo $MSG_USER ?></label>
@@ -404,6 +415,9 @@
                 }
                 else if (tmp.intranet_ip.match(/10\.1[0-9]{2}\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "其他Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.33\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰机房六楼";
                 }
                 else if (tmp.intranet_ip.match(/172\.16\.[\s\S]+/)) {
                     tmp.place = "VPN";
