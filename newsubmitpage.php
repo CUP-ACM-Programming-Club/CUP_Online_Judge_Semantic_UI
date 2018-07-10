@@ -927,7 +927,7 @@ SHOULD BE:
                             require_once("include/set_get_key.php");
                             ?>
                             <a class='ui button purple'
-                               :href="'admin/quixplorer/index.php?action=list&dir='+problem_id+'&order=name&srt=yes'">TestData</a>
+                               :href="'admin/quixplorer/index.php?action=list&dir='+original_id+'&order=name&srt=yes'">TestData</a>
                             <?php
                         }
                         ?>
@@ -966,7 +966,7 @@ SHOULD BE:
                             require_once("include/set_get_key.php");
                             ?>
                             <a class='ui button purple'
-                               :href="'admin/quixplorer/index.php?action=list&dir='+problem_id+'&order=name&srt=yes'">TestData</a>
+                               :href="'admin/quixplorer/index.php?action=list&dir='+original_id+'&order=name&srt=yes'">TestData</a>
                             <?php
                         }
                         ?>
@@ -1033,7 +1033,7 @@ SHOULD BE:
                             ?>
 
                             <a class='ui button purple'
-                               :href="'admin/quixplorer/index.php?action=list&dir='+problem_id+'&order=name&srt=yes'">TestData</a>
+                               :href="'admin/quixplorer/index.php?action=list&dir='+original_id+'&order=name&srt=yes'">TestData</a>
                             <?php
                         }
                         ?>
@@ -1082,7 +1082,7 @@ SHOULD BE:
                 </div>
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
-                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.5"></script>
+                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.6"></script>
                 <textarea style="display:none" cols=40 rows=5 name="input_text"
                           id="ipt" class="sample_input"><?php echo $view_sample_input ?></textarea>
                 <div id="modeBar" style="margin: 0;

@@ -205,7 +205,7 @@
             <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
         <thead v-cloak>
             <th>Problem</th>
-            <th v-for="i in Array.from(Array(Math.max(0,statistics.total_result-3)).keys()).map(function(i){return i+4})"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{statistics.status[i]}}</a></th>
+            <th v-for="i in statistics.total_result"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{statistics.status[i]}}</a></th>
             <th>Total</th>
         </thead>
         <tbody>
@@ -473,7 +473,7 @@
             stat:[],
             cid:getParameterByName("cid"),
             res:["WT","WR","CPL","RN","AC","PE","WA","TLE","MLE","OLE","RE","CE","CF","TR",
-            "SP","SR"]
+            "SP","SR","SE"]
             }
         },
         computed: {
@@ -483,6 +483,7 @@
                     var lang = {};
                     var status = {};
                     var maxResult = 0;
+                    var minResult = 19;
                     var maxNum = 0;
                     var used_lang = {};
                     _.forEach(this.stat,function(val,index){
@@ -493,6 +494,7 @@
                             lang[val.num] = {};
                         }
                         maxResult = Math.max(maxResult,val.result);
+                        minResult = Math.min(minResult,val.result);
                         maxNum = Math.max(maxNum,val.num);
                         if(!status[val.num][val.result])
                         status[val.num][val.result] = 0;
@@ -507,7 +509,7 @@
                         }
                     }
                     _.forEach(status,function(val,index){
-                        for(var i = 4;i<= maxResult;++i) {
+                        for(var i = minResult;i<= maxResult;++i) {
                             status[index][i] = 0;
                         }
                     })
@@ -551,9 +553,11 @@
                     if(maxResult === 0) {
                         maxNum = -1;
                     }
+                    var tot_res = [];
+                    for(var i = minResult;i<=maxResult;++i)tot_res.push(i);
                     return {
                         total_problem:maxNum||0,
-                        total_result:maxResult||0,
+                        total_result:tot_res||[],
                         status:this.res||[],
                         stat_data:status||[],
                         used_lang:used_lang,

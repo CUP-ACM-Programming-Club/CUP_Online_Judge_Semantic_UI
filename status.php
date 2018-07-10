@@ -502,6 +502,7 @@
                 obj.judger = "鹤望兰号";
                 obj.result = 0
                 obj.sim = false;
+                obj.contest_id = data.val.cid ? Math.abs(data.val.cid):null;
                 obj.sim_id = null;
                 this.problem_list.pop();
                 this.problem_list.unshift(obj);
@@ -524,6 +525,7 @@
                         i.sim = data.sim;
                         i.sim_id = data.sim_s_id;
                         i.pass_rate = pass_rate;
+                        i.contest_id = data.contest_id ? Math.abs(data.contest_id):null;
                         return;
                     }
                 })

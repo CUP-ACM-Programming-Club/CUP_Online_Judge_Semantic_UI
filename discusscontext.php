@@ -13,7 +13,11 @@
 <link href="/css/github-markdown.min.css" rel="stylesheet" type="text/css">
     <link href="/js/styles/github.min.css" rel="stylesheet" type="text/css">
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
+    <script src="/js/mavon-editor.js"></script>
     <script src="/js/markdown-it.js"></script>
+    <script>
+     Vue.use(window["mavon-editor"]);
+    </script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
