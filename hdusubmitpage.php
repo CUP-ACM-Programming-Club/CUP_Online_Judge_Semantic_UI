@@ -28,7 +28,8 @@
     <?php include("template/$OJ_TEMPLATE/extra_js.php") ?>
     <?php include("csrf.php"); ?>
     <script>
-        window.lastlang = 0;
+        window.lastlang = "<?=$code_lang?>"||0;
+        window.lastlang = parseInt(window.lastlang);
         window.oj_signal="<?=$oj_signal?>";
     </script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -152,6 +153,23 @@ SHOULD BE:
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
                 <script src="template/<?php echo $OJ_TEMPLATE; ?>/js/editor_config.js?v=1.0"></script>
+                <script>
+                    function flush_theme() {
+            var highlight = ace.require("ace/ext/static_highlight")
+            var dom = ace.require("ace/lib/dom")
+            qsa(".code").forEach(function (codeEl) {
+                highlight(codeEl, {
+                    mode: codeEl.getAttribute("ace-mode"),
+                    theme: codeEl.getAttribute("ace-theme"),
+                    startLineNumber: 1,
+                    showGutter: codeEl.getAttribute("ace-gutter"),
+                    trim: true
+                }, function (highlighted) {
+
+                });
+            });
+        }
+                </script>
                 <script src="include/checksource.js"></script>
                 <script>
                     if(window.oj_signal=="HDU")

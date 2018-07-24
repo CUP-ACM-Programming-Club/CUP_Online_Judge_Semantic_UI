@@ -31,9 +31,7 @@
         <div class="ui bottom attached segment">
             <div align=center class="input-append">
                 <form id=simform class="ui form segment" action="hdu_status.php" method="get">
-                    <div class="<?php if (isset($_SESSION['administrator'])) {
-                        echo "five";
-                    } else echo "four" ?> fields">
+                    <div class="four fields">
                         <div class="field">
                             <label> <?php echo $MSG_PROBLEM_ID ?></label>
                             <input class="form-control" type=text size=4 name=problem_id
@@ -85,34 +83,8 @@
                                 ?>
                             </select>
                         </div>
-                        <?php if (isset($_SESSION['administrator']) || isset($_SESSION['source_browser'])) {
-                            ?>
-                            <div class="field"><?php
-                            if (isset($_GET['showsim']))
-                                $showsim = intval($_GET['showsim']);
-                            else
-                                $showsim = 0;
-                            echo "<label>SIM</label>
-<select id=\"appendedInputButton\" class=\"ui search dropdown\" name=showsim onchange=\"document.getElementById('simform').submit();\">
-<option value=0 " . ($showsim == 0 ? 'selected' : '') . ">All</option>
-<option value=50 " . ($showsim == 50 ? 'selected' : '') . ">50</option>
-<option value=60 " . ($showsim == 60 ? 'selected' : '') . ">60</option>
-<option value=70 " . ($showsim == 70 ? 'selected' : '') . ">70</option>
-<option value=80 " . ($showsim == 80 ? 'selected' : '') . ">80</option>
-<option value=90 " . ($showsim == 90 ? 'selected' : '') . ">90</option>
-<option value=100 " . ($showsim == 100 ? 'selected' : '') . ">100</option>
-</select>";
-                            ?>
-                            </div><?php
-                        }
-                        ?>
-
                     </div>
                     <div class="center aligned">
-                        <div class='ui toggle checkbox'>
-                            <input type='checkbox'>
-                            <label>使用Timeago(beta)</label>
-                        </div>
                         <button class="ui labeled icon mini button" type="submit"><i
                                 class="search icon"></i><?= $MSG_SEARCH ?></button>
                     </div>

@@ -173,6 +173,18 @@ if (isset($_SESSION['user_id'])) {
        window.socket.windowDestroyClose = true;
        window.socket.close();
 });
+    window.addEventListener("blur", function(event){
+        var socket = window.socket;
+        if(socket && socket.connected && socket.io.engine.transport.query.transport === "polling") {
+            socket.close();
+        }
+    });
+    window.addEventListener("focus", function(event){
+        var socket = window.socket;
+        if(socket && !socket.connected && socket.io.engine.transport.query.transport === "polling") {
+            socket.connect();
+        }
+    })
   // $.getScript( protocol+"//"+location.hostname+"/socket.io/socket.io.js",function(){
         
   // });

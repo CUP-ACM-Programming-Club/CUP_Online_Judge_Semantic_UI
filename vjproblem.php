@@ -11,6 +11,8 @@
     <title><?php echo $OJ_NAME?></title>
     <?php include("template/$OJ_TEMPLATE/css.php");?>
     <?php include("template/$OJ_TEMPLATE/js.php");?>
+        <?php include("template/$OJ_TEMPLATE/extra_js.php") ?>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
@@ -49,7 +51,8 @@
         else{
             echo "<a class='ui button blue' href='".strtolower($oj_signal)."submitpage.php?".$_SERVER['QUERY_STRING']."'>$MSG_SUBMIT</a>&nbsp;";
         }
-        echo "<a href='problemstatus.php?id=".$row->problem_id."' class='ui button orange'>$MSG_STATUS</a>&nbsp;";
+        echo " <a href='vjudgeproblemstatus.php?pid=$pid&oj=$oj_signal'
+                           class='ui button orange'>$MSG_STATUS</a>";
             echo "<a href='".strtolower($oj_signal)."submitpage.php?".$_SERVER['QUERY_STRING']."' class='ui button black'>切换双屏</a>&nbsp;";
         //echo "<a class='btn btn-lg btn-default' href='bbs.php?pid=".$row->problem_id."$ucid'>$MSG_BBS</a>&nbsp;";
         if(isset($_SESSION['administrator'])){

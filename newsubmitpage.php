@@ -12,12 +12,11 @@
     </title>
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
+    <script src="/js/fingerprint2.min.js"></script>
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
     <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-language_tools.js" type="text/javascript"
             charset="utf-8"></script>
-    <script src="/js/markdown-it.js?ver=1.0.0"></script>
-
     <script src="ace-builds/src-min-noconflict/ext-error_marker.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-statusbar.js?ver=1.0" type="text/javascript"
             charset="utf-8"></script>
@@ -375,7 +374,7 @@
                             var memory = data["memory"];
                             var sim = data.sim;
                             var sim_s_id = data.sim_s_id;
-                            var pass_rate = data["pass_rate"] * 100;
+                            var pass_rate = (data["pass_rate"] ? data["pass_rate"] : 1) * 100;
                             if (status > 3) {
                                 count = 0;
                                 this.submitDisabled = false;
@@ -514,6 +513,7 @@
                                 source: window.editor.getValue(),
                                 share:this.share,
                                 type: type,
+                                fingerprint:window.fingerprint,
                                 csrf: "<?=$token?>"
                             };
                             window.postdata = postdata;
@@ -599,12 +599,10 @@
                                     language: $("#language").val(),
                                     source: window.editor.getValue(),
                                     type: type,
-                                    csrf: "<?=$token?>"
-
+                                    csrf: "<?=$token?>",
+                                    fingerprint:window.fingerprint
                                 };
                                 window.postdata = postdata;
-
-
                             }
                             console.log(window.postdata);
                             $.post("submit.php?ajax", {
@@ -771,7 +769,7 @@
                 });
                 var copy_content = new Clipboard(".copy.context",{
                         text: function (trigger) {
-                            return $($(trigger.getAttribute("data-clipboard-target"))[1]).text();
+                            return $(trigger).parent().next().text();
                         }
                         });
                     copy_content.on("success",function(e){
@@ -1227,4 +1225,9 @@ SHOULD BE:
 <!-- Placed at the end of the document so the pages load faster -->
 
 </body>
+<script>
+  new Fingerprint2().get(function(result, components) {
+  window.fingerprint = result;
+})
+</script>
 </html>

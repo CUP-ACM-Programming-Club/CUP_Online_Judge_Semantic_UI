@@ -482,11 +482,12 @@
                 $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt, function (data) {
                     that.dim = false;
                     that.search_func(data);
+                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt, function (data) {
+                        that.dim = false;
+                        that.search_func(data);
+                    })
                 })
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt, function (data) {
-                    that.dim = false;
-                    that.search_func(data);
-                })
+                
             },
             submit: function (data) {
                 if((!this.user_id || this.user_id === data.user_id) && (this.problem_result === -1) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt) {

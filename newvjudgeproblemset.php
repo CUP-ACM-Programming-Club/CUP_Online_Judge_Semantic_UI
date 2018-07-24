@@ -95,8 +95,7 @@
             </td>
             <td>
                 <div class="left aligned">
-                    <a :href="row.source.toLowerCase()+'submitpage.php?id='+row.problem_id+'&js'" target="_blank">
-                        {{row.title}}
+                    <a :href="row.source.toLowerCase()+'submitpage.php?id='+row.problem_id+'&js'" target="_blank" v-html="markdownIt.renderRaw(row.title)">
                     </a>
                     <div class="show_tag_controled" style="float:right;">
                     <span class="ui header" v-for="_tag in row.label?row.label.split(' '):['标签待整理']">
