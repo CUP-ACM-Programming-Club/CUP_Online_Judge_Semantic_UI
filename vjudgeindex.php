@@ -212,7 +212,7 @@ $homepage="";
     $time=$result[0]['t'];
     $msg=$result[0]['msg'];
     ?>
-    $('.maintain').html("Version:<?=$time?>").attr("data-html", "<div class='header'>"+"升级维护内容"+"</div><div class='content'><?=str_replace("&gt;",">",str_replace("&lt;","<",htmlentities($msg,ENT_COMPAT)))?></div>")
+    $('.maintain').html("Version:<?=$time?>").attr("data-html", "<div class='header'>"+"升级维护内容"+"</div><div class='content'><?=str_replace("\n","",str_replace("&gt;",">",str_replace("&lt;","<",htmlentities($msg,ENT_COMPAT))))?></div>")
         .popup({
             position: 'top center',
             on: 'hover'

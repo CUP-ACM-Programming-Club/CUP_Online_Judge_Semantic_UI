@@ -79,36 +79,27 @@ if(isset($_GET['debug']))
     exit(0);
 }
 foreach($result as $row){
-if ($cnt)
-echo "<tr class='oddrow'>";
-else
-echo "<tr class='evenrow'>";
-$i=0;
-$cnt=count($row);
-for($a=0;$a<$cnt/2;$a++){
-	if($i>3&&$i!=8)
-		echo "<td class='hidden-xs'>";
-	else
-		echo "<td>";
-	if($a>=3&&$a<5)
-		echo "<a href='userinfo.php?user=".$row[$a]."'>";
-	else if($a==1)
-		echo "<a class='ui button blue' href='comparesource.php?left=".$row[$a]."&right=".$row[$a+1]."'>";
-	if($a==1)
+    ?>
+    <tr>
+        <td><?php
+        echo "<a href='newsubmitpage.php?cid=".intval($_GET['cid'])."&pid=".$row["pid"]."'>".chr(65+intval($row["pid"]));
+        ?></td>
+        <td><?php
+		echo "<a class='ui button blue' href='comparesource.php?left=".$row[1]."&right=".$row[2]."'>";
 	    echo "代码对比(".$row[1].",".$row[2].")";
-	else if($a==0)
-	    echo "<a href='newsubmitpage.php?cid=".intval($_GET['cid'])."&pid=".$row[$a]."'>".chr(65+intval($row[$a]));
-	else
-	echo $row[$a];
-	if($a==5)echo "%";
-	else
-	echo "</a>";
-	if($a==1)$a=2;
-	echo "</td>";
-	$i++;
-}
-echo "</tr>";
-$cnt=1-$cnt;
+	    echo "</a>";
+        ?></td>
+        <td>
+        <a href='userinfo.php?user=<?=$row["muid"]?>'><?=$row["muid"]?><br><?=$row["mnick"]?></a>
+        </td>
+        <td>
+            <a href='userinfo.php?user=<?=$row["cuid"]?>'><?=$row["cuid"]?><br><?=$row["cnick"]?></a>
+        </td>
+        <td>
+            <?=$row["msim"]?>%
+        </td>
+        </tr>
+    <?php
 }
 ?>
 </tbody>
