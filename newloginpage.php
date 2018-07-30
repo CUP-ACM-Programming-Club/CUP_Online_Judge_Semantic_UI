@@ -1,13 +1,4 @@
 <!DOCTYPE html>
-<?php
-
-
-$authcode = "";
-if (isset($_SESSION['user_id'])) {
-    $authcode = generate_password(16);
-    $database->update("users", ["authcode" => $authcode], ["user_id" => $_SESSION['user_id']]);
-}
-?>
 <html>
 <head>
     <!-- Standard Meta -->
@@ -19,7 +10,7 @@ if (isset($_SESSION['user_id'])) {
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <script src="../dist/components/transition.js"></script>
-    <?php include("csrf.php")?>
+    <script src="/template/semantic-ui/js/cookie.js"></script>
     <style type="text/css">
         body {
             background-color: #DADADA;
@@ -39,43 +30,23 @@ if (isset($_SESSION['user_id'])) {
     </style>
     <script>
         function check() {
-            if($(".ui.error.message").html().length>0)$(".ui.error.message").html("");
+            $(".ui.error.message").hide();
             $(".ui.fluid.large.teal.button").addClass("loading");
-            var a = document.getElementById("user_id").value;
-            var b = document.getElementById("password").value;
-            var c = document.getElementById("vcode").value;
-            var arr = {};
-            var response;
-            arr.user_id = a;
-            arr.password = b;
-            var jsonstring;
-            <?php if($OJ_VCODE){?>
-            var obj = {
-                user_id: a,
-                password: b,
-                vcode: c,
-                authcode:"<?=$authcode?>"
-            };
-            jsonstring = JSON.stringify(obj);
-            <?php } else{?>
-            var obj = {
-                user_id: a,
-                password: b
-                ,csrf:"<?=$token?>"
-            };
-            jsonstring = JSON.stringify(obj);
-            <?php }?>
+            var jsonstring = JSON.stringify({
+                user_id:$("#user_id").val(),
+                password:$("#password").val(),
+                vcode:$("#vcode").val()
+            });
             $.post("/api/login","msg=" + Base64.encode(Base64.encode(jsonstring)));
             var send={
                 msg:Base64.encode(Base64.encode(jsonstring)),
-                csrf:"<?=$token?>"
+                csrf:Cookies.get("token")
             }
             console.log(send);
             $.post("login.php",send,function(response){
                     $(".ui.fluid.large.teal.button").removeClass("loading");
                     if (response === "true") {
-                        //window.session=Base64.encode(Base64.encode(jsonstring);
-                        $(".ui.error.message").html("").hide();
+                        $(".ui.error.message").hide();
                         $.post("/api/login/newpassword","user_id="+$("#user_id").val()+"&password="+$("#password").val());
                         var timetick = setTimeout(function () {
                            location.href="/";
@@ -83,11 +54,11 @@ if (isset($_SESSION['user_id'])) {
                     }
                     else if (response == "vcode false") {
                         $(".ui.error.message").html("验证码错误!").show();
-                        $(".ui.middle.aligned.center.aligned.grid .column").transition("shake")
-                        document.getElementById('vcode_graph').src = 'vcode.php?' + Math.random();
+                        $(".ui.middle.aligned.center.aligned.grid .column").transition("shake");
+                        $("#vcode_graph").attr("src",'vcode.php?' + Math.random());
                     }
                     else {
-                        document.getElementById('vcode_graph').src = 'vcode.php?' + Math.random();
+                        $("#vcode_graph").attr("src",'vcode.php?' + Math.random());
                         $(".ui.middle.aligned.center.aligned.grid .column").transition("shake")
                         $(".ui.error.message").html("账号或密码错误！<a href='lostpassword.php'>找回密码</a>").show();
                     }

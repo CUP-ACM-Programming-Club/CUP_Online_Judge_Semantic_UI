@@ -1,7 +1,5 @@
 <?php
 $url = basename($_SERVER['REQUEST_URI']);
-//require_once('name_var.php');
-$dir = basename(getcwd());
 require_once("template/$OJ_TEMPLATE/profile.php");
 $path_fix = "";
 $ACTIVE = "class='active'";
@@ -367,15 +365,13 @@ $suffix="?my";
 <div class="ui flowing popup hidden dropdown_menu_group">
      <?=$dropdown_control?>
 </div>
-<?php if (!isset($homepage)) { ?>
-    <div class="ui vertical center aligned segment" style="border-bottom:0px">
+    <div class="ui vertical center aligned segment hidemenu" style="border-bottom:0px;display:none">
         <div class="ui container">
             <div class="ui inverted borderless large pointing menu" style="opacity:0">
                 
             </div>
         </div>
     </div>
-<?php } ?>
 <div class="ui basic small test modal">
     <div class="ui icon header">
 <i class="code icon"></i>
@@ -416,9 +412,12 @@ $("a[href='"+location.pathname.substring(1)+"']").addClass("active");
 if(typeof homepage !== "undefined") {
     $(".ui.borderless.network.secondary.menu").addClass("inverted");
 }
+if(location.pathname.substring(1).length > 0 && !location.pathname.match(/index/)) {
+    $(".hidemenu").show();
+}
   </script>
-<script src="template/<?php echo $OJ_TEMPLATE ?>/js/cookie.js"></script>
-<script src="template/<?php echo $OJ_TEMPLATE ?>/js/platform.js?ver=1.0.1"></script>
+<script src="template/semantic-ui/js/cookie.js"></script>
+<script src="template/semantic-ui/js/platform.js?ver=1.0.1"></script>
 <?php 
-require_once("template/$OJ_TEMPLATE/websocket.php");
+require_once("template/semantic-ui/websocket.php");
 ?>
