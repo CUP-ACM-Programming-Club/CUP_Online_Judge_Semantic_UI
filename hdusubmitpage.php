@@ -421,6 +421,14 @@ SHOULD BE:
                                 });
                                 $("#progress").progress('set error');
                             }
+                            else if(status == 15) {
+                                var innerH = judge_result[status] + " 由于您的代码问题/目标OJ的故障,该代码未能提交";
+                                $("#progess_text").html(innerH);
+                                $('#progress').progress({
+                                    percent: 100
+                                });
+                                $("#progress").progress('set warning');
+                            }
                             else {
                                 var innerH = judge_result[status];
                                 if (status == 11) {
