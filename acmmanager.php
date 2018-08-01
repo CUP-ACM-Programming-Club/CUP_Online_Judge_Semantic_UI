@@ -38,7 +38,7 @@
                         <th width="10%">题目</th>
                         <th width="15%">提交时间</th>
                         <th width="6%" v-if="current_person">提交语言</th>
-                        <th width="11%" v-if="current_person">结果</th>
+                        <th width="11%">结果</th>
                         <th width="6%" v-if="current_person">运行时间</th>
                         <th width="6%" v-if="current_person">运行内存</th>
                         <th width="6%" v-if="current_person">代码长度</th>
@@ -50,7 +50,7 @@
                             <td><a target="_blank" :href="getProblemSource(row.oj_name,row.problem_id)">{{row.oj_name+" "+(isNaN(row.problem_id) ? row.problem_id :Math.abs(row.problem_id))}}</a></td>
                             <td>{{new Date(row.time).toLocaleString()}}</td>
                             <td v-if="current_person">{{isNaN(row.language)?row.language:parseLang(row.oj_name,row.language)}}</td>
-                            <td v-if="current_person" :class="judge_color[row.result]"><i :class="icon_list[row.result]+' icon'"></i>{{result_parse[row.result]}}</td>
+                            <td :class="judge_color[row.result]"><i :class="icon_list[row.result]+' icon'"></i>{{result_parse[row.result]}}</td>
                             <td v-if="current_person">{{row.time_running}}ms</td>
                             <td v-if="current_person">{{row.memory}}KB</td>
                             <td v-if="current_person">{{row.code_length}}B</td>
@@ -84,9 +84,9 @@ $.get("../api/acmsubmit",function(d){
                 var that = this;
                 $.get("../api/acmsubmit?name="+this.current_person,function(data){
                     that.table = data.data;
-                })
-                $.get("../api/acmsubmit?name="+this.current_person,function(data){
+                    $.get("../api/acmsubmit?name="+that.current_person,function(data){
                     that.table = data.data;
+                })
                 })
             }
         },

@@ -47,14 +47,11 @@ $homepage="";
             
             <h1 class="ui inverted header">
                 <?= $OJ_NAME ?>
-                <a class="ui white top right attached label maintain"></a>
             </h1>
+            <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a>
             
-            <h2>由 <a class="club white" href="https://github.com/CUP-ACM-Programming-Club" target="_blank">ACM程序设计俱乐部</a> <span class="maintainer">维护开发</span> <a class="support white">点此支持</a><div class='ui flowing popup  hidden'><div class='ui image' style="width:220px"><img src='/img/wechat.png'></div><div class="ui image" style="width:220px"><img src="/img/alipay_2.jpg"></div><div class="ui image" style="width:220px"><img src="/img/alipay.jpg"></div></div></h2>
 <!--<h4></h4>-->
-             <a class="ui huge inverted download button" target="_blank" href='update_log.php'>更新日志</a>
              <!--<a class="ui huge inverted download button" href="cprogrammingcontest.php">查看复赛情况</a>-->
-             <!--<a class="ui huge inverted download button generator">问题生成器</a>-->
         </div>
         <br>
         <!--
@@ -64,22 +61,6 @@ $homepage="";
             </div>
         </div>
         <br><br>-->
-        <div class="packer hidden transition">
-            <a href="/software/CUP_Online_Judge_Problem_Creator-darwin-x64.zip" class="ui large button download inverted">
-              <i class="icon apple"></i>
-              macOS 10.9或以上
-            </a>
-            <a href="/software/CUP_Online_Judge_Problem_Creator-win32-x64.zip" class="ui large button download inverted">
-              <i class="icon windows"></i>
-              Windows 7(64位)或以上
-            </a>
-            
-            <a href="/software/CUP_Online_Judge_Problem_Creator-linux-x64.zip" class="ui large button download inverted">
-              <i class="icon linux"></i>
-              Linux(x64)
-            </a>
-            <h4></h4>
-        </div>
         <a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image" style="display:inline-block"></a>
         <!--<div class="ui huge primary button" onclick="location.href='<?php if (isset($_SESSION['user_id'])) echo "problemset.php"; else echo "newloginpage.php"; ?>'"><?php if (!isset($_SESSION['user_id'])) echo "Login"; else echo "Get Started"; ?><i class="right arrow icon"></i></div>-->
     </div>
@@ -135,6 +116,7 @@ $homepage="";
             <a href="#">Developer</a>
         </h4>
         <h3 class="ui header">平台开发</h3>
+        <h4>由 <a class="club" href="https://github.com/CUP-ACM-Programming-Club" target="_blank">ACM程序设计俱乐部</a> <span class="maintainer">维护开发</span> <a class="support">点此支持</a><div class='ui flowing popup  hidden'><div class='ui image' style="width:220px"><img src='/img/wechat.png'></div><div class="ui image" style="width:220px"><img src="/img/alipay_2.jpg"></div><div class="ui image" style="width:220px"><img src="/img/alipay.jpg"></div></div></h4>
         <h4 class="ui content">技术栈:Linux + C/C++ + MySQL + PHP + Node.js + ExpressJS + Apache</h4>
         <h4 class="ui content">由Vue.js强力驱动</h4>
         <a class="ui large disabled button" href="https://coding.net/u/RyanLee/p/CUPOJ" target="_blank">部分代码暂未开源</a>
@@ -211,11 +193,13 @@ $homepage="";
         on:'hover'
     });
     <?php
-    $result=$database->query("select mtime as t,msg from maintain_info order by t desc limit 1")->fetchAll();
+    $result=$database->query("select mtime as t,msg,version,vj_version from maintain_info order by t desc limit 1")->fetchAll();
     $time=$result[0]['t'];
     $msg=$result[0]['msg'];
+    $ver=$result[0]['version'];
+    $vj_ver=$result[0]['vj_version'];
     ?>
-    $('.maintain').html("Version:<?=$time?>").attr("data-html", "<div class='header'>"+"升级维护内容"+"</div><div class='content'><?=str_replace("&gt;",">",str_replace("&lt;","<",htmlentities($msg,ENT_COMPAT)))?></div>")
+    $('.maintain').html("Version:<?=$time?>").attr("data-html", "<div class='ui header'>"+"升级维护内容"+"<div class='sub header'>引擎版本:<?=$ver?></div><div class='sub header'>VJ版本:<?=$vj_ver?></div></div><div class='content'><?=str_replace("\n","",str_replace("&gt;",">",str_replace("&lt;","<",htmlentities($msg,ENT_COMPAT))))?></div>")
         .popup({
             position: 'top center',
             on: 'hover'
@@ -240,7 +224,7 @@ $homepage="";
     })
 </script>
 <!--
-<script src="template/<?= $OJ_TEMPLATE ?>/js/typed.min.js"></script>
-<script src="template/<?= $OJ_TEMPLATE ?>/js/typed.js?v=1.0"></script>
+<script src="template/semantic-ui/js/typed.min.js"></script>
+<script src="template/semantic-ui/js/typed.js?v=1.0"></script>
 -->
 </html>

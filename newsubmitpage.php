@@ -14,6 +14,7 @@
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <script src="/js/fingerprint2.min.js"></script>
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
+    <!--<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>-->
     <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-language_tools.js" type="text/javascript"
             charset="utf-8"></script>
@@ -21,7 +22,6 @@
     <script src="ace-builds/src-min-noconflict/ext-statusbar.js?ver=1.0" type="text/javascript"
             charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-emmet.js" type="text/javascript" charset="utf-8"></script>
-    <script src="template/semantic-ui/js/cookie.js"></script>
     <script src="ace-builds/src-min-noconflict/ext-static_highlight.js"></script>
     <style>
         .ui.modal {
@@ -1080,7 +1080,7 @@ SHOULD BE:
                 </div>
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
-                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.6"></script>
+                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.7"></script>
                 <textarea style="display:none" cols=40 rows=5 name="input_text"
                           id="ipt" class="sample_input"><?php echo $view_sample_input ?></textarea>
                 <div id="modeBar" style="margin: 0;

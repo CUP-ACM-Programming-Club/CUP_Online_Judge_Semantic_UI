@@ -26,6 +26,34 @@
             <h2 class="ui header">
                 <i class="settings icon"></i>
                 <div class="content">
+                    问题生成器
+                    <div class="sub header">下载生成题目的工具</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+    <div class="ui grid">
+        <div class="column">
+            <a href="/software/CUP_Online_Judge_Problem_Creator-darwin-x64.zip" class="ui large button download basic">
+              <i class="icon apple"></i>
+              macOS 10.9或以上
+            </a>
+            <a href="/software/CUP_Online_Judge_Problem_Creator-win32-x64.zip" class="ui large button download basic">
+              <i class="icon windows"></i>
+              Windows 7(64位)或以上
+            </a>
+            
+            <a href="/software/CUP_Online_Judge_Problem_Creator-linux-x64.zip" class="ui large button download basic">
+              <i class="icon linux"></i>
+              Linux(x64)
+            </a>
+        </div>
+    </div>
+    <div class="ui one column grid">
+        <div class="column">
+            <h2 class="ui header">
+                <i class="settings icon"></i>
+                <div class="content">
                     浏览器
                     <div class="sub header">下载最适合使用的浏览器</div>
                 </div>
@@ -123,6 +151,24 @@
                     <div class="sub header">使用更加符合运行环境的编译套件</div>
                 </div>
             </h2>
+        </div>
+    </div>
+    <div class="ui grid">
+        <div class="column">
+            <h3 class="ui header">Windows X64</h3>
+            <p>Install MinGW:<a href="https://nuwen.net/mingw.html" target="_blank">https://nuwen.net/mingw.html</a></p>
+            <h3 class="ui header">macOS(HomeBrew)</h3>
+            <pre>brew install gcc</pre>
+            <p><b>Important:</b>In macOS,gcc/g++ is the alias of clang/clang++</p>
+            <p>Real gcc which installed from HomeBrew is 
+            <pre>gcc-${version}</pre> 
+            <pre>g++-${version}</pre>
+            (gcc-8 in sample picture below)</p>
+            <img src="/img/mac_install_gcc.svg" class="ui image">
+            <h3 class="ui header">Ubuntu</h3>
+            <pre>sudo apt install gcc</pre>
+            <h3 class="ui header">CentOS/Fedora/RHEL</h3>
+            <pre>sudo yum install gcc</pre>
         </div>
     </div>
 </div>

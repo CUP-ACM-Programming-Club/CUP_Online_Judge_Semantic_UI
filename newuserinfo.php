@@ -1,39 +1,3 @@
-<?php
-$special_subject = $database->select("special_subject", "*", ["topic_id[>=]" => 4,"topic_id[<=]"=>22]);
-$ss = [];
-foreach ($special_subject as $v) {
-    $ss[] = ["title" => $v['title'], "id" => $v['topic_id']];
-}
-// print_r($special_subject);
-// print_r($ss);
-foreach ($ss as $k => $v) {
-    $result = $database->select("special_subject_problem", "*", ["topic_id" => $v['id']]);
-    $ss[$k]["problem"]=$result;
-}
-
-foreach ($ss as $k => $v) {
-    foreach ($v['problem'] as $s => $e) {
-        //echo var_dump($v['problem']);
-        $result = $database->count("vjudge_solution", ["user_id" => $user_mysql, "result" => 4, "problem_id" => $e['problem_id'], "oj_name" => $e['oj_name']]);
-        $result += $database->count("vjudge_record", ["user_id" => $user_mysql, "problem_id" => $e['problem_id'], "oj_name" => $e['oj_name'],"result"=>4]);
-        //echo $result;
-        $ss[$k]['problem'][$s]['ac'] = $result > 0 ? 1 : 0;
-    }
-}
-foreach ($ss as $k => $v) {
-    $cnt = 0;
-    $tot=0;
-    foreach ($v['problem'] as $s => $e) {
-        $cnt += intval($e['ac']);
-        $tot++;
-    }
-    if($tot==0)$tot=1;
-    $ss[$k]['ac_num'] = $cnt;
-    $ss[$k]['tot']=$tot;
-  //  echo "<br>".$cnt."<br>".$tot."<br>".$ss[$k]['title'];
-}
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,120 +8,7 @@ foreach ($ss as $k => $v) {
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title><?php echo $OJ_NAME ?></title>
-    <link href="template/<?php echo $OJ_TEMPLATE ?>/css/semantic.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../template/<?php echo $OJ_TEMPLATE; ?>/css/home.css">
-    <link href="../template/<?= $OJ_TEMPLATE ?>/css/katex.min.css" rel="stylesheet">
-    <style type="text/css">
-        .padding {
-            padding-left: 1em;
-            padding-right: 1em;
-            padding-top: 1em;
-            padding-bottom: 1em;
-        }
-
-        .hidden.menu {
-            display: none;
-        }
-
-        .masthead.segment {
-            min-height: 700px;
-            padding: 1em 0em;
-        }
-
-        .masthead .logo.item img {
-            margin-right: 1em;
-        }
-
-        .masthead .ui.menu .ui.button {
-            margin-left: 0.5em;
-        }
-
-        .masthead h1.ui.header {
-            margin-top: 3em;
-            margin-bottom: 0em;
-            font-size: 4em;
-            font-weight: normal;
-        }
-
-        .masthead h2 {
-            font-size: 1.7em;
-            font-weight: normal;
-        }
-
-        .ui.vertical.stripe {
-            padding: 8em 0em;
-        }
-
-        .ui.vertical.stripe h3 {
-            font-size: 2em;
-        }
-
-        .ui.vertical.stripe .button + h3,
-        .ui.vertical.stripe p + h3 {
-            margin-top: 3em;
-        }
-
-        .ui.vertical.stripe .floated.image {
-            clear: both;
-        }
-
-        .ui.vertical.stripe p {
-            font-size: 1.33em;
-        }
-
-        .ui.vertical.stripe .horizontal.divider {
-            margin: 3em 0em;
-        }
-
-        .quote.stripe.segment {
-            padding: 0em;
-        }
-
-        .quote.stripe.segment .grid .column {
-            padding-top: 5em;
-            padding-bottom: 5em;
-        }
-
-        .footer.segment {
-            padding: 5em 0em;
-        }
-
-        .secondary.pointing.menu .toc.item {
-            display: none;
-        }
-
-        .ui.large.secondary.inverted.pointing.menu {
-            border-width: 0px;
-        }
-
-        @media only screen and (max-width: 700px) {
-            .ui.fixed.menu {
-                display: none !important;
-            }
-
-            .secondary.pointing.menu .item,
-            .secondary.pointing.menu .menu {
-                display: none;
-            }
-
-            .secondary.pointing.menu .toc.item {
-                display: block;
-            }
-
-            .masthead.segment {
-                min-height: 350px;
-            }
-
-            .masthead h1.ui.header {
-                font-size: 2em;
-                margin-top: 1.5em;
-            }
-
-        }
-
-
-    </style>
+    <title>CUP Online Judge</title>
     <?php include("template/$OJ_TEMPLATE/js.php"); 
           include("template/$OJ_TEMPLATE/css.php");
     ?>
@@ -166,7 +17,7 @@ foreach ($ss as $k => $v) {
 
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php"); ?>
-<div class="ui container pusher">
+<div class="ui container pusher" v-cloak>
     <div class="padding">
         <div class="ui grid">
             <div class="row">
@@ -174,72 +25,27 @@ foreach ($ss as $k => $v) {
                     <div class="ui card" style="width: 100%; " id="user_card">
                         <div class="blurring dimmable image" id="avatar_container">
                             <img style=" "
-                                 src="<?php if (file_exists("./avatar/$user.jpg")) { ?>./avatar/<?= $user ?>.jpg<?php
-                                 } else {
-                                     ?>./assets/images/wireframe/white-image.png<?php
-                                 }
-                                 ?>">
+                                 :src="avatar">
                         </div>
                         <div class="content">
                             <div
-                                class="header"><?php echo stripslashes($nick) ?>&nbsp;&nbsp;<a
-                                    href="mail.php?to_user=<?= $user ?>"><i class="mail icon"></i></a></div>
+                                class="header">{{nick}}&nbsp;&nbsp;<a
+                                    :href="'mail.php?to_user='+user_id"><i class="mail icon"></i></a></div>
                             <div class="meta">
-                                <i class="user circle outline icon"></i><a class="group"><?php if ($privilege) {
-                                        echo "管理员";
-                                    } else {
-                                        echo "普通用户";
-                                    } ?></a>
+                                <i class="user circle outline icon"></i><a class="group">{{privilege && privilege.length > 0?"管理员":"普通用户"}}</a>
                                     
-                                        <?php if($user == "2016011253"){ ?>
-                                        <i class="user circle outline icon"></i><a class="group">
+                                        <i  v-if="user_id === '2016011253'" class="user circle outline icon"></i><a v-if="user_id === '2016011253'" class="group">
                                         系统开发/维护
                                         </a>
-                                        <?php } ?>
                                     <br>
-                                <?php
-                                $result = $database->select("acm_member","level", ["user_id" => $user]);
-                                if (count($result) > 0) {
-                                    echo "<a class='group'><i class='user icon'></i>ACM";
-                                    if($result[0]=="0")echo "后备";
-                                    else echo "正式";
-                                    echo "队员</a>";
-                                }
-                                ?>
-                                <?php 
-                                $result=$database->select("award","*",["user_id"=>$user]);
-                                if(count($result)>0)
-                                {
-                                    foreach($result as $v)
-                                    {
-                                        echo "<br><a class='group'><i class='trophy icon'></i>".$v["year"]."年".$v["award"]."</a>";
-                                    }
-                                }
-                                ?>
+                                    <a class='group'><i class='user icon'></i>ACM{{acm_user.level?"正式":"后备"}}队员</a>
+                                        <a v-for="row in award" class="group"><br>
+                                            <i class="trophy icon"></i>
+                                        {{row.year + "年" + row.award}}</a>
                             </div>
                         </div>
                         <div class="extra content">
-                            <a><i class="check icon"></i>通过 <?php
-                                $acres=$database->select("vjudge_record",["problem_id","oj_name"],["user_id"=>$user_mysql]);
-                                $acproblem=[];
-                                foreach($acres as $v)
-                                {
-                                    $acproblem[$v['oj_name'].$v['problem_id']]=1;
-                                }
-                                $aclocal=$database->select("vjudge_solution",["problem_id","oj_name"],["user_id"=>$user_mysql]);
-                              //  echo count($acproblem);
-                              //  echo print_r($acproblem);
-                                foreach($aclocal as $v)
-                                {
-                                    $acproblem[$v['oj_name'].$v['problem_id']]=1;
-                                }
-                                $result=count($acproblem);
-                                echo intval($AC + $result) . "&nbsp;题&nbsp;";
-                                if ($result > 0) {
-                                    echo "(" . $AC . "+" . $result . ")";
-                                }
-                                ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
-                                    class="line chart icon"></i>Rank:&nbsp;<?= $Rank ?></a>
+                            <a><i class="check icon"></i>通过 {{local_accepted + other_accepted + "&nbsp;题&nbsp;(" + local_accepted + "+" + other_accepted + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"}}<i class="line chart icon"></i>Rank:&nbsp;{{rank}}</a>
                         </div>
                     </div>
                 </div>
@@ -254,116 +60,57 @@ foreach ($ss as $k => $v) {
                                                 <div class="column">
                                                     <h4 class="ui top attached block header"><i
                                                             class="id card icon"></i>用户名</h4>
-                                                    <div class="ui attached segment"><?= $user ?></div>
+                                                    <div class="ui attached segment">{{user_id}}</div>
                                                     <h4 class="ui attached block header"><i class="university icon"></i>学校
                                                     </h4>
-                                                    <div class="ui attached segment"><?= $school ?></div>
+                                                    <div class="ui attached segment">{{school}}</div>
                                                     <h4 class="ui attached block header"><i
                                                             class="mail square icon"></i>邮件</h4>
                                                     <div class="ui attached segment"><a
-                                                            href="mailto:<?= $email ?>"><?= $email ?></a></div>
+                                                            :href="'mailto:'+email">{{email}}</a></div>
                                                     <h4 class="ui attached block header">
                                                         <i class="newspaper icon"></i>Blog
                                                     </h4>
                                                     <div class="ui attached segment">
-                                                        <a target="_blank" href="<?=$blog?>"><?=$blog?></a>
+                                                        <a target="_blank" :href="blog">{{blog}}</a>
                                                     </div>
                                                     <h4 class="ui attached block header">
                                                         <i class="github icon"></i>GitHub
                                                     </h4>
                                                     <div class="ui bottom attached segment">
-                                                        <a target="_blank" href="<?=$github?>"><?=$github?></a>
+                                                        <a target="_blank" :href="github">{{github}}</a>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="column">
-                                                    <h4 class="ui top attached block header"><?= $OJ_NAME ?></h4>
+                                                    <h4 class="ui top attached block header">CUP Online Judge</h4>
                                                     <div class="ui attached segment">
-                                                        <script language='javascript'>
-                                                            function p(id) {
-                                                                document.write("<a href=problem.php?id=" + id + ">" + id + " </a>");
-                                                            }
-                                                            <?php
-                                                            $result = array_unique($database->select("solution", "problem_id", ["user_id" => $user_mysql, "result" => 4, "ORDER" => ["problem_id" => "ASC"]]));
-                                                            foreach ($result as $v) {
-                                                                if ($v)
-                                                                    echo "p(" . $v . ");";
-                                                            }
-                                                            ?>
-                                                        </script>
+                                                        <a v-for="row in accept.local"
+                                                        :href="'newsubmitpage.php?id='+row.problem_id">
+                                                            {{row.problem_id}}</a>
                                                     </div>
                                                     <h4 class="ui attached block header">HDU</h4>
                                                     <div class="ui attached segment">
-                                                        <script language='javascript'>
-                                                        function vp(id,oj) {
-                                                                document.write("<a href="+oj+"submitpage.php?pid=" + id + ">" + id + " </a>");
-                                                            }
-                                                            <?php
-                                                            $result = array_unique($database->select("vjudge_solution", "problem_id", ["user_id" => $user_mysql, "result" => 4, "oj_name" => "HDU", "ORDER" => ["problem_id" => "ASC"]]));
-                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "HDU","result"=>4]);
-                                                            foreach ($datas as $v) {
-                                                                array_push($result, $v);
-                                                            }
-                                                            $result = array_unique($result);
-                                                            sort($result);
-                                                            foreach ($result as $v) {
-                                                                if (is_numeric($v))
-                                                                    echo "vp(" . $v . ",\"hdu\");";
-                                                            }
-                                                            ?>
-                                                        </script>
+                                                        <a v-for="row in accept.hdu"
+                                                        :href="'hdusubmitpage.php?id='+row.problem_id"> {{row.problem_id}}</a>
                                                     </div>
                                                     <h4 class="ui attached block header">POJ</h4>
                                                     <div class="ui attached segment">
-                                                        <script language='javascript'>
-                                                            <?php
-                                                            $result = array_unique($database->select("vjudge_solution", "problem_id", ["user_id" => $user_mysql, "result" => 4, "oj_name" => "POJ", "ORDER" => ["problem_id" => "ASC"]]));
-                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "POJ","result"=>4]);
-                                                            foreach ($datas as $v) {
-                                                                array_push($result, $v);
-                                                            }
-                                                            $result = array_unique($result);
-                                                            sort($result);
-                                                            foreach ($result as $v) {
-                                                                if (is_numeric($v)>0)
-                                                                    echo "vp(" . $v . ",\"poj\");";
-                                                            }
-                                                            ?>
-                                                        </script>
+                                                        <a v-for="row in accept.poj" :href="'pojsubmitpage.php?id='+row.problem_id">
+                                                            {{row.problem_id}}</a>
+                                                            </a>
                                                     </div>
                                                     <h4 class="ui attached block header">UVA</h4>
                                                     <div class="ui attached segment">
-                                                        <script language='javascript'>
-                                                        <?php 
-                                                        $result = array_unique($database->select("vjudge_solution", "problem_id", ["user_id" => $user_mysql, "result" => 4, "oj_name" => "UVA", "ORDER" => ["problem_id" => "ASC"]]));
-                                                            $datas = $database->select("vjudge_record", "problem_id", ["user_id" => $user_mysql, "oj_name" => "UVA","result"=>4]);
-                                                            foreach ($datas as $v) {
-                                                                array_push($result, $v);
-                                                            }
-                                                            $result = array_unique($result);
-                                                            sort($result);
-                                                            foreach ($result as $v) {
-                                                                if (is_numeric($v)>0)
-                                                                    echo "vp(" . $v . ",\"uva\");";
-                                                            }
-                                                        ?>
-                                                        </script>
+                                                       <a v-for="row in accept.uva" :href="'uvasubmitpage.php?id='+row.problem_id">
+                                                            {{row.problem_id}}</a>
+                                                            </a>
                                                         </div>
                                                     <h4 class="ui attached block header">其他</h4>
                                                     <div class="ui bottom attached segment">
-                                                        <script language='javascript'>
-                                                        function p(id) {
-                                                                document.write("<a href='javascript:void(0)'>" + id + " </a>");
-                                                            }
-                                                            <?php
-                                                            $result = $database->select("vjudge_record", ["oj_name", "problem_id"], ["user_id" => $user_mysql, "oj_name[!]" => ["POJ", "HDU","UVA"],"result"=>4]);
-                                                            sort($result);
-                                                            foreach ($result as $v) {
-                                                                echo "p('" . $v["oj_name"] . " " . (is_numeric($v["problem_id"])?abs(intval($v["problem_id"])):$v["problem_id"]) . "');";
-                                                            }
-                                                            ?>
-                                                        </script>
+                                                        <a v-for="row in accept.other" href="javascript:void(0)">
+                                                            {{row.oj_name + " " + row.problem_id}}</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -400,7 +147,7 @@ foreach ($ss as $k => $v) {
                                                         id="pie_chart_language" width="455" height="455"></canvas>
                                             </div>
                                         </div>
-                                        <h4 class="ui top attached block header"><i class="pie chart icon"></i>提交频率</h4>
+                                        <h4 class="ui top attached block header"><i class="pie chart icon"></i>提交频率(维护中)</h4>
                                         <div class="ui bottom attached segment">
                                             <div class="hidden" id="drawgraphitem">
                                                 <div style="margin:auto">
@@ -410,7 +157,7 @@ foreach ($ss as $k => $v) {
                                         </div>
                                         <h4 class="ui top attached block header">
                                             <i class="pie chart icon"></i>
-                                            能力雷达图
+                                            能力雷达图(维护中)
                                         </h4>
                                         <div class="ui attached segment">
                                             <div style="width:100%;">
@@ -427,165 +174,10 @@ foreach ($ss as $k => $v) {
         </div>
     </div>
 </div>
-<?php
-$status = [];
-foreach ($view_userstat as $row) {
-    if ($row[0] == 4) {
-        $status["AC"] = $row[1];
-    } else if ($row[0] == 5) {
-        $status["PE"] = $row[1];
-    } else if ($row[0] == 6) {
-        $status["WA"] = $row[1];
-    } else if ($row[0] == 7) {
-        $status["TLE"] = $row[1];
-    } else if ($row[0] == 8) {
-        $status["MLE"] = $row[1];
-    } else if ($row[0] == 9) {
-        $status["OLE"] = $row[1];
-    } else if ($row[0] == 10) {
-        $status["RE"] = $row[1];
-    } else if ($row[0] == 11) {
-        $status["CE"] = $row[1];
-    } else if ($row[0] == 13) {
-        $status["TR"] = $row[1];
-    }
-}
-?>
 <script>
     $(function () {
-        var pie = new Chart(document.getElementById('pie_chart').getContext('2d'), {
-            type: 'pie',
-            data: {
-                datasets: [
-                    {
-                        data: [
-                            <?=$status["AC"]?>,
-                            <?=$status["WA"]?>,
-                            <?=$status["RE"]?>,
-                            <?=$status["TLE"]?>,
-                            <?=$status["MLE"]?>,
-                            <?=$status["OLE"]?>,
-                            <?=$status["CE"]?>,
-                            <?=$status["PE"]?>
-                        ],
-                        backgroundColor: [
-                            "#66dd66",
-                            "#ff6384",
-                            "darkorchid",
-                            "#ffce56",
-                            "#00b5ad",
-                            "#35a0e8",
-                            "#F7464A",
-                            "#D4CCC5"
-                        ]
-                    }
-                ],
-                labels: [
-                    "Accepted",
-                    "Wrong Answer",
-                    "Runtime Error",
-                    "Time Limit Exceeded",
-                    "Memory Limit Exceeded",
-                    "Output Limit Exceeded",
-                    "Compile Error",
-                    "Presentation Error"
-                ]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    display: false
-                },
-                legendCallback: function (chart) {
-                    var text = [];
-                    text.push('<ul style="list-style: none; padding-left: 20px; margin-top: 0; " class="' + chart.id + '-legend">');
-
-                    var data = chart.data;
-                    var datasets = data.datasets;
-                    var labels = data.labels;
-
-                    if (datasets.length) {
-                        for (var i = 0; i < datasets[0].data.length; ++i) {
-                            text.push('<li style="font-size: 12px; width: 50%; display: inline-block; color: #666; "><span style="width: 10px; height: 10px; display: inline-block; border-radius: 50%; margin-right: 5px; background-color: ' + datasets[0].backgroundColor[i] + '; "></span>');
-                            if (labels[i]) {
-                                text.push(labels[i]);
-                            }
-                            text.push('</li>');
-                        }
-                    }
-
-                    text.push('</ul>');
-                    return text.join('');
-                }
-            },
-        });
-
-        document.getElementById('pie_chart_legend').innerHTML = pie.generateLegend();
-        var lang = new Chart(document.getElementById('pie_chart_language').getContext('2d'), {
-            type: 'pie',
-            data: {
-                datasets: [
-                    {
-                        data: [
-                            <?=$aclang[0]+$aclang[21]?>,
-                            <?=$aclang[1]+$aclang[20]+$aclang[19]?>,
-                            <?=$aclang[3]?>,
-                            <?=$aclang[6]?>,
-                            <?=$aclang[13]?>,
-                            <?=$aclang[14]?>,
-                            <?=$aclang[2]?>
-                        ],
-                        backgroundColor: [
-                            "#66dd66",
-                            "#ff6384",
-                            "darkorchid",
-                            "#ffce56",
-                            "#00b5ad",
-                            "#35a0e8",
-                            "#E2EAE9"
-                        ]
-                    }
-                ],
-                labels: [
-                    "GCC",
-                    "G++",
-                    "Java",
-                    "Python",
-                    "Clang",
-                    "Clang++",
-                    "Pascal"
-                ]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    display: false
-                },
-                legendCallback: function (chart) {
-                    var text = [];
-                    text.push('<ul style="list-style: none; padding-left: 20px; margin-top: 0; " class="' + chart.id + '-legend">');
-
-                    var data = chart.data;
-                    var datasets = data.datasets;
-                    var labels = data.labels;
-
-                    if (datasets.length) {
-                        for (var i = 0; i < datasets[0].data.length; ++i) {
-                            text.push('<li style="font-size: 12px; width: 50%; display: inline-block; color: #666; "><span style="width: 10px; height: 10px; display: inline-block; border-radius: 50%; margin-right: 5px; background-color: ' + datasets[0].backgroundColor[i] + '; "></span>');
-                            if (labels[i]) {
-                                text.push(labels[i]);
-                            }
-                            text.push('</li>');
-                        }
-                    }
-
-                    text.push('</ul>');
-                    return text.join('');
-                }
-            },
-        });
-
-        document.getElementById('pie_chart_language_legend').innerHTML = lang.generateLegend();
+        
+        
     });
     var config = {
         type: 'line',
@@ -719,6 +311,337 @@ foreach ($view_userstat as $row) {
     };
 
     window.myRadar = new Chart(document.getElementById("canvat"), config);
+    var user_id = getParameterByName("user");
+    $.get("/api/user/"+user_id,function(d){
+        var user_infor = window.user_infor = new Vue({
+        el:".ui.container.pusher",
+        data:function(){
+            var submission = d.data.submission;
+            var local = [],local_accept = [];
+            var hdu = [],hdu_accept = [];
+            var poj = [],poj_accept = [];
+            var uva = [],uva_accept = [];
+            var other = [],other_accept = [];
+            var pick_ac = function(arr) {
+                var res = [];
+                _.forEach(arr,function(val){
+                    if(val.result === 4 && val.problem_id != 0) {
+                        res.push(val);
+                    }
+                })
+                res = _.uniqBy(res,"problem_id");
+                res.sort(function(a,b){
+                    if(!isNaN(a.problem_id) && !isNaN(b.problem_id)) {
+                    return parseInt(a.problem_id) - parseInt(b.problem_id);
+                    }
+                    else {
+                        if(a.problem_id < b.problem_id) {
+                            return 1;
+                        }
+                        else if(a.problem_id === b.problem_id) {
+                            return 0;
+                        }
+                        else {
+                            return -1;
+                        }
+                    }
+                })
+                return res;
+            }
+            _.forEach(submission,function(val){
+                if(val.oj_name === "LOCAL") {
+                    local.push(val);
+                }
+                else if(val.oj_name === "HDU") {
+                    hdu.push(val);
+                }
+                else if(val.oj_name === "POJ") {
+                    poj.push(val);
+                }
+                else if(val.oj_name === "UVA") {
+                    uva.push(val);
+                }
+                else {
+                    other.push(val);
+                }
+            })
+            
+                hdu_accept = pick_ac(hdu);
+                local_accept = pick_ac(local);
+                poj_accept = pick_ac(poj);
+                uva_accept = pick_ac(uva);
+                other_accept = pick_ac(other);
+                
+            return {
+                award:d.data.award,
+                const_variable:d.data.const_variable,
+                nick:d.data.information.nick,
+                school:d.data.information.school,
+                github:d.data.information.github,
+                email:d.data.information.email,
+                blog:d.data.information.blog,
+                avatar:Boolean(d.data.information.avatar) ? "/avatar/" +user_id+".jpg":"./assets/images/wireframe/white-image.png",
+                user_id:user_id,
+                acm_user:d.data.acm_user,
+                privilege:d.data.privilege,
+                submission:{
+                    local:local,
+                    hdu:hdu,
+                    poj:poj,
+                    uva:uva,
+                    other:other
+                },
+                accept:{
+                    hdu:hdu_accept,
+                    poj:poj_accept,
+                    uva:uva_accept,
+                    local:local_accept,
+                    other:other_accept
+                },
+                rank:d.data.rank,
+                local_accepted:local_accept.length,
+                other_accepted:hdu_accept.length + poj_accept.length + uva_accept.length + other_accept.length
+            };
+        },
+        mounted:function(){
+            var that = this;
+            $title = $("title").html();
+            $("title").html(that.user_id + " " + that.nick + " " + $title);
+            var pie = new Chart(document.getElementById('pie_chart').getContext('2d'), {
+            type: 'pie',
+            data: {
+                datasets: [
+                    {
+                        data: [
+                            that.local_accepted,
+                            _.reduce(that.submission.local,function(result,val){
+                                if(val.result == 6) {
+                                    return result + 1;
+                                }
+                                else {
+                                    return result;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(result,val){
+                                if(val.result == 10) {
+                                    return result + 1;
+                                }
+                                else {
+                                    return result;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(result,val){
+                                if(val.result == 7) {
+                                    return result + 1;
+                                }
+                                else {
+                                    return result;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(result,val){
+                                if(val.result == 8) {
+                                    return result + 1;
+                                }
+                                else {
+                                    return result;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(result,val){
+                                if(val.result == 9) {
+                                    return result + 1;
+                                }
+                                else {
+                                    return result;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(result,val){
+                                if(val.result == 11) {
+                                    return result + 1;
+                                }
+                                else {
+                                    return result;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(result,val){
+                                if(val.result == 5) {
+                                    return result + 1;
+                                }
+                                else {
+                                    return result;
+                                }
+                            },0)
+                        ],
+                        backgroundColor: [
+                            "#66dd66",
+                            "#ff6384",
+                            "darkorchid",
+                            "#ffce56",
+                            "#00b5ad",
+                            "#35a0e8",
+                            "#F7464A",
+                            "#D4CCC5"
+                        ]
+                    }
+                ],
+                labels: [
+                    "Accepted",
+                    "Wrong Answer",
+                    "Runtime Error",
+                    "Time Limit Exceeded",
+                    "Memory Limit Exceeded",
+                    "Output Limit Exceeded",
+                    "Compile Error",
+                    "Presentation Error"
+                ]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    display: false
+                },
+                legendCallback: function (chart) {
+                    var text = [];
+                    text.push('<ul style="list-style: none; padding-left: 20px; margin-top: 0; " class="' + chart.id + '-legend">');
+
+                    var data = chart.data;
+                    var datasets = data.datasets;
+                    var labels = data.labels;
+
+                    if (datasets.length) {
+                        for (var i = 0; i < datasets[0].data.length; ++i) {
+                            text.push('<li style="font-size: 12px; width: 50%; display: inline-block; color: #666; "><span style="width: 10px; height: 10px; display: inline-block; border-radius: 50%; margin-right: 5px; background-color: ' + datasets[0].backgroundColor[i] + '; "></span>');
+                            if (labels[i]) {
+                                text.push(labels[i]);
+                            }
+                            text.push('</li>');
+                        }
+                    }
+
+                    text.push('</ul>');
+                    return text.join('');
+                }
+            },
+        });
+
+        document.getElementById('pie_chart_legend').innerHTML = pie.generateLegend();
+        var lang = new Chart(document.getElementById('pie_chart_language').getContext('2d'), {
+            type: 'pie',
+            data: {
+                datasets: [
+                    {
+                        data: [
+                            _.reduce(that.submission.local,function(sum,val){
+                                if(val.language === "0" || val.language === "21") {
+                                    return sum + 1;
+                                }
+                                else {
+                                    return sum;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(sum,val){
+                                if(val.language === "1" || val.language === "19"|| val.language === "20") {
+                                    return sum + 1;
+                                }
+                                else {
+                                    return sum;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(sum,val){
+                                if(val.language === "3" || val.language === "23"|| val.language === "24") {
+                                    return sum + 1;
+                                }
+                                else {
+                                    return sum;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(sum,val){
+                                if(val.language === "6") {
+                                    return sum + 1;
+                                }
+                                else {
+                                    return sum;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(sum,val){
+                                if(val.language === "13") {
+                                    return sum + 1;
+                                }
+                                else {
+                                    return sum;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(sum,val){
+                                if(val.language === "14") {
+                                    return sum + 1;
+                                }
+                                else {
+                                    return sum;
+                                }
+                            },0),
+                            _.reduce(that.submission.local,function(sum,val){
+                                if(val.language === "2") {
+                                    return sum + 1;
+                                }
+                                else {
+                                    return sum;
+                                }
+                            },0)
+                        ],
+                        backgroundColor: [
+                            "#66dd66",
+                            "#ff6384",
+                            "darkorchid",
+                            "#ffce56",
+                            "#00b5ad",
+                            "#35a0e8",
+                            "#E2EAE9"
+                        ]
+                    }
+                ],
+                labels: [
+                    "GCC",
+                    "G++",
+                    "Java",
+                    "Python",
+                    "Clang",
+                    "Clang++",
+                    "Pascal"
+                ]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    display: false
+                },
+                legendCallback: function (chart) {
+                    var text = [];
+                    text.push('<ul style="list-style: none; padding-left: 20px; margin-top: 0; " class="' + chart.id + '-legend">');
+
+                    var data = chart.data;
+                    var datasets = data.datasets;
+                    var labels = data.labels;
+
+                    if (datasets.length) {
+                        for (var i = 0; i < datasets[0].data.length; ++i) {
+                            text.push('<li style="font-size: 12px; width: 50%; display: inline-block; color: #666; "><span style="width: 10px; height: 10px; display: inline-block; border-radius: 50%; margin-right: 5px; background-color: ' + datasets[0].backgroundColor[i] + '; "></span>');
+                            if (labels[i]) {
+                                text.push(labels[i]);
+                            }
+                            text.push('</li>');
+                        }
+                    }
+
+                    text.push('</ul>');
+                    return text.join('');
+                }
+            },
+        });
+
+        document.getElementById('pie_chart_language_legend').innerHTML = lang.generateLegend();
+        }
+    })
+    })
+    
 </script>
 <?php include("template/$OJ_TEMPLATE/bottom.php") ?>
 </body>
