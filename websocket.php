@@ -120,7 +120,9 @@ if (isset($_SESSION['user_id'])) {
                 list_online();
             }
             <?php } ?>
-
+            if(typeof checkOnline == "function") {
+            checkOnline(receive_data["user"]);
+            }
         });
         
         socket.on("judger",function(data){
@@ -173,7 +175,7 @@ if (isset($_SESSION['user_id'])) {
        window.socket.windowDestroyClose = true;
        window.socket.close();
 });
-    window.addEventListener("blur", function(event){
+    window.addEventListener("blur", function(event){ 
         var socket = window.socket;
         if(socket && socket.connected && socket.io.engine.transport.query.transport === "polling") {
             socket.close();
@@ -181,7 +183,7 @@ if (isset($_SESSION['user_id'])) {
     });
     window.addEventListener("focus", function(event){
         var socket = window.socket;
-        if(socket && !socket.connected && socket.io.engine.transport.query.transport === "polling") {
+        if(socket && !socket.connected) {
             socket.connect();
         }
     })

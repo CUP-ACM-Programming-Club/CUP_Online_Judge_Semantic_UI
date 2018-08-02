@@ -13,6 +13,33 @@
           include("template/$OJ_TEMPLATE/css.php");
     ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
+    <script>
+        function checkOnline(online_list) {
+            var user_id = getParameterByName("user");
+            if(online_list) {
+                if(window.user_infor) {
+                    _.forEach(online_list,function(val){
+                if(val.user_id === user_id) {
+                    window.user_infor.online = true;
+                }
+            })
+                }
+                else {
+                this.olist = online_list;
+                }
+            }
+            else {
+                if(this.olist){
+                    _.forEach(this.olist,function(val){
+                if(val.user_id === user_id) {
+                    window.user_infor.online = true;
+                }
+            })
+                }
+            }
+            
+        }
+    </script>
 </head>
 
 <body>
@@ -46,6 +73,24 @@
                         </div>
                         <div class="extra content">
                             <a><i class="check icon"></i>通过 {{local_accepted + other_accepted + "&nbsp;题&nbsp;(" + local_accepted + "+" + other_accepted + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"}}<i class="line chart icon"></i>Rank:&nbsp;{{rank}}</a>
+                        </div>
+                    </div>
+                    <div class="ui card" style="width:100%;">
+                        <div class="content">
+                            <div class="header">
+                                状态
+                            </div>
+                        </div>
+                        <div class="content">
+                            <div v-if="online" class="ui header">
+                                当前在线
+                            </div>
+                            <div v-if="!online" class="ui header">
+                                离线
+                                <div  class="sub header">
+                                上次登录:{{new Date(last_login).toLocaleString()}}
+                            </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -399,6 +444,8 @@
                     other:other_accept
                 },
                 rank:d.data.rank,
+                online:false,
+                last_login:d.data.login_time ? d.data.login_time[0].time:"",
                 local_accepted:local_accept.length,
                 other_accepted:hdu_accept.length + poj_accept.length + uva_accept.length + other_accept.length
             };
@@ -406,6 +453,9 @@
         mounted:function(){
             var that = this;
             $title = $("title").html();
+            this.$nextTick(function(){
+                checkOnline();
+            })
             $("title").html(that.user_id + " " + that.nick + " " + $title);
             var pie = new Chart(document.getElementById('pie_chart').getContext('2d'), {
             type: 'pie',
