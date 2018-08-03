@@ -168,7 +168,10 @@
                             </div>
                         </div>
                         <div class="ten wide right aligned aligned column">
-                            <selected-tag :color="table.color" :data="search_tag" :label="label"></selected-tag>
+                            <selected-tag v-if="search_tag || label" :color="table.color" :data="search_tag" :label="label"></selected-tag>
+                            <a class="ui mini labeled icon button" href="upload_problem.php" target="_blank" v-else>
+                                <i class="plus icon"></i>添加题目
+                            </a>
                         </div>
                     </div>
                     <div class="ui grid">

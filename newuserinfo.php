@@ -13,6 +13,7 @@
           include("template/$OJ_TEMPLATE/css.php");
     ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
+    <script src="/js/dayjs.min.js"></script>
     <script>
         function checkOnline(online_list) {
             var user_id = getParameterByName("user");
@@ -93,6 +94,33 @@
                             </div>
                         </div>
                     </div>
+                    <div class="ui card" style="width:100%">
+                        <div class="content">
+                            <div class="header">
+                                发表的帖子
+                            </div>
+                        </div>
+                        <div class="content">
+                            <table class="ui very basic table">
+                                <thead>
+                                    <th>ID</th>
+                                    <th>标题</th>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="row in article_publish">
+                                        <td>
+                                            {{row.article_id}}
+                                        </td>
+                                        <td>
+                                            <a :href="'discuss.php?id='+row.article_id" target="_blank">
+                                                {{row.title}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="eleven wide column">
                     <div class="ui grid">
@@ -106,6 +134,10 @@
                                                     <h4 class="ui top attached block header"><i
                                                             class="id card icon"></i>用户名</h4>
                                                     <div class="ui attached segment">{{user_id}}</div>
+                                                    <h4 class="ui attached block header">
+                                                        <i class="id badge icon"></i>个人介绍
+                                                    </h4>
+                                                    <div class="ui attached segment">{{biography}}</div>
                                                     <h4 class="ui attached block header"><i class="university icon"></i>学校
                                                     </h4>
                                                     <div class="ui attached segment">{{school}}</div>
@@ -192,7 +224,7 @@
                                                         id="pie_chart_language" width="455" height="455"></canvas>
                                             </div>
                                         </div>
-                                        <h4 class="ui top attached block header"><i class="pie chart icon"></i>提交频率(维护中)</h4>
+                                        <h4 class="ui top attached block header"><i class="pie chart icon"></i>提交频率</h4>
                                         <div class="ui bottom attached segment">
                                             <div class="hidden" id="drawgraphitem">
                                                 <div style="margin:auto">
@@ -200,6 +232,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <!--
                                         <h4 class="ui top attached block header">
                                             <i class="pie chart icon"></i>
                                             能力雷达图(维护中)
@@ -208,7 +241,7 @@
                                             <div style="width:100%;">
                                                 <canvas id="canvat"></canvas>
                                             </div>
-                                        </div>
+                                        </div>-->
                                     </div>
                                 </div>
                             </div>
@@ -220,90 +253,15 @@
     </div>
 </div>
 <script>
-    $(function () {
-        
-        
-    });
-    var config = {
-        type: 'line',
-        data: {
-            labels: [<?php
-                $cnt = 0;
-                ksort($arr);
-                foreach ($arr as $k => $v) {
-                    if ($cnt > 0) echo ",";
-                    echo "\"" . $k . "\"";
-                    $cnt++;
-                }
-                ?>],
-            datasets: [{
-                label: "总提交",
-                backgroundColor: window.chartColors.red,
-                borderColor: window.chartColors.red,
-                data: [<?php
-                    $cnt = 0;
-                    foreach ($arr as $k => $v) {
-                        if ($cnt > 0) echo ",";
-                        echo $v[0];
-                        $cnt++;
-                    }
-                    ?>],
-                fill: false,
-            }, {
-                label: "正确",
-                fill: false,
-                backgroundColor: window.chartColors.blue,
-                borderColor: window.chartColors.blue,
-                data: [<?php
-                    $cnt = 0;
-                    foreach ($arr as $k => $v) {
-                        if ($cnt > 0) echo ",";
-                        echo $v[1];
-                        $cnt++;
-                    }
-                    ?>],
-            }]
-        },
-        options: {
-            responsive: true,
-            title: {
-                display: false,
-                text: '统计信息'
-            },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: true
-            },
-            scales: {
-                xAxes: [{
-                    display: true,
-                    scaleLabel: {
-                        display: false,
-                        labelString: '月份'
-                    }
-                }],
-                yAxes: [{
-                    display: true,
-                    scaleLabel: {
-                        display: false,
-                        labelString: '提交'
-                    }
-                }]
-            }
-        }
-    };
-    var ctx = document.getElementById("canvas").getContext("2d");
-    window.myLine = new Chart(ctx, config);
+    /*
+    
     var color = Chart.helpers.color;
     var config = {
         type: 'radar',
         data: {
             labels: [
                 <?php
+                /*
                 $cnt = 0;
                 foreach ($ss as $v) {
                     if ($cnt++ > 0) echo ",";
@@ -322,7 +280,7 @@
                     foreach ($ss as $v) {
                         if ($cnt++ > 0) echo ",";
                         echo substr(strval($v['ac_num']/$v['tot']*100),0,min(5,strlen(strval($v['ac_num']/$v['tot']*100))));
-                    }
+                    }*/
                     ?>
                 ]
             }]
@@ -356,6 +314,7 @@
     };
 
     window.myRadar = new Chart(document.getElementById("canvat"), config);
+    */
     var user_id = getParameterByName("user");
     $.get("/api/user/"+user_id,function(d){
         var user_infor = window.user_infor = new Vue({
@@ -393,7 +352,13 @@
                 })
                 return res;
             }
+            var analsubmission = [];
+            var now = dayjs();
             _.forEach(submission,function(val){
+                val.time = dayjs(val.time);
+                    if(val.time.add(3,"month").isAfter(now)) {
+                        analsubmission.push(val);
+                    }
                 if(val.oj_name === "LOCAL") {
                     local.push(val);
                 }
@@ -409,7 +374,33 @@
                 else {
                     other.push(val);
                 }
-            })
+            });
+            analsubmission.sort(function(a,b){
+                if(a.time.isBefore(b.time)) {
+                    return -1;
+                }
+                else {
+                    return 1;
+                }
+            });
+            var timeobj = {};
+            var acobj = {};
+            _.forEach(analsubmission,function(val){
+                var daystr = val.time.format("YYYY-MM-DD");
+                if(!timeobj[daystr]) {
+                    timeobj[daystr] = 1;
+                    acobj[daystr] = 0;
+                    if(parseInt(val.result) === 4) {
+                        acobj[daystr] = 1;
+                    }
+                }
+                else {
+                    ++timeobj[daystr];
+                    if(parseInt(val.result) === 4) {
+                        ++acobj[daystr];
+                    }
+                }
+            });
             
                 hdu_accept = pick_ac(hdu);
                 local_accept = pick_ac(local);
@@ -419,12 +410,18 @@
                 
             return {
                 award:d.data.award,
+                biography:d.data.information.biography,
                 const_variable:d.data.const_variable,
+                article_publish:d.data.article_publish,
                 nick:d.data.information.nick,
                 school:d.data.information.school,
                 github:d.data.information.github,
                 email:d.data.information.email,
                 blog:d.data.information.blog,
+                recent_submission:{
+                    submission:timeobj,
+                    accept:acobj
+                },
                 avatar:Boolean(d.data.information.avatar) ? "/avatar/" +user_id+".jpg":"./assets/images/wireframe/white-image.png",
                 user_id:user_id,
                 acm_user:d.data.acm_user,
@@ -688,6 +685,58 @@
         });
 
         document.getElementById('pie_chart_language_legend').innerHTML = lang.generateLegend();
+        var config = {
+        type: 'line',
+        data: {
+            labels: _.keys(that.recent_submission.submission),
+            datasets: [{
+                label: "总提交",
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: _.values(that.recent_submission.submission),
+                fill: false,
+            }, {
+                label: "正确",
+                fill: false,
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: _.values(that.recent_submission.accept),
+            }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: false,
+                text: '统计信息'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: false,
+                        labelString: '月份'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: false,
+                        labelString: '提交'
+                    }
+                }]
+            }
+        }
+    };
+    var ctx = document.getElementById("canvas").getContext("2d");
+    window.myLine = new Chart(ctx, config);
         }
     })
     })
