@@ -60,13 +60,13 @@
                                 class="header">{{nick}}&nbsp;&nbsp;<a
                                     :href="'mail.php?to_user='+user_id"><i class="mail icon"></i></a></div>
                             <div class="meta">
-                                <i class="user circle outline icon"></i><a class="group">{{privilege && privilege.length > 0?"管理员":"普通用户"}}</a>
-                                    
+                                <i class="user circle outline icon"></i>
+                                <a class="group">{{privilege}}</a>
                                         <i  v-if="user_id === '2016011253'" class="user circle outline icon"></i><a v-if="user_id === '2016011253'" class="group">
                                         系统开发/维护
                                         </a>
                                     <br>
-                                    <a class='group'><i class='user icon'></i>ACM{{acm_user.level?"正式":"后备"}}队员</a>
+                                    <a class='group' v-if="acm_user"><i class='user icon'></i>ACM{{acm_user.level?"正式":"后备"}}队员</a>
                                         <a v-for="row in award" class="group"><br>
                                             <i class="trophy icon"></i>
                                         {{row.year + "年" + row.award}}</a>
@@ -407,7 +407,26 @@
                 poj_accept = pick_ac(poj);
                 uva_accept = pick_ac(uva);
                 other_accept = pick_ac(other);
-                
+                var privilege = d.data.privilege;
+                if(privilege && privilege.length > 0) {
+                    for(var i = 0;i<privilege.length;++i) {
+                        if(privilege[i].rightstr === "administrator") {
+                            privilege = "管理员";
+                            break;
+                        }
+                        else if(privilege[i].rightstr === "source_browser") {
+                            privilege = "代码检查员";
+                            break;
+                        }
+                        else if(privilege[i].rightstr === "editor") {
+                            privilege = "问题编辑";
+                            break;
+                        }
+                    }
+                }
+                if(typeof privilege !== "string") {
+                    privilege = "普通用户";
+                }
             return {
                 award:d.data.award,
                 biography:d.data.information.biography,
@@ -425,7 +444,7 @@
                 avatar:Boolean(d.data.information.avatar) ? "/avatar/" +user_id+".jpg":"./assets/images/wireframe/white-image.png",
                 user_id:user_id,
                 acm_user:d.data.acm_user,
-                privilege:d.data.privilege,
+                privilege:privilege,
                 submission:{
                     local:local,
                     hdu:hdu,
