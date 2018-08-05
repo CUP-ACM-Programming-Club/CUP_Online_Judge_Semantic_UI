@@ -28,10 +28,8 @@
                     <h4 class="ui inverted header">© CUP Online Judge 2017-<?=date("Y")?>
                        <div class="sub header">  Impressed by HUSTOJ & SYZOJ</div>
                         <div class="sub header">  Powered By Vue.js</div>
-                        </h4>
-                        <h4  class="ui inverted header">
                         <div class="sub header">Software Designer:<a href="https://github.com/ryanlee2014" target="_blank">Ryan Lee(李昊元)</a></div>
-                    </h4>
+                        </h4>
                 </div>
             </div>
         </div>
