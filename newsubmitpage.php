@@ -487,8 +487,29 @@
                                 this.presubmit();
                             }
                         },
+                        checkJava: function(submit_language) {
+                            switch (submit_language)
+                            {
+                                case 3:
+                                case 23:
+                                case 24:
+                                    var code = window.editor.getValue();
+                                    if(code.indexOf("Main") === -1 || code.indexOf("main") === -1 || code.indexOf("package") !== -1)
+                                    {
+                                        alert("Java语言提交时必须使用Main作为主类\n使用static main作为入口函数\n并且不能存在包名(如package helloworld)");
+                                        return false;
+                                    }
+                                default:
+                                return true;
+                            }
+                            return true;
+                        },
                         presubmit: function () {
                             var qstring = getParameterByName;
+                            var submit_language = parseInt($("#language").val());
+                            if(!this.checkJava(submit_language)) {
+                                return;
+                            }
                             var type = "problem";
                             if (qstring("cid")) {
                                 type = "contest";
@@ -509,7 +530,7 @@
                                 tid: qstring("tid"),
                                 pid: qstring("pid"),
                                 input_text: $("#ipt").val(),
-                                language: $("#language").val(),
+                                language: submit_language,
                                 source: window.editor.getValue(),
                                 share:this.share,
                                 type: type,
@@ -555,6 +576,10 @@
                                 return;
                             }
                             this.hide_warning = true;
+                            var submit_language = parseInt($("#language").val());
+                            if(!this.checkJava(submit_language)) {
+                                return;
+                            }
                             var that = this;
                             if (editor.getValue().length < 15) {
                                 $('.ui.basic.confirms.modal')
@@ -592,7 +617,7 @@
                                 var postdata = {
                                     id: -Math.abs(parseInt(qstring("id"))) || -Math.abs(parseInt(that.original_id)),
                                     cid: -Math.abs(parseInt(qstring("cid"))) || null,
-                                    tid: qstring("tid"),
+                                    tid: -Math.abs(parseInt(qstring("tid"))) || null,
                                     pid: qstring("pid"),
                                     share:this.share,
                                     input_text: window.problemsubmitter.$data.sampleinput,
