@@ -963,14 +963,14 @@ SHOULD BE:
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
-                            v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
+                            v-text="time"></li>
                         <li class='ui label red' id="mlimit"
-                            v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
+                            v-text="memory"></li>
                         <li class='ui label orange' id="spj" v-cloak v-show="spj">Special Judge</li>
                         <li class='ui label grey' id="totsub"
-                            v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
+                            v-text="submit"></li>
                         <li class='ui label green' id="totac"
-                            v-text="accepted"><?php echo "$MSG_SOVLED:$row->accepted" ?> </li>
+                            v-text="accepted"></li>
                     </div>
                     <br>
                     <div class='ui buttons'>
@@ -1105,7 +1105,7 @@ SHOULD BE:
                 </div>
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
-                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.7"></script>
+                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.8"></script>
                 <textarea style="display:none" cols=40 rows=5 name="input_text"
                           id="ipt" class="sample_input"><?php echo $view_sample_input ?></textarea>
                 <div id="modeBar" style="margin: 0;
@@ -1243,7 +1243,7 @@ SHOULD BE:
         </div>
     </div>
 </div>
-<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+<?php include("template/semantic-ui/bottom.php"); ?>
 <!-- /container -->
 <!-- Bootstrap core JavaScript
 ================================================== -->
