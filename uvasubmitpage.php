@@ -99,6 +99,9 @@ SHOULD BE:
                class='ui button orange'><?= $MSG_STATUS ?></a>
                <a href="https://www.udebug.com/UVa/<?=$pid?>" target="_blank" class="ui button blue">uDebug</a>
             <button class="ui green button" id="button-submit">提交代码</button>
+            <?php if($_SESSION["editor"] || $_SESSION["administrator"]){ ?>
+            <a class="ui button violet" href="problem_edit.php?id=<?=$pid?>&from=uva">Edit</a>
+            <?php } ?>
         </center>
         <h3 class="ui top attached block header">PDF题面</h3>
         <div class="ui attached buttom segment">

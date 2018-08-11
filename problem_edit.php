@@ -25,7 +25,7 @@ include("csrf.php");
 ?>
 <div class="container">
     <!-- Main component for a primary marketing message or call to action -->
-    <div class="ui container padding">
+    <div class="ui container padding" v-cloak>
         <div class="ui grid">
             <div class="row">
                 <h2 class="ui header">
@@ -99,12 +99,12 @@ include("csrf.php");
                 <div class="row">
                 <mavon-editor v-model="sampleoutput"></mavon-editor>
                 </div>
-                <div class="row">
+                <div class="row"  v-if="from === 'local'">
                 <h2 class="ui header">
                     Hint
                 </h2>
                 </div>
-                <div class="row">
+                <div class="row" v-if="from === 'local'">
                 <mavon-editor v-model="hint"></mavon-editor>
                 </div>
                 <a class="ui button" @click="submit">提交</a>
@@ -115,8 +115,9 @@ include("csrf.php");
 </div> <!-- /container -->
 <script>
     var id = getParameterByName("id");
+    var from = getParameterByName("from")||"local";
     if(id){
-        $.get("/api/problem/local?id="+id+"&raw",function(data){
+        $.get("/api/problem/"+from+"?id="+id+"&raw",function(data){
             var d = data.problem;
             window.editor = new Vue({
                 el:".ui.container.padding",
@@ -131,6 +132,7 @@ include("csrf.php");
                         sampleinput:d.sample_input,
                         sampleoutput:d.sample_output,
                         hint:d.hint,
+                        source:from,
                         label:d.label?d.label.split(" "):[],
                         all_label:[]
                     }
@@ -156,7 +158,7 @@ include("csrf.php");
                         }
                         
                         send_obj["label"] = unique(labels).join(" ");
-                        $.post("/api/problem/local/"+id,{json:send_obj},function(data){
+                        $.post("/api/problem/"+this.source+"/"+id,{json:send_obj},function(data){
                             if(data.status == "OK"){
                                 alert("提交成功");
                             }
@@ -165,7 +167,7 @@ include("csrf.php");
                 },
                 mounted:function(){
                     var that = this;
-                    $.get("/api/problem/local/?label=true",function(data){
+                    $.get("/api/problem/"+this.source+"/?label=true",function(data){
                         that.all_label = data.data;
                         var has_label = that.label;
                         $('.label.selection.ui.dropdown')

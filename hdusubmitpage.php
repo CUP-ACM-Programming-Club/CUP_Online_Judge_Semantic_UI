@@ -107,11 +107,14 @@ SHOULD BE:
                            <a href='<?=strtolower($oj_signal)?>problem.php?<?=$_SERVER['QUERY_STRING']?>' class="ui button blue">单屏显示</a>
                         <?php
                         //echo "[<a href='bbs.php?pid=".$problem_row->problem_id."$ucid'>$MSG_BBS</a>]";
+                        if(isset($_SESSION["editor"]) || isset($_SESSION["administrator"])) {
+                            ?>
+                            <a class="ui button violet" href="problem_edit.php?id=<?=$problem_row->problem_id?>&from=<?=$oj_signal?>">Edit</a>
+                            <?php
+                        }
                         if (isset($_SESSION['administrator'])) {
                             require_once("include/set_get_key.php");
                             ?>
-                            <a class='ui button violet'
-                               href="admin/problem_edit.php?id=<?php echo $id ?>&getkey=<?php echo $_SESSION['getkey'] ?>">Edit</a>
                             <a class='ui button purple'
                                href="admin/quixplorer/index.php?action=list&dir=<?php echo $problem_row->problem_id ?>&order=name&srt=yes">TestData</a>
                             <?php

@@ -487,8 +487,29 @@
                                 this.presubmit();
                             }
                         },
+                        checkJava: function(submit_language) {
+                            switch (submit_language)
+                            {
+                                case 3:
+                                case 23:
+                                case 24:
+                                    var code = window.editor.getValue();
+                                    if(code.indexOf("Main") === -1 || code.indexOf("main") === -1 || code.indexOf("package") !== -1)
+                                    {
+                                        alert("Java语言提交时必须使用Main作为主类\n使用static main作为入口函数\n并且不能存在包名(如package helloworld)");
+                                        return false;
+                                    }
+                                default:
+                                return true;
+                            }
+                            return true;
+                        },
                         presubmit: function () {
                             var qstring = getParameterByName;
+                            var submit_language = parseInt($("#language").val());
+                            if(!this.checkJava(submit_language)) {
+                                return;
+                            }
                             var type = "problem";
                             if (qstring("cid")) {
                                 type = "contest";
@@ -509,7 +530,7 @@
                                 tid: qstring("tid"),
                                 pid: qstring("pid"),
                                 input_text: $("#ipt").val(),
-                                language: $("#language").val(),
+                                language: submit_language,
                                 source: window.editor.getValue(),
                                 share:this.share,
                                 type: type,
@@ -555,6 +576,10 @@
                                 return;
                             }
                             this.hide_warning = true;
+                            var submit_language = parseInt($("#language").val());
+                            if(!this.checkJava(submit_language)) {
+                                return;
+                            }
                             var that = this;
                             if (editor.getValue().length < 15) {
                                 $('.ui.basic.confirms.modal')
@@ -592,7 +617,7 @@
                                 var postdata = {
                                     id: -Math.abs(parseInt(qstring("id"))) || -Math.abs(parseInt(that.original_id)),
                                     cid: -Math.abs(parseInt(qstring("cid"))) || null,
-                                    tid: qstring("tid"),
+                                    tid: -Math.abs(parseInt(qstring("tid"))) || null,
                                     pid: qstring("pid"),
                                     share:this.share,
                                     input_text: window.problemsubmitter.$data.sampleinput,
@@ -938,14 +963,14 @@ SHOULD BE:
                     </h2>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
-                            v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
+                            v-text="time"></li>
                         <li class='ui label red' id="mlimit"
-                            v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
+                            v-text="memory"></li>
                         <li class='ui label orange' id="spj" v-cloak v-show="spj">Special Judge</li>
                         <li class='ui label grey' id="totsub"
-                            v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
+                            v-text="submit"></li>
                         <li class='ui label green' id="totac"
-                            v-text="accepted"><?php echo "$MSG_SOVLED:$row->accepted" ?> </li>
+                            v-text="accepted"></li>
                     </div>
                     <br>
                     <div class='ui buttons'>
@@ -1080,7 +1105,7 @@ SHOULD BE:
                 </div>
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
-                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.7"></script>
+                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.8"></script>
                 <textarea style="display:none" cols=40 rows=5 name="input_text"
                           id="ipt" class="sample_input"><?php echo $view_sample_input ?></textarea>
                 <div id="modeBar" style="margin: 0;
@@ -1218,7 +1243,7 @@ SHOULD BE:
         </div>
     </div>
 </div>
-<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+<?php include("template/semantic-ui/bottom.php"); ?>
 <!-- /container -->
 <!-- Bootstrap core JavaScript
 ================================================== -->

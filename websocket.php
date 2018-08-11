@@ -91,6 +91,20 @@ if (isset($_SESSION['user_id'])) {
         socket.on('connect',function(data){
             vonline_num.message="<i class='feed icon'></i>";
             socket.emit("auth",auth_msg);
+            setTimeout(function(){
+                window.addEventListener("blur", function(event){ 
+        var socket = window.socket;
+        if(socket && socket.connected && socket.io.engine.transport.query.transport === "polling") {
+            socket.close();
+        }
+    });
+    window.addEventListener("focus", function(event){
+        var socket = window.socket;
+        if(socket && !socket.connected) {
+            socket.connect();
+        }
+    })
+            },1000);
             window.connected = true;
         });
         socket.on('error',function(error){
@@ -175,18 +189,6 @@ if (isset($_SESSION['user_id'])) {
        window.socket.windowDestroyClose = true;
        window.socket.close();
 });
-    window.addEventListener("blur", function(event){ 
-        var socket = window.socket;
-        if(socket && socket.connected && socket.io.engine.transport.query.transport === "polling") {
-            socket.close();
-        }
-    });
-    window.addEventListener("focus", function(event){
-        var socket = window.socket;
-        if(socket && !socket.connected) {
-            socket.connect();
-        }
-    })
   // $.getScript( protocol+"//"+location.hostname+"/socket.io/socket.io.js",function(){
         
   // });

@@ -11,6 +11,7 @@
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
+    <script src="/js/dayjs.min.js"></script>
 </head>
 
 <body>
@@ -30,7 +31,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="row in problem_lists" :class="row.sim?'warning':''">
+        <tr v-for="row in problem_lists" :class="row.sim?'warning':''"
+        :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p><p>用户指纹:<br>'+row.fingerprint+'</p>'">
             <td>{{row.solution_id}}</td>
             <td><div class="ui grid">
             <div class="three wide column">
@@ -60,7 +62,7 @@
                 <div><span class="boldstatus">{{memory_parse(row.memory)}}</span><br><span class="boldstatus">{{time_parse(row.time)}}</span></div>
             </td>
             <td><a class="boldstatus" v-if="self === row.user_id || isadmin || row.share == 1" target=_blank :href="'showsource.php?id='+row.solution_id">查看</a>
-                <span v-else>{{language_name[row.language]}}</span>
+                <span class="boldstatus" v-else>{{language_name[row.language]}}</span>
                 <span v-if="(self === row.user_id || isadmin || row.share == 1) && row.problem_id"> / </span>
                 <a class="boldstatus" v-if="(self === row.user_id || isadmin || row.share == 1) && row.problem_id" target="_blank"
                    :href="'newsubmitpage.php?id='+Math.abs(row.problem_id)+'&sid='+Math.abs(row.solution_id)">编辑</a>
@@ -68,7 +70,7 @@
                 <span class="boldstatus" v-if="(self === row.user_id || isadmin || row.share == 1)">{{language_name[row.language]}} / </span>
                 <span class="boldstatus">{{row.length}}B</span>
             </td>
-            <td class="need_popup" :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p>'">{{new Date(row.in_date).toLocaleString()}}<br>{{row.judger}}</td>
+            <td>{{dayjs(row.in_date).format("YYYY-MM-DD HH:mm:ss")}}<br>{{row.judger}}</td>
         </tr>
         </tbody>
     </table>
@@ -544,15 +546,16 @@
             $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/", function (data) {
                     that.dim = false;
                     that.search_func(data);
-                });
-            $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/", function (data) {
+                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/", function (data) {
                     that.dim = false;
                     that.search_func(data);
                 })
+                });
         },
         updated: function() {
-            $(".need_popup").popup({
+            $("tr").popup({
                     on: 'hover',
+                    hoverable  : true,
                     positon: "top center"
                 });
         },
