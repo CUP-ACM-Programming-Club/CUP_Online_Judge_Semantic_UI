@@ -77,7 +77,7 @@
             <th width="10%" class="center head"><b>{{_name.user}}</b></th>
             <th width="3%"></th>
             <th width="15%"><b>{{_name.nick}}</b></th>
-            <th width="55%"></th>
+            <th width="55%" class="center head">个人介绍</th>
             <th width="10%"  class="center head"><b>{{_name.accept}}</b></th>
             <!--<th width="7%"><b>{{_name.vjudge_accept}}</b></th>
             <th width="7%"><b>{{_name.submit}}</b></th>
@@ -94,7 +94,7 @@
             <td>
                     {{row.nick}}
             </td>
-            <td class="center head">{{row.biography}}</td>
+            <td class="center head" v-html="markdownIt.renderRaw(row.biography||'')"></td>
             <td class="center head"><a :href="'status.php?user_id='+row.user_id+'&jresult=4'">{{row.solved||0}}</a></td>
             <!--<td><a :href="'hdu_status.php?user_id='+row.user_id+'&jresult=4'">{{row.vjudge_solved||0}}</a></td>
             <td><a :href="'status.php?user_id='+row.user_id">{{row.submit||0}}</a></td>
