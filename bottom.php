@@ -2,10 +2,15 @@
         <div class="ui container">
             <div class="ui stackable inverted divided equal height stackable grid">
                 <div class="five wide column">
-                    <h4 class="ui inverted header"><a href="faqs.php" class="white link" target="_blank">About</a></h4>
+                    <h3 class="ui inverted header"><a href="faqs.php" class="white link" target="_blank">关于
+                        <div class="sub header">
+                            常见问题
+                        </div>
+                    </a>
+                    </h3>
                     <div class="ui inverted link list">
-                        <a href="mailto:gxlhybh@gmail.com" class="item">Contact Us</a>
-                        <a href="opensource.php" class="item">OpenSource Announcement</a>
+                        <a href="mailto:gxlhybh@gmail.com" class="item">联系开发者</a>
+                        <a href="opensource.php" class="item">开放源代码声明</a>
                     </div>
                 </div>
                 <div class="five wide column">

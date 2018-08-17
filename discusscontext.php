@@ -56,8 +56,7 @@
       <div class="meta">
         <a :href="'userinfo.php?user='+thread_head.user_id" target="_blank">{{thread_head.user_id}}</a>
       </div>
-      <div class="description">
-        {{thread_head.biography}}
+      <div class="description" v-html="markdownIt.renderRaw(thread_head.biography||'')">
       </div>
     </div>
     <div class="extra content">

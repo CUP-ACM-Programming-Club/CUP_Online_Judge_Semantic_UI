@@ -575,7 +575,7 @@
                     if (label == "标签待整理") {
                         return;
                     }
-                    this.search_tag = label;
+                    this.search_tag = label == "none" ?"":label;
                     this.dim = true;
                     var order_target = this.order_target;
                     var page = this.current_page = 0;
@@ -619,7 +619,7 @@
                     localStorage.setItem("show_label_cloud", Boolean(this.show_label_cloud));
                 },
                 enter: function (obj) {
-                    var val = obj.target.value;
+                    var val = obj.target.value || "none";
                     this.searching(val);
                 },
                 drawLabelCloud:function(){

@@ -137,7 +137,7 @@
                                                     <h4 class="ui attached block header">
                                                         <i class="id badge icon"></i>个人介绍
                                                     </h4>
-                                                    <div class="ui attached segment">{{biography}}</div>
+                                                    <div class="ui attached segment" v-html="markdownIt.renderRaw(biography||'')"></div>
                                                     <h4 class="ui attached block header"><i class="university icon"></i>学校
                                                     </h4>
                                                     <div class="ui attached segment">{{school}}</div>
