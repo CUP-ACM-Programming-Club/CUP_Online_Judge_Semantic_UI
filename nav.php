@@ -1,6 +1,6 @@
 <?php
 $url = basename($_SERVER['REQUEST_URI']);
-require_once("template/$OJ_TEMPLATE/profile.php");
+require_once("template/semantic-ui/profile.php");
 $path_fix = "";
 $ACTIVE = "class='active'";
 $acmmanager = false;
@@ -33,7 +33,7 @@ $suffix="?my";
             <i class="dropdown icon"></i>
             <div class="menu">
                 <?php } ?>
-                <a class="item" href="faqs.php"><i class="help icon"></i><?= $MSG_FAQ ?></a>
+                
                 <a class="item"
                    href="problemset.php"><i class="browser icon"></i><?= $MSG_PROBLEM ?></a>
                 <a class="item"
@@ -43,6 +43,8 @@ $suffix="?my";
                    <?php if(isset($_SESSION["user_id"])) { ?>
                    <a class="item" href="discuss.php"><i class="comment alternate icon"></i>讨论</a>
                    <?php } ?>
+                   <a class="item"
+                           href="contest.php<?=$suffix?>"><i class="puzzle icon"></i><?= $MSG_CONTEST ?></a>
                 <div
                     class="<?php if (!(isset($_GET['cid']) || isset($_GET['tid']) || $vjudge || $acmmanager)) echo 'ui dropdown' ?> item"
                     tabindex="0">
@@ -54,8 +56,7 @@ $suffix="?my";
                         <i class="dropdown icon"></i>
                     <?php } ?>
                     <div class="menu">
-                        <a class="item"
-                           href="contest.php<?=$suffix?>"><i class="puzzle icon"></i><?= $MSG_CONTEST ?></a>
+                        <a class="item" href="faqs.php"><i class="help icon"></i><?= $MSG_FAQ ?></a>
                         <a class="item"
                            href="specialsubject.php"><i class="rocket icon"></i><?= $MSG_SPECIALSUBJECT ?></a>
                         <a class="item"
@@ -157,13 +158,15 @@ $suffix="?my";
             <i class="dropdown icon"></i>
             <div class="menu">
                 <?php } ?>
-                <a class="item" href="faqs.php"><?= $MSG_FAQ ?></a>
+                
                 <a class="item"
                    href="problemset.php"><?= $MSG_PROBLEM ?></a>
                 <a class="item"
                    href="status.php"><?= $MSG_STATUS ?></a>
                 <a class="item"
                    href="<?php echo $path_fix ?>ranklist.php"><?= $MSG_RANKLIST ?></a>
+                   <a class="item"
+                           href="contest.php<?=$suffix?>"><?= $MSG_CONTEST ?></a>
                 <div
                     class="<?php if (!(isset($_GET['cid']) || isset($_GET['tid']) || $vjudge || $acmmanager)) echo 'ui dropdown' ?> item"
                     tabindex="0">
@@ -175,8 +178,7 @@ $suffix="?my";
                         <i class="dropdown icon"></i>
                     <?php } ?>
                     <div class="menu">
-                        <a class="item"
-                           href="contest.php<?=$suffix?>"><?= $MSG_CONTEST ?></a>
+                        <a class="item" href="faqs.php"><?= $MSG_FAQ ?></a>
                         <a class="item"
                            href="specialsubject.php"><?= $MSG_SPECIALSUBJECT ?></a>
                         <a class="item"

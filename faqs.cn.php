@@ -9,8 +9,8 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title><?php echo $OJ_NAME?></title>
-    <?php include("template/$OJ_TEMPLATE/css.php");?>
-    <?php include("template/$OJ_TEMPLATE/js.php");?>
+    <?php include("template/semantic-ui/css.php");?>
+    <?php include("template/semantic-ui/js.php");?>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -26,35 +26,179 @@
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php");?>
-<div class="ui main text container pusher padding">
-
+<?php include("template/semantic-ui/nav.php");?>
+<div class="ui main container">
     <!-- Main component for a primary marketing message or call to action -->
-    <div>
-        <center>
-            <h1 class="ui header block"><?php echo $OJ_NAME?> FAQ</h1>
-        </center>
+<script type="text/x-template" id="markdown_content">
+    
+## 我如何能够提交我的代码?
+
+1. 注册一个账号
+2. 进入一个题目
+3. 粘贴你的代码
+4. 点击提交，查看返回结果
+```cpp
+   if(AC) goto 2;
+   else {
+       debug;
+       goto 3;
+   }
+```
+## 我的代码在什么环境上运行？
+
+- CPU:Intel(R) Xeon(R) CPU E5-2609 0 @ 2.40GHz
+- RAM:16G
+- OS:CentOS 7
+
+## 我的编译环境是什么？
+
+| Compiler(Language) | Command                                                                                                        |
+|:------------------:| -------------------------------------------------------------------------------------------------------------- |
+| GCC(C/C++)         | `gcc/g++ -fmax-errors=10 -fno-asm -Wall -O2 -lm --static -std=c++${version} -DONLINE_JUDGE -o Main Main.cc `   |
+| Clang(C/C++)       | `clang/clang++ Main.cc -o Main -ferror-limit=10 -fno-asm -Wall -lm --static -std=c++${version} -DONLINE_JUDGE` |
+| Java               | `java -J${java_xms} -J${java_xmx} -encoding UTF-8 Main.java`                                                   |
+| Python             | None                                                                                                           |
+| JavaScript         | None                                                                                                           |
+| fpc(Pascal)        | `fpc Main.pas -Cs32000000 -Sh -O2 -Co -Ct -Ci`                                                                 |
+
+
+
+## 我如何从评测机获得输入，并将结果输出？
+
+评测机仅接受使用`stdin`进行输入，并将结果输出到`stdout`中。所有文件操作均被禁止使用
+
+## 评测机返回的结果代表什么意思?
+
+| 评测结果                       | 含义                                           |
+| -------------------------- | -------------------------------------------- |
+| Waiting/等待                 | 等待评测队列对代码进行评测                                |
+| Compiling/编译中              | 系统正在编译代码                                     |
+| Running/运行并评判              | 系统正在运行程序，并进行评判                               |
+| Accept/答案正确                | 代码通过所有的评测样例                                  |
+| Presentation Error/格式错误    | 代码结果可以通过所有样例，但是没有符合题目要求的格式                   |
+| Wrong Answer/答案错误          | 代码没有通过所有的评测样例                                |
+| Time Limit Exceeded/时间超限   | 代码运行的时间超出了题目的要求，程序被提前强行终止                    |
+| Memory Limit Exceeded/内存超限 | 代码运行的内存超出了题目的要求，程序被提前强行终止                    |
+| Output Limit Exceeded/输出超限 | 代码运行结果超出正确输出(一般是超出正确输出长度两倍以上)                |
+| Runtime Error/运行错误         | 代码在运行过程中出现段错误/访问非法内存空间/非法调用系统操作/浮点数除零错误/系统错误 |
+| Compile Error/编译错误         | 编译过程中发生错误，编译失败                               |
+| Add to queue/已加入队列         | 代码已加入爬虫提交队列，等待向远程服务器发送提交请求                   |
+| Server Refuse/提交被服务器拒绝     | 由于代码不合法/目标服务器状态非法等原因，代码没有成功提交至目标服务器          |
+| System Error/系统错误          | 由于不可预料的原因，系统无法完成评测                           |
+
+## 我如何针对OJ编写程序？
+
+以Problem 1000 A+B Problem 为例
+
+### C
+
+```c
+#include <stdio.h>
+int main()
+{
+  int a,b;
+  scanf("%d%d",&a,&b);
+  printf("%d\n");
+}
+```
+
+### C++
+
+```c++
+#include <iostream>
+using namespace std;
+int main()
+{
+  int a,b;
+  cin >> a >> b;
+  cout << a + b << endl;
+}
+```
+
+### Java
+
+**注:Java程序必须以`Main`作为主类，否则将返回编译错误**
+
+```java
+import java.util.*
+public class Main {
+	public static void main(String[] args) throws Exception {
+  	Scanner in = new Scanner(System.in);
+    int a = in.nextInt();
+    int b = in.nextInt();
+    System.out.println(a+b);
+  }
+}
+```
+
+### Python 2
+
+```python
+print sum(map(int,raw_input().split()))
+```
+
+### Python 3
+
+```python
+print(sum(map(int,input().split()))
+```
+
+## 注意事项
+
+#### C/C++
+
+1. `main`函数的返回值必须为`int`,`void main()`等非标准的写法将不被允许
+2. 对于64位整数，请使用`long long/unsigned long long`而不是`__int64`声明变量，并使用`%lld`或`%llu`输入输出
+3. 由于众所周知的原因，`cin`和`cout`的速度慢于`scanf`以及`printf`。因此我们推荐使用后两者读写数据。(事实上`cin`以及`cout`并不一定比`scanf`和`printf`慢。详情见[感性对比评测机效率](discusscontext.php?id=8)以及[cin加速](http://www.hankcs.com/program/cpp/cin-tie-with-sync\_with\_stdio-acceleration-input-and-output.html))
+
+#### Java
+
+1. 提交的代码中只能存在一个public 类,该类名必须为`Main`,类`Main`必须设置为`public`
+2. `Main`类中必须存在一个`static main`方法，并保证该方法返回`void`
+
+#### 其他语言
+
+其他语言(包括Java)的时限和内存限制一般是C/C++的两倍
+
+
+
+</script>
+            <h1 class="ui dividing header"><?php echo $OJ_NAME?> FAQ</h1>
+            <div class="markdown target"></div>
+            <!--
+            <div class="ui info message">
+  <i class="close icon"></i>
+  <div class="header">
+    该板块内容需要更新
+  </div>
+  <ul class="list">
+    <li>由于系统迭代升级多次，条目内容需要补充完整</li>
+    <li>以下内容仅供参考</li>
+  </ul>
+</div>
         <font color=green>Q</font>:这个在线评测平台使用什么样的编译器和编译选项?<br>
             <font color=red>A</font>:详见<a href="http://acm.cup.edu.cn/wiki/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/%E7%BC%96%E8%AF%91%E5%91%BD%E4%BB%A4" target="_blank">CUP Online Judge WIKI</a><br>
         <p>  编译器版本为（系统可能升级编译器版本，这里直供参考）:<br>
         <div class="ui raised segment">
             <font color=blue>
-gcc 版本 8.1.0 (GCC)<br>
+g++ (GCC) 8.2.0<br>
+Copyright © 2018 Free Software Foundation, Inc.<br>
 使用内建 specs。<br>
-COLLECT_GCC=/usr/local/bin/gcc<br>
-COLLECT_LTO_WRAPPER=/usr/local/libexec/gcc/x86_64-pc-linux-gnu/8.1.0/lto-wrapper<br>
+COLLECT_GCC=/usr/local/bin/g++<br>
+COLLECT_LTO_WRAPPER=/usr/local/libexec/gcc/x86_64-pc-linux-gnu/8.2.0/lto-wrapper<br>
 目标：x86_64-pc-linux-gnu<br>
-配置为：../configure --disable-multilib<br>
+配置为：../configure --enable-language=c,c++ --disable-multilib<br>
 线程模型：posix<br>
+gcc 版本 8.2.0 (GCC)<br>
 
             </font><br>
             <font color=blue>clang version 3.4.2 (tags/RELEASE_34/dot2-final)
                 Target: x86_64-redhat-linux-gnu
             </font><br>
             <font color=blue>glibc 2.3.6</font><br>
-            <font color=blue>openjdk version "1.8.0_171"<br>
-OpenJDK Runtime Environment (build 1.8.0_171-b10)<br>
-OpenJDK 64-Bit Server VM (build 25.171-b10, mixed mode)
+            <font color=blue>openjdk version "10.0.1" 2018-04-17<br>
+OpenJDK Runtime Environment (build 10.0.1+10)<br>
+OpenJDK 64-Bit Server VM (build 10.0.1+10, mixed mode)
 <br>
 Python 2.7.5
 <br>
@@ -187,7 +331,7 @@ for line in sys.stdin:
                 </tr>
             </table>
         </center>
-    </div>
+        -->
 
 </div> <!-- /container -->
 
@@ -199,6 +343,7 @@ for line in sys.stdin:
 <script language="javascript" type="text/javascript" src="include/jquery.flot.js"></script>
 <script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
+/*
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/c_cpp");
@@ -236,7 +381,10 @@ for line in sys.stdin:
     editor3.setShowPrintMargin(false);
     editor4.setShowPrintMargin(false);
     editor5.setShowPrintMargin(false);
+    */
+    var mdcontent = $("#markdown_content").html();
+    $(".markdown.target").html(markdownIt.render(mdcontent));
 </script>
-<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+<?php include("template/semantic-ui/bottom.php"); ?>
 </body>
 </html>

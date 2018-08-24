@@ -246,26 +246,6 @@
 
             </div>
         </div>
-        <div>
-            <!--
-        <div class="ui pagination menu" style="box-shadow:none">
-            <a class="<?php if ($page == 1) echo "disabled"; ?> icon item" id="page_prev" href="<?php if (intval($page) > 1) echo "problemset.php?page=" . ($page - 1); else echo "javascript:void(0)"; ?>">
-                <i class="left chevron icon"></i>
-            </a>
-            <br>
-                <?php
-            for ($i = max($page - 14, 1); $i <= min(max($page + 14, 20), $view_total_page); $i++) {
-                if ($i == $page)
-                    echo "<a class='active item' href='#'>$i</a>";
-                else
-                    echo "<a class='item' href='problemset.php?page=" . $i . "'>" . $i . "</a>";
-            }
-            ?>
-            <a class="<?php if (intval($page) == intval($view_total_page)) echo "disabled"; ?> icon item" href="<?php if (intval($page) < intval($view_total_page)) echo "problemset.php?page=" . (intval($page) + 1); else echo "javascript:void(0)"; ?>" id="page_next">
-                <i class="right chevron icon"></i>
-            </a>
-        </div>-->
-        </div>
     </div>
 </div>
 <script>
