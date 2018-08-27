@@ -25,7 +25,7 @@
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<?php include("template/semantic-ui/nav.php"); ?>
 <script type="text/x-template" id="ranklist_template">
 <div>
     <div class="ui stack segment">

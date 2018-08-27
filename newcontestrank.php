@@ -13,6 +13,9 @@
 
  <?php include("template/$OJ_TEMPLATE/js.php");?>
  <script src="/js/dayjs.min.js"></script>
+<script src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.4/xlsx.core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/TableExport/5.0.0/js/tableexport.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
@@ -61,27 +64,27 @@
              <div class="left aligned twelve wide column">
                  <h3 class="ui header">
                      当前时间:{{current_time}}
-                     <div class="sub header">
+                     <div class="sub header" v-if="start_time">
                          起始时间:{{dayjs(start_time).format("YYYY-MM-DD HH:mm:ss")}},已经过
                          {{format_date(dayjs().diff(start_time,"second"))}}
                      </div>
                  </h3>
              </div>
              <div class="right aligned four wide column">
-                 <a class="ui primary mini button" :href="'contestrank.xls.php?cid='+cid">Save to XLS</a>
+                 <a class="ui primary mini button" @click="exportXLS">Save to XLS</a>
              </div>
          </div>
          <div class="row">
              <div style="width:100%;height:100%;overflow:auto" class="ranking">
 <table id='rank' class="ui small celled table">
-    <thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=5%>User</th><th width=20% class="left aligned">Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
-<th width="5%" v-for="i in Array.from(Array(total).keys())">{{String.fromCharCode(i + 65)}}</th>
+    <thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=5%>User</th><th style="min-width:90px">Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
+<th style="min-width: 85.71px;" v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</th>
 </thead>
 <tbody>
     <tr v-for="row in submitter">
         <td style="text-align:center;font-weight:bold">{{row.rank}}</td>
         <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
-        <td><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{convertHTML(row.nick)}}</a></td>
+        <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{convertHTML(row.nick)}}</a></td>
         <td style="text-align:center"><a :href="'status.php?user_id=' + row.user_id + '&cid=' + cid">{{row.ac}}</a></td>
         <td style="text-align:center">{{format_date(row.penalty_time)}}</td>
         <td v-for="p in row.problem" style="text-align:center" 
@@ -91,11 +94,31 @@
                 {{p.try_time > 0 ? p.try_time : p.submit.length > 0?p.submit.length : ""}}</b>
             <br v-if="p.accept.length > 0">
             <span v-if="p.accept.length > 0" :class="p.first_blood?'first accept text':''">
-                {{format_date(p.accept[0].diff(start_time,'second'))}}
+                {{format_date(p.accept[0].diff(p.start_time,'second'))}}
             </span>
         </td>
     </tr>
 </tbody>
+</table>
+<table id="save" class="ui small celled table" style="display:none">
+    <thead><tr class=toprow align=center><th width=5%>Rank<th width=5%>User</th><th style="min-width:90px">Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
+<th style="min-width: 85.71px;" v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</th>
+</thead>
+<tbody>
+    <tr v-for="row in submitter">
+        <td style="text-align:center;font-weight:bold">{{row.rank}}</td>
+        <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
+        <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{convertHTML(row.nick)}}</a></td>
+        <td style="text-align:center"><a :href="'status.php?user_id=' + row.user_id + '&cid=' + cid">{{row.ac}}</a></td>
+        <td style="text-align:center">{{format_date(row.penalty_time)}}</td>
+        <td v-for="p in row.problem" style="text-align:center" 
+        :class="p.accept.length > 0?p.first_blood ? 'first accept':'accept':''">
+            <b :class="'text '+ (p.accept.length > 0 ? p.first_blood?'first accept':'accept':'red')">
+                {{ (p.submit.length > 0)?'(-':''}}{{p.try_time > 0 ? p.try_time + ")" : p.submit.length > 0?p.submit.length + ")" : ""}}{{p.accept.length > 0 ? format_date(p.accept[0].diff(p.start_time,'second')):""}}</b>
+        </td>
+    </tr>
+</tbody>
+</table>
 </div>
          </div>
      </div>
@@ -168,18 +191,18 @@ td{
     $(".ranking").height(window.screen.availHeight-($(".ui.vertical.center").outerHeight()+$("center").outerHeight())-105);
 </script>
 <script>
-    var cid = getParameterByName("cid");
-    $.get("/api/scoreboard/" + cid,function(d) {
-    window.contestrank = new Vue({
+window.contestrank = new Vue({
        el:".contestrank.scoreboard",
        data:{
            cid: getParameterByName("cid"),
            _scoreboard:null,
            submitter:{},
+           subback:[],
            total:0,
-           start_time:dayjs(),
+           start_time:false,
            first_blood:{},
            title:"",
+           tmpboard:[],
            current_time:dayjs().format("YYYY-MM-DD HH:mm:ss")
        },
        computed:{
@@ -188,13 +211,17 @@ td{
                    
                },
                set:function(val){
+                   var that = this;
+                   for(var i = 0;i<that.total;++i) {
+                       if(!that.first_blood)
+                       that.first_blood[i] = -1
+                   }
                    var len = val.length;
                    var submitter = this.submitter;
                    var total = this.total;
                    var that = this;
                    for(var i = 0;i<len;++i)
                    {
-                       val[i].in_date = val[i].in_date;
                        val[i].nick = val[i].nick.trim();
                        if(!submitter[val[i].user_id]) {
                            submitter[val[i].user_id] = {
@@ -206,7 +233,8 @@ td{
                            for(var j = 0;j<total;++j) {
                                submitter[val[i].user_id].problem[j] = {
                                    submit:[],
-                                   accept:[]
+                                   accept:[],
+                                   start_time:val[i].start_time
                                }
                            }
                        }
@@ -258,7 +286,7 @@ td{
                    _.forEach(_submitter,function(val){
                        _.forEach(val.problem,function(v,idx){
                            if(v.accept.length > 0) {
-                               var difftime =  v.accept[0].diff(that.start_time,'second');
+                               var difftime =  v.accept[0].diff(v.start_time,'second');
                                val.penalty_time += difftime;
                                if(~that.first_blood[idx]) {
                                    that.first_blood[idx] = Math.min(that.first_blood[idx],difftime);
@@ -272,7 +300,7 @@ td{
                    
                    _.forEach(_submitter,function(val){
                        _.forEach(val.problem,function(v,idx){
-                           if(v.accept.length > 0 && v.accept[0].diff(that.start_time,'second') === that.first_blood[idx]) {
+                           if(v.accept.length > 0 && v.accept[0].diff(v.start_time,'second') === that.first_blood[idx]) {
                                v.first_blood = true;
                            }
                            else {
@@ -294,10 +322,9 @@ td{
                    _.forEach(_submitter,function(val){
                        val.rank = rnk++;
                    })
-                   
                    that.submitter = _submitter;
                    console.log(_submitter);
-                   that._scoreboard = val;
+                   //that._scoreboard = val;
                }
            }
        },
@@ -324,24 +351,21 @@ td{
                var d = document.createElement("div");
                d.innerHTML = str;
                return d.innerText;
+           },
+           exportXLS:function(){
+               var table = TableExport(document.getElementById("save"));
+               var d = table.getExportData().save.xlsx;
+               var filename = "Contest " + this.cid;
+               filename = filename.substring(0,31);
+               table.export2file(d.data,d.mimeType,filename,d.fileExtension,d.merges)
            }
        },
        mounted:function(){
            var that = this;
-           
-               that.start_time = dayjs(d.start_time);
-               that.total = d.total;
-               that.title = d.title;
-               for(var i = 0;i<that.total;++i) {
-                   that.first_blood[i] = -1
-               }
-               that.scoreboard = d.data;
                that.$nextTick(function(){
-                   metal();
                    $(".ranking").height($(window).height()-($(".hidemenu").outerHeight())-150);
                })
-               var $title = $("title").html();
-               $("title").html("Contest " + that.cid + " - " + that.title + $title);
+               
                setInterval(function(){
                    that.current_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
                },1000);
@@ -350,7 +374,51 @@ td{
            
        }
    })
-    })
+    var cid = getParameterByName("cid");
+    var cidArr = [];
+    if(cid.indexOf(",")!== -1) {
+        cidArr = cid.split(",");
+    }
+    else {
+        cidArr = [cid];
+    }
+    var cnt = 0;
+    var data = [];
+    function work(){
+        cid = cidArr.shift();
+        $.get("/api/scoreboard/"+cid,function(d){
+            _.forEach(d.data,function(val,idx){
+                val.num += cnt;
+                val.start_time = dayjs(d.start_time);
+            });
+            data = data.concat(d.data);
+            cnt += d.total;
+
+            if(cidArr.length > 0) {
+            work();
+            }
+            else {
+            window.contestrank.total = cnt;
+            window.contestrank.scoreboard = data;
+            }
+        });
+    }
+    if(cidArr.length > 1) {
+        window.contestrank.title = cidArr.join(",");
+        work();
+    }
+    else {
+        cid = cidArr.shift();
+        $.get("/api/scoreboard/"+cid,function(d){
+            window.contestrank.total = d.total;
+            window.contestrank.start_time = dayjs(d.start_time);
+            _.forEach(d.data,function(val){
+                val.start_time = dayjs(d.start_time);
+            })
+            window.contestrank.scoreboard = d.data;
+            window.contestrank.title = d.title;
+        });
+    }
 </script>
   </body>
 </html>

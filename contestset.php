@@ -9,24 +9,20 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title><?php echo $OJ_NAME?></title>
-    <?php include("template/$OJ_TEMPLATE/css.php");?>
-    <?php include("template/$OJ_TEMPLATE/js.php");?>
+    <?php include("template/semantic-ui/css.php");?>
+    <?php include("template/semantic-ui/js.php");?>
     <style>
         .admin_hide{
             opacity:0.3;
         }
 
     </style>
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php");?>
-<div class="ui padding pusher container">
+<?php include("template/semantic-ui/nav.php");?>
+<div class="ui padding container contest" v-cloak>
     <!-- Main component for a primary marketing message or call to action -->
     <h2 class="ui dividing header">
             Contest Set
@@ -39,10 +35,11 @@
                 <input class="ui teal button" type=submit value="查询">
             </form>ServerTime:<span id=nowdate></span>-->
             <div class="ui top attached tabular menu">
-                <a class="active item">测验</a>
+                <a :class="(current_column === 'contest' ? 'active':'') + ' item'" @click="current_column = 'contest'">测验</a>
+                <a :class="(current_column === 'rank' ? 'active':'') + ' item'" @click="current_column = 'rank'">排名统计</a>
             </div>
  
-            <div class="ui bottom attached segment">
+            <div v-show="current_column === 'contest'" class="ui bottom attached segment">
                 <div class="ui icon message">
   <i class="notched circle loading icon"></i>
   <div class="content">
@@ -88,8 +85,26 @@
                 ?>
                 </tbody>
             </table></div>
+            <div v-show="current_column === 'rank'" class="ui bottom attached segment">
+                <div class="ui grid">
+                    <div class="fourteen wide column">
+                        <div class="ui fluid multiple search selection dropdown">
+  <input type="hidden" name="country" @change="select = $event.target.value">
+  <i class="dropdown icon"></i>
+  <div class="default text">Select Contest Or Input Contest ID</div>
+  <div class="menu">
+      <div class="item" :data-value="row.contest_id" v-for="row in contest_list">{{row.title}}</div>
+</div>
+  </div>
+                    </div>
+                    <div class="two wide column">
+                        <a class="primary button ui" @click="run">Go</a>
+                    </div>
+                </div>
+                
+            </div>
 </div> <!-- /container -->
-<?php include("template/$OJ_TEMPLATE/bottom.php");?>
+<?php include("template/semantic-ui/bottom.php");?>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
@@ -127,7 +142,8 @@
         setTimeout("clock()",1000);
     }
     clock();
-    <?php if(isset($_SESSION['administrator'])){ ?>
+    function init() {
+        <?php if(isset($_SESSION['administrator'])){ ?>
     $(".ui.padded.table").popup({
         title:"管理员视图",
         content:"白色背景竞赛属于普通用户可见竞赛，灰色背景竞赛为不可见竞赛,绿色背景竞赛为正在进行中的竞赛",
@@ -154,9 +170,45 @@
                 render[i].innerHTML = render[i].getAttribute("datetime");
             }
         }
+    });
+    $('.multiple.search')
+                .dropdown({
+            })
+    }
+    window.contest = new Vue({
+        el:".contest.container",
+        data:function(){
+            return {
+                current_column:"contest",
+                contest_list:[],
+                select:""
+            }
+        },
+        mounted:function(){
+            var that = this;
+            $.get("/api/contest/list",function(d){
+                d.data.sort(function(a,b){
+                    return parseInt(b.contest_id) - parseInt(a.contest_id);
+                })
+                that.contest_list = d.data;
+                setTimeout(function(){
+                    $('.multiple.search')
+                .dropdown({
+                    allowAdditions: true
+            })
+                },1000)
+            });
+        },
+        updated:function(){
+            
+        },
+        methods:{
+            run:function(){
+                window.open("contestrank.php?cid=" + this.select);
+            }
+        }
     })
-    ;
-
+    init();
 </script>
 </body>
 </html>

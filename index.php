@@ -17,8 +17,8 @@ $homepage="";
     <script>
         var homepage = true;
     </script>
-    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
-    <script src="template/<?= $OJ_TEMPLATE ?>/js/countdown.js"></script>
+    <?php include("template/semantic-ui/js.php"); ?>
+    <script src="template/semantic-ui/js/countdown.js"></script>
     <style>
         a{
             cursor: pointer;
@@ -26,7 +26,34 @@ $homepage="";
         .white{
             color:white;
         }
-        
+        .ml14 {
+  font-weight: 200;
+  font-size: 3.2em;
+}
+
+.ml14 .text-wrapper {
+  position: relative;
+  display: inline-block;
+  padding-top: 0.1em;
+  padding-right: 0.05em;
+  padding-bottom: 0.15em;
+}
+
+.ml14 .line {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: #fff;
+  transform-origin: 100% 100%;
+  bottom: 0;
+}
+
+.ml14 .letter {
+  display: inline-block;
+  line-height: 1em;
+}
     </style>
 </head>
 <body>
@@ -43,11 +70,12 @@ $homepage="";
             </div>
         </div>
 
-        <div class="ui text container transition">
-            
-            <h1 class="ui inverted header">
-                <?= $OJ_NAME ?>
-            </h1>
+        <div class="ui text container transition main title">
+            <h1 class="ui inverted header ml14">
+  <span class="text-wrapper">
+    <span class="letters" data-content="CUP Online Judge"></span>
+  </span>
+</h1>
             <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a>
             
 <!--<h4></h4>-->
@@ -61,7 +89,7 @@ $homepage="";
             </div>
         </div>
         <br><br>-->
-        <a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image" style="display:inline-block"></a>
+        <a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
         <!--<div class="ui huge primary button" onclick="location.href='<?php if (isset($_SESSION['user_id'])) echo "problemset.php"; else echo "newloginpage.php"; ?>'"><?php if (!isset($_SESSION['user_id'])) echo "Login"; else echo "Get Started"; ?><i class="right arrow icon"></i></div>-->
     </div>
 
@@ -123,7 +151,7 @@ $homepage="";
     </div>
 </div>
 
-<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+<?php include("template/semantic-ui/bottom.php"); ?>
 
 </div>
 
@@ -221,7 +249,56 @@ $homepage="";
     $(".generator").on("click",function(){
         $(".packer").transition("fade down");
         $(".vultr").transition("fade up");
-    })
+    });
+    $('.ml14 .letters').each(function(){
+  $(this).html($(this).attr("data-content").replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
+});
+
+anime.timeline({loop: false})
+  .add({
+    targets: '.ml14 .line',
+    scaleX: [0,1],
+    opacity: [0.5,1],
+    easing: "easeInOutExpo",
+    duration: 900
+  }).add({
+    targets: '.ml14 .letter',
+    opacity: [0,1],
+    translateX: [40,0],
+    translateZ: 0,
+    scaleX: [0.3, 1],
+    easing: "easeOutExpo",
+    duration: 800,
+    offset: '-=600',
+    delay: function(el, i) {
+      return 0 + 25 * i;
+    }
+  }).add({
+      targets: '.maintain',
+      opacity:[0,1],
+      translateX:[-40,0],
+      scaleX:[0.3,1],
+      easing: [.91,-0.54,.29,1.56],
+      duration:500,
+      offset: '-=600'
+  }).
+  add({
+      targets: '.vultr',
+      opacity:[0,1],
+      translateX:[40,0],
+      translateZ:0,
+      scaleX:[0.3,1],
+      easing: "easeOutExpo",
+      duration: 500,
+      offset: '-=300'
+  })
+  /*.
+  add({
+      targets: '.main.title',
+      translateX:[0,-200],
+      duration:500,
+      easing: "easeOutExpo"
+  })*/;
 </script>
 <!--
 <script src="template/semantic-ui/js/typed.min.js"></script>

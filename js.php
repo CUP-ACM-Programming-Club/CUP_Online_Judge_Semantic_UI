@@ -15,6 +15,6 @@ if(result.name === "ie" && result.versionNumber < 10) {
 -->
 <script src="/js/vue.min.js?ver=2.5.17"></script>
 <script src="/template/semantic-ui/js/base64.js?type=min&ver=1.0"></script>
-<script src="/template/semantic-ui/js/utils.js?ver=1.0"></script>
+<script src="/template/semantic-ui/js/utils.js?ver=1.0.1"></script>
 <script src="/template/semantic-ui/js/anime.min.js"></script>
 <script src="/js/lodash.min.js"></script>

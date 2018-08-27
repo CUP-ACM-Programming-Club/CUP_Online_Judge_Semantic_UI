@@ -1,16 +1,3 @@
-            <?php
-
-
-$authcode = "";
-if (isset($_SESSION['user_id'])) {
-    $authcode = generate_password(16);
-    $mem = new Memcache;
-    $mem->connect($OJ_MEMSERVER,$OJ_MEMPORT);
-    $mem->set($_SESSION['user_id'],$authcode,0,100);
-    $database->update("users", ["authcode" => $authcode], ["user_id" => $_SESSION['user_id']]);
-}
-?>
-
 <?php if (isset($_SESSION['user_id'])) { ?>
 
 <script src="/socket.io/socket.io.js" id="socket_io"></script>
@@ -125,8 +112,8 @@ if (isset($_SESSION['user_id'])) {
             vonline_num.users = user['user_cnt'];
             vonline_num.judgers = judger.length;
            // vonline_num.message="<i class='users icon'></i>" + user['user_cnt'] + "人" + "&nbsp;<i class='microchip icon'></i>"+judger.length;
-            <?php if(isset($_SESSION['administrator'])){ ?>
             var receive_data = user;
+            <?php if(isset($_SESSION['administrator'])){ ?>
             console.log(receive_data)
             window.online_list = receive_data["user"];
             if (online_list&&typeof list_online=="function" && $("#online_user_table").attr("refresh") == "true")
