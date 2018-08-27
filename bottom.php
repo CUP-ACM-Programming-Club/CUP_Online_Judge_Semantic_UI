@@ -2,7 +2,7 @@
         <div class="ui container">
             <div class="ui stackable inverted divided equal height stackable grid">
                 <div class="five wide column">
-                    <h3 class="ui inverted header"><a href="faqs.php" class="white link" target="_blank">关于
+                    <h3 class="ui inverted header"><a href="about.php" class="white link" target="_blank">关于
                         <div class="sub header">
                             常见问题
                         </div>

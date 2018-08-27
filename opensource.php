@@ -68,6 +68,12 @@
         <p>Copyright© <a href="https://github.com/Requarks" target="_blank">Requarks</a></p>
         <p>Licensed under <a href="https://github.com/Requarks/wiki/blob/master/LICENSE" target="_blank">AGPL-3.0</a>
         </p>
+        <h2 class="ui header">Vue.js</h2>
+        <p><i class="github icon"></i>&nbsp;<a href="https://github.com/vuejs/vue" target="_blank">https://github.com/vuejs/vue</a>
+        </p>
+        <p>Copyright© <a href="https://github.com/vuejs" target="_blank">Vuejs</a></p>
+        <p>Licensed under <a href="https://github.com/vuejs/vue/blob/dev/LICENSE" target="_blank">MIT License</a>
+        </p>
         <h2 class="ui header">HUSTOJ-Flat-UI-Theme</h2>
         <p><i class="github icon"></i>&nbsp;<a href="https://github.com/ryanlee2014/HUSTOJ-Flat-UI-Theme"
                                                target="_blank">https://github.com/ryanlee2014/HUSTOJ-Flat-UI-Theme</a>
@@ -147,6 +153,13 @@
         <p><i class="github icon"></i>&nbsp;<a href="https://www.mathjax.org/" target="_blank">https://www.mathjax.org/</a></p>
         <p>Copyright© <a href="https://github.com/mathjax/" target="_blank">MathJax</a></p>
         <p>Licensed under <a href="https://github.com/mathjax/MathJax/blob/master/LICENSE" target="_blank">Apache License 2.0</a></p>
+        <h2 class="ui header">CUP Online Judge Semantic UI</h2>
+        <p><i class="github icon"></i>&nbsp;<a href="https://github.com/CUP-ACM-Programming-Club/CUP_Online_Judge_Semantic_UI" target="_blank">https://github.com/CUP-ACM-Programming-Club/CUP_Online_Judge_Semantic_UI</a></p>
+        <p>Copyright©️<a href="https://github.com/ryanlee2014" target="_blank">Ryan Lee</a></p>
+        
+        <h2 class="ui header">MarkdownIt Browser</h2>
+        <p><i class="github icon"></i>&nbsp;<a href="https://github.com/ryanlee2014/markdown-it-browser" target="_blank">https://github.com/ryanlee2014/markdown-it-browser</a></p>
+        <p>Copyright©️<a href="https://github.com/ryanlee2014" target="_blank">Ryan Lee</a></p>
         <h1></h1>
     </div> <!-- /container -->
 </div>

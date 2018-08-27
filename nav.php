@@ -67,6 +67,7 @@ $suffix="?my";
                            <?php if(!$OJ_CONTEST_MODE||isset($_SESSION['administrator'])){ ?>
                 <a class="item tutorial" target="_blank"><i class="question circle outline icon"></i>C/C++语言参考手册</a>
                                 <a class="item" href="https://wiki.cupacm.com"><i class="book icon"></i>Wiki</a>
+                                <a class="item" href="fame.php"><i class="chess queen icon"></i>Hall of Fame</a>
 
                 <?php } ?>
                            
