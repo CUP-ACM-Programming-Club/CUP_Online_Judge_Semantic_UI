@@ -34,10 +34,10 @@ $pass_st=["negative","","positive"];
         <div class="ui grid">
             <div class="row">
                 <div class="eleven wide column">
-                    <table id='problemset' class='ui padded celled selectable table'  width='90%'>
+                    <table id='problemset' class='ui padded celled selectable table'  width='95%'>
                 <thead>
                 <tr align=center class='toprow'>
-                    <th style="cursor:hand" onclick="sortTable('problemset', 1, 'int');" width="13%" ><?php echo $MSG_PROBLEM_ID?>
+                    <th style="cursor:hand" onclick="sortTable('problemset', 1, 'int');" width="15%" ><?php echo $MSG_PROBLEM_ID?>
                     <th width='60%'><?php echo $MSG_TITLE?></th>
                     <th style="cursor:hand" onclick="sortTable('problemset', 4, 'int');" width='8%'>
                         正确</th>

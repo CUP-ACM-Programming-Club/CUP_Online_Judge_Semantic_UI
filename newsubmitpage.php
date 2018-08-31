@@ -10,8 +10,8 @@
     <?php include("csrf.php"); ?>
     <title>
     </title>
-    <?php include("template/$OJ_TEMPLATE/css.php"); ?>
-    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
+    <?php include("template/semantic-ui/css.php"); ?>
+    <?php include("template/semantic-ui/js.php"); ?>
     <script src="/js/fingerprint2.min.js"></script>
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
     <!--<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>-->
@@ -147,7 +147,7 @@
                             _data.problem_id = d.problem_id;
                         }
                         else {
-                            _data.problem_id = String.fromCharCode(parseInt(pid) + "A".charCodeAt(0));
+                            _data.problem_id = 1001 + parseInt(pid);
                         }
                         if(_data.prepend && _data.prepend[_data.selected_language]) {
                             _data.current_prepend = _data.prepend[_data.selected_language];

@@ -75,7 +75,7 @@
         </tbody>
     </table>
 </script>
-<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<?php include("template/semantic-ui/nav.php"); ?>
 <div>
     <!-- Main component for a primary marketing message or call to action -->
     <div class="padding ui container">
@@ -109,17 +109,10 @@
                                 <div class="menu">
                                     <div class='item' data-value='-1'>All<i class="dropdown icon"
                                                                             style="visibility: hidden; "></i></div>
-                                <?php
-                                $i = 0;
-                                foreach ($language_name as $lang) {?>
-                                <div class="item" data-value="<?=$i?>">
-                                <i class="<?=$language_icon[$i]?> color"></i>
-                                <?=$language_name[$i]?>
-                                </div>
-                                <?php
-                                    $i++;
-                                }
-                                ?>
+                                <div class="item" :data-value="i" v-for="i in Array.from(Array(language_name?language_name.length:0).keys())">
+                                        <i :class="language_icon[i]+' color'"></i>
+                                        {{language_name[i]}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -133,15 +126,12 @@
                                 <div class="menu">
                                     <div class='item' data-value='-1'>All<i class="dropdown icon"
                                                                             style="visibility: hidden; "></i></div>
-                                    <?php
-                                    for ($j = 0, $i = ($j + 4) % 12; $j < 12; $j++, $i = ($j + 4) % 12) {
-                                        ?>
-                                        <div class='item' data-value='<?= strval($i) ?>'><span
-                                                class='<?= $judge_flag[$i] ?>'><i
-                                                    class='<?= $jicon[$i] ?> icon'></i><?= $jresult[$i] ?></span></div>
-                                        <?php
-                                    }
-                                    ?>
+                                    <div class="item" :data-value="i" v-for="i in Array.from(Array(judge_color ? judge_color.length : 0).keys())">
+                                        <span :class="judge_color[i]">
+                                        <i :class="judge_icon[i]+' icon'"></i>
+                                        {{result[i]}}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -405,9 +395,11 @@
             problem_list: [],
             icon_list: [],
             judge_color: [],
+            judge_icon:[],
             target: {},
             language_name: [],
             result: [],
+            language_icon:[],
             self: "",
             isadmin: false,
             problem_id: null,
@@ -453,6 +445,8 @@
                 that.icon_list = data.const_list.icon_list;
                 that.judge_color = data.const_list.judge_color;
                 that.target = data.const_list.language.cn.status;
+                that.judge_icon = data.const_list.judge_icon;
+                that.language_icon = data.const_list.language_icon;
                 that.language_name = data.const_list.language_name.local;
                 that.result = data.const_list.result.cn;
                 that.self = data.self;
@@ -566,6 +560,6 @@
         }
     })
 </script>
-<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+<?php include("template/semantic-ui/bottom.php"); ?>
 </body>
 </html>

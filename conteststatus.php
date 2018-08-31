@@ -39,7 +39,7 @@
             <td><a :href="'userinfo.php?user='+row.user_id">{{row.user_id}}<br>{{row.nick}}</a>
             </td>
             <td>
-                <div class=center><a :href="(row.oj_name === 'local'?'new':(!row.oj_name?'new':row.oj_name.toLowerCase()))+'submitpage.php?cid='+row.contest_id+'&pid='+row.num">{{end?((row.oj_name === "local"?"":row.oj_name.toUpperCase())+row.problem_id):(problem_alpha[row.num])}}</a>
+                <div class=center><a :href="(row.oj_name === 'local'?'new':(!row.oj_name?'new':row.oj_name.toLowerCase()))+'submitpage.php?cid='+row.contest_id+'&pid='+row.num">{{end?((row.oj_name === "local"?"":row.oj_name.toUpperCase())+row.problem_id):(row.num + 1001)}}</a>
                 </div>
             </td>
             <td><a :href="(row.result == 11?'ce':'re')+'info.php?sid='+row.solution_id"
@@ -71,7 +71,7 @@
         </tbody>
     </table>
 </script>
-<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<?php include("template/semantic-ui/nav.php"); ?>
 <div>
     <!-- Main component for a primary marketing message or call to action -->
     <div class="padding ui container">
@@ -88,27 +88,27 @@
                 <form id=simform class="ui form segment" action="status.php" method="get">
                     <div class="four fields">
                         <div class="field">
-                            <label> <?php echo $MSG_PROBLEM_ID ?></label>
-                            <div class="ui fluid search dropdown selection" size="1">
+                            <label>编号</label>
+                            <div class="ui fluid search dropdown selection" size="1" id="cur_problem">
                                 <input v-model="problem_id" @change="problem_id=$event.target.value"
                                        type="hidden" name="problem_id">
                                 <i class="dropdown icon"></i>
                                 <div class="default text">All</div>
                                 <div class="menu">
                                     <div class='item' data-value=''>未选择</div>
-                                    <div v-for="i in Array.from(Array(total).keys())" class="item" :data-value="String.fromCharCode('A'.charCodeAt(0)+i)">
-                                        {{String.fromCharCode('A'.charCodeAt(0)+i)}}
+                                    <div v-for="i in Array.from(Array(total).keys())" class="item" :data-value="i">
+                                        {{1001 + i}}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="field">
-                            <label><?php echo $MSG_USER ?></label>
+                            <label>用户</label>
                             <input v-model="user_id" class="form-control" type=text size=4 name=user_id
                                    value=''>
                         </div>
                         <div class="field">
-                            <label><?php echo $MSG_LANG ?></label>
+                            <label>语言</label>
                             <div class="ui fluid search dropdown selection" size="1">
                                 <input v-model="language" @change="language=$event.target.value"
                                        type="hidden" name="language">
@@ -117,25 +117,15 @@
                                 <div class="menu">
                                     <div class='item' data-value='-1'>All<i class="dropdown icon"
                                                                             style="visibility: hidden; "></i></div>
-                                <?php
-                                $i = 0;
-                                foreach ($language_name as $lang) {?>
-                                <div class="item" data-value="<?=$i?>">
-                                <i class="<?=$language_icon[$i]?> color"></i>
-                                <?=$language_name[$i]?>
-                                </div>
-                                <?php
-                                    $i++;
-                                }
-                                ?>
+                                    <div class="item" :data-value="i" v-for="i in Array.from(Array(language_name?language_name.local?language_name.local.length:0:0).keys())">
+                                        <i :class="language_icon[i]+' color'"></i>
+                                        {{language_name.local[i]}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="field">
-                            <label><?php echo $MSG_RESULT ?></label>
-                            <?php
-                            $jresult_get = -1;
-                            ?>
+                            <label>结果</label>
                             <div class="ui fluid search dropdown selection" size="1">
                                 <input v-model="problem_result" @change="problem_result=$event.target.value"
                                        type="hidden" name="jresult">
@@ -144,15 +134,12 @@
                                 <div class="menu">
                                     <div class='item' data-value='-1'>All<i class="dropdown icon"
                                                                             style="visibility: hidden; "></i></div>
-                                    <?php
-                                    for ($j = 0, $i = ($j + 4) % 12; $j < 12; $j++, $i = ($j + 4) % 12) {
-                                        ?>
-                                        <div class='item' data-value='<?= strval($i) ?>'><span
-                                                class='<?= $judge_flag[$i] ?>'><i
-                                                    class='<?= $jicon[$i] ?> icon'></i><?= $jresult[$i] ?></span></div>
-                                        <?php
-                                    }
-                                    ?>
+                                    <div class="item" :data-value="i" v-for="i in Array.from(Array(judge_color ? judge_color.length : 0).keys())">
+                                        <span :class="judge_color[i]">
+                                        <i :class="judge_icon[i]+' icon'"></i>
+                                        {{result[i]}}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -210,8 +197,8 @@
         </thead>
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
-                <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
-                <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&jresult='+key">{{row}}</a></td>
+                <td><a :href="'status.php?cid='+cid+'&problem_id='+(i)" target="_blank">{{(1001 + i)}}</a></td>
+                <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+(i)+'&jresult='+key">{{row}}</a></td>
                  <td>{{statistics.totalSumResult[i]}}</td>
             </tr>
         </tbody>
@@ -229,8 +216,8 @@
         </thead>
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
-                <td><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)" target="_blank">{{String.fromCharCode("A".charCodeAt(0)+i)}}</a></td>
-                <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+String.fromCharCode('A'.charCodeAt(0)+i)+'&language='+key">{{row}}</a></td>
+                <td><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)" target="_blank">{{(1001 + i)}}</a></td>
+                <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)+'&language='+key">{{row}}</a></td>
                 <td>{{statistics.totalSumProblem[i]}}</td>
             </tr>
         </tbody>
@@ -457,6 +444,8 @@
             judge_color: [],
             target: {},
             language_name: [],
+            language_icon:[],
+            judge_icon:[],
             result: [],
             self: "",
             isadmin: false,
@@ -609,6 +598,9 @@
                 that.problem_list = data.result;
                 that.icon_list = data.const_list.icon_list;
                 that.judge_color = data.const_list.judge_color;
+                that.judge_icon = data.const_list.judge_icon;
+                that.language_icon = data.const_list.language_icon;
+                
                 that.target = data.const_list.language.cn.status;
                 that.language_name = data.const_list.language_name;
                 that.result = data.const_list.result.cn;
@@ -699,6 +691,9 @@
                     on: 'hover',
                     positon: "top center"
                 });
+            this.$nextTick(function(){
+                $("#cur_problem").dropdown("set selected",this.problem_id);
+            })
         },
         created: function () {
             var that = this;
@@ -728,6 +723,6 @@
         }
     })
 </script>
-<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
+<?php include("template/semantic-ui/bottom.php"); ?>
 </body>
 </html>

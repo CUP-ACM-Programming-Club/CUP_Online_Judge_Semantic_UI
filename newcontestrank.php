@@ -9,13 +9,25 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title><?php echo $OJ_NAME?></title>  
-    <?php include("template/$OJ_TEMPLATE/css.php");?>	    
+    <?php include("template/semantic-ui/css.php");?>	    
 
- <?php include("template/$OJ_TEMPLATE/js.php");?>
+ <?php include("template/semantic-ui/js.php");?>
  <script src="/js/dayjs.min.js"></script>
 <script src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.4/xlsx.core.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/TableExport/5.0.0/js/tableexport.min.js"></script>
+<script src="https://cdn.rawgit.com/mozilla/localForage/master/dist/localforage.js"></script>
+<script>
+/*
+    localforage.setDriver([
+  localforage.INDEXEDDB,
+  localforage.WEBSQL,
+  localforage.LOCALSTORAGE
+  ]).then(function() {
+  
+});
+*/
+</script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
@@ -46,14 +58,20 @@
     .text.red {
         color:#DB2828!important;
     }
+    .well{
+   background-image:none;
+   padding:1px;
+}
+td{
+   white-space:nowrap;
+}
     </style>
   </head>
-
   <body>
-<?php include("template/$OJ_TEMPLATE/nav.php");?>	   
+<?php include("template/semantic-ui/nav.php");?>	   
     <div class="contestrank scoreboard padding" v-cloak>
         <h2 class="ui dividing header">
-            Contest Rank
+            {{total === 0?"计算中,请稍后":"Contest Rank"}}
             <div class="sub header">
                  {{title}}
             </div>
@@ -176,22 +194,14 @@ cell.className="ui grey";
 //alert(e);
 }
 }
-</script>
-<style>
-.well{
-   background-image:none;
-   padding:1px;
-}
-td{
-   white-space:nowrap;
-
-}
-</style>
-<script>
-    $(".ranking").height(window.screen.availHeight-($(".ui.vertical.center").outerHeight()+$("center").outerHeight())-105);
-</script>
-<script>
-window.contestrank = new Vue({
+    $(".ranking").height(window.innerHeight-($(".ui.vertical.center").outerHeight()+$(".dividing.header").outerHeight())-85);
+    window.addEventListener("resize",function(){
+        setTimeout(function(){
+            $(".ranking").height(window.innerHeight-($(".ui.vertical.center").outerHeight()+$(".dividing.header").outerHeight())-85);
+        },100);
+        
+    })
+var contestrank = new Vue({
        el:".contestrank.scoreboard",
        data:{
            cid: getParameterByName("cid"),
@@ -233,20 +243,21 @@ window.contestrank = new Vue({
                            for(var j = 0;j<total;++j) {
                                submitter[val[i].user_id].problem[j] = {
                                    submit:[],
-                                   accept:[],
-                                   start_time:val[i].start_time
-                               }
+                                   accept:[]
+                                }
                            }
                        }
                        if(val[i].result == 4) {
                             submitter[val[i].user_id].problem[val[i].num].accept.push(
                                 val[i].in_date
-                            )
+                            );
+                            submitter[val[i].user_id].problem[val[i].num].start_time = val[i].start_time;
                        }
                        else {
                            submitter[val[i].user_id].problem[val[i].num].submit.push(
                                val[i].in_date
                            )
+                           submitter[val[i].user_id].problem[val[i].num].start_time = val[i].start_time;
                        }
                    }
                    var _submitter = [];
@@ -254,7 +265,6 @@ window.contestrank = new Vue({
                        val.user_id = index;
                        _submitter.push(val);
                    })
-                   // var _submitter = _.values(submitter);
                    _.forEach(submitter,function(value,key){
                        var problems = submitter[key].problem;
                        _.forEach(problems,function(value,index){
@@ -277,7 +287,6 @@ window.contestrank = new Vue({
                                ++submitter[key].ac;
                                submitter[key].penalty_time += penalty_time;
                            }
-                           
                        })
                         // console.log(submitter[key]);
                    })
@@ -300,12 +309,7 @@ window.contestrank = new Vue({
                    
                    _.forEach(_submitter,function(val){
                        _.forEach(val.problem,function(v,idx){
-                           if(v.accept.length > 0 && v.accept[0].diff(v.start_time,'second') === that.first_blood[idx]) {
-                               v.first_blood = true;
-                           }
-                           else {
-                               v.first_blood = false;
-                           }
+                           v.first_blood = Boolean(v.accept.length > 0 && v.accept[0].diff(v.start_time,'second') === that.first_blood[idx]);
                        })
                    })
                    
@@ -323,7 +327,6 @@ window.contestrank = new Vue({
                        val.rank = rnk++;
                    })
                    that.submitter = _submitter;
-                   console.log(_submitter);
                    //that._scoreboard = val;
                }
            }
@@ -360,6 +363,9 @@ window.contestrank = new Vue({
                table.export2file(d.data,d.mimeType,filename,d.fileExtension,d.merges)
            }
        },
+       updated:function(){
+            metal();
+       },
        mounted:function(){
            var that = this;
                that.$nextTick(function(){
@@ -384,6 +390,8 @@ window.contestrank = new Vue({
     }
     var cnt = 0;
     var data = [];
+    var finished = false;
+    var cstring = cidArr.join(",");
     function work(){
         cid = cidArr.shift();
         $.get("/api/scoreboard/"+cid,function(d){
@@ -391,18 +399,40 @@ window.contestrank = new Vue({
                 val.num += cnt;
                 val.start_time = dayjs(d.start_time);
             });
-            data = data.concat(d.data);
+            _.forEach(d.data,function(val){
+                data.push(val);
+            })
             cnt += d.total;
 
             if(cidArr.length > 0) {
             work();
             }
             else {
-            window.contestrank.total = cnt;
-            window.contestrank.scoreboard = data;
+                finished = true;
+                window.contestrank.total = cnt;
+                window.contestrank.scoreboard = data;
+                //console.log(data);
+                //localforage.setItem(cstring,JSON.stringify({data:data,total:cnt}));
             }
         });
     }
+    /*
+  localforage.getItem(cstring).then(function(readValue){
+      if(readValue && !finished) {
+          console.log(readValue);
+          readValue = JSON.parse(readValue);
+        //window.contestrank.total = readValue.total;
+        if(cidArr.length  > 1) {
+            window.contestrank.start_time = dayjs(readValue.start_time);
+            window.contestrank.title = readValue.title;
+        }
+        _.forEach(readValue.data,function(val){
+             val.start_time = dayjs(readValue.start_time);
+        });
+        console.log(data);
+        //window.contestrank.scoreboard = readValue.data;
+      }
+  })*/
     if(cidArr.length > 1) {
         window.contestrank.title = cidArr.join(",");
         work();
@@ -410,6 +440,7 @@ window.contestrank = new Vue({
     else {
         cid = cidArr.shift();
         $.get("/api/scoreboard/"+cid,function(d){
+            finished = true;
             window.contestrank.total = d.total;
             window.contestrank.start_time = dayjs(d.start_time);
             _.forEach(d.data,function(val){
@@ -417,6 +448,7 @@ window.contestrank = new Vue({
             })
             window.contestrank.scoreboard = d.data;
             window.contestrank.title = d.title;
+            //localforage.setItem(cstring,d,function(){});
         });
     }
 </script>
