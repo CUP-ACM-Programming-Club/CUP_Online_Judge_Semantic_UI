@@ -412,9 +412,9 @@ $suffix="?my";
  }, 500);
       
 $("a[href='"+location.pathname.substring(1)+"']").addClass("active");
-if(typeof homepage !== "undefined") {
-    $(".ui.borderless.network.secondary.menu").addClass("inverted");
-}
+//if(typeof homepage !== "undefined") {
+//    $(".ui.borderless.network.secondary.menu").addClass("inverted");
+//}
 if(location.pathname.substring(1).length > 0 && !location.pathname.match(/index/)) {
     $(".hidemenu").show();
 }

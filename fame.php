@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title><?php echo $OJ_NAME ?></title>
+    <title>Hall of Fame -- <?=$OJ_NAME ?></title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
 </head>
@@ -45,7 +45,7 @@
                     <h3 class="ui header">ICPC2015 北京</h3>
                     <h4>纪念奖</h4>
                     <p>队名:START</p>
-                    <p>成员:王国霞 贾林鹏 刘兴</p>
+                    <p>成员:王蕊 刘贺静 薛文第</p>
                 </div>
             </div>
             <img class="ui image" src="/glory_image/2015BEIJING.jpg">
@@ -87,6 +87,18 @@
             </div>
             <img class="ui image" src="/glory_image/2017BEIJING.jpg">
         </div>
+        <div class="ui segment" id="tianti2018">
+            <h3 class="ui header contents">2018 北京(北京工业大学)</h3>
+            <div class="right ui rail">
+                <div class="ui sticky 2018tianti">
+                    <h3 class="ui header">2018程序设计天梯赛</h3>
+                    <h4>团体全国二等奖 北京市一等奖</h4>
+                    <p>队名:Meister</p>
+                    <p>成员:冯云豪 李昊元 吕博枫 许思睿 连浩丞<br>夏方略 高宇翔 王智健 陈哲 季来虎</p>
+                </div>
+            </div>
+            <img class="ui image" src="/glory_image/2018tianti.png">
+        </div>
         <div class="ui segment" id="icpc2018ningxia">
             <h3 class="ui header contents">2018 宁夏(宁夏理工学院)</h3>
             <div class="right ui rail">
@@ -94,7 +106,7 @@
                     <h3 class="ui header">ICPC2018 Multi-Province 宁夏</h3>
                     <h4>银奖 铜奖</h4>
                     <p>队名:我为祖国献石油<br>队名:我为石油献代码</p>
-                    <p>成员:冯云豪 李昊元 吕博枫<br>成员:许思睿 连浩丞 夏方略</p>
+                    <p>成员:冯云豪 李昊元 吕博枫<br>成员:许思睿 连浩丞 高宇翔</p>
                 </div>
             </div>
             <img class="ui image" src="/glory_image/2018NINGXIA.jpg">
@@ -129,6 +141,11 @@
             context:"#icpc2015changchun",
             offset: 50
         });
+        $(".ui.sticky.2018tianti")
+        .sticky({
+            context: "#tianti2018",
+            offset: 50
+        })
         $('.ui.sticky.two')
         .sticky({
           context: '#example2',

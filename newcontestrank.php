@@ -253,7 +253,7 @@ var contestrank = new Vue({
                             );
                             submitter[val[i].user_id].problem[val[i].num].start_time = val[i].start_time;
                        }
-                       else {
+                       else if(val[i].result >= 6 && val[i].result <= 10){
                            submitter[val[i].user_id].problem[val[i].num].submit.push(
                                val[i].in_date
                            )
@@ -433,6 +433,11 @@ var contestrank = new Vue({
         //window.contestrank.scoreboard = readValue.data;
       }
   })*/
+  function build_data(_data)
+  {
+      _data.start_time = window.contestrank.start_time;
+      return _data;
+  }
     if(cidArr.length > 1) {
         window.contestrank.title = cidArr.join(",");
         work();
@@ -447,6 +452,7 @@ var contestrank = new Vue({
                 val.start_time = dayjs(d.start_time);
             })
             window.contestrank.scoreboard = d.data;
+            data = d.data;
             window.contestrank.title = d.title;
             //localforage.setItem(cstring,d,function(){});
         });
