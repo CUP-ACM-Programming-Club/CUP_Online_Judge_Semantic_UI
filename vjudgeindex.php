@@ -150,6 +150,7 @@ $homepage="";
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
     }
+    $(".ui.borderless.network.secondary.menu").addClass("inverted");
 
     $(document).ready(function () {
         window.picid = 'bg' + getRandomIntInclusive(14, 18);

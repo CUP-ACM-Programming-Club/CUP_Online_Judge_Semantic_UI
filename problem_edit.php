@@ -160,6 +160,7 @@ include("csrf.php");
                         send_obj["label"] = unique(labels).join(" ");
                         $.post("/api/problem/"+this.source+"/"+id,{json:send_obj},function(data){
                             if(data.status == "OK"){
+                                $.get("/api/problem/"+from+"?id="+id);
                                 alert("提交成功");
                             }
                         });

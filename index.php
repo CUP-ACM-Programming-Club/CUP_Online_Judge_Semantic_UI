@@ -12,11 +12,12 @@ $homepage="";
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <?php include("template/$OJ_TEMPLATE/css.php"); ?>
-    <!-- Site Properties -->
-    <title><?= $OJ_NAME ?> -- HomePage</title>
     <script>
         var homepage = true;
+        var finished = false;
     </script>
+    <!-- Site Properties -->
+    <title><?= $OJ_NAME ?> -- HomePage</title>
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="template/semantic-ui/js/countdown.js"></script>
     <style>
@@ -25,6 +26,9 @@ $homepage="";
         }
         .white{
             color:white;
+        }
+        .unvisible{
+            display: none;
         }
         .ml14 {
   font-weight: 200;
@@ -49,7 +53,33 @@ $homepage="";
   transform-origin: 100% 100%;
   bottom: 0;
 }
+#myVideo {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%; 
+    height: 100%;
+    width:100%;
+    background: white;
+    margin:auto;
+    min-height: 100%;
+        -ms-transition:
 
+            opacity 1s cubic-bezier(0.680, -0.550, 0.265, 1.4) 0s
+;
+    -moz-transition:
+
+            opacity 1s cubic-bezier(0.680, -0.550, 0.265, 1.4) 0s
+;
+    -webkit-transition:
+
+            opacity 1s cubic-bezier(0.680, -0.550, 0.265, 1.4) 0s
+;
+    transition:
+
+            opacity 1.5s cubic-bezier(0.680, -0.550, 0.265, 1.4) 0s
+;
+}
 .ml14 .letter {
   display: inline-block;
   line-height: 1em;
@@ -58,13 +88,17 @@ $homepage="";
 </head>
 <body>
 <!-- Following Menu -->
-<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<?php include("template/semantic-ui/nav.php"); ?>
 
 <!-- Sidebar Menu -->
 
 <!-- Page Contents -->
 <div>
     <div class="ui inverted vertical masthead center aligned segment zoomed" id="background">
+        <video autoplay muted id="myVideo">
+  <source src="/video/icpc.mp4" type="video/mp4">
+</video>
+<div class="unvisible">
         <div class="ui container">
             <div class="ui large secondary inverted pointing menu">
             </div>
@@ -76,8 +110,21 @@ $homepage="";
     <span class="letters" data-content="CUP Online Judge"></span>
   </span>
 </h1>
+<div class="column buttonset">
+<a href="icpc.php" target="_blank" class="ui inverted large button download basic">
+              <i class="newspaper outline icon"></i>
+              关于ACM/ICPC
+            </a>
+            <a href="fame.php" target="_blank" class="ui inverted large button download basic">
+              <i class="chess queen icon"></i>
+              Hall of Fame
+            </a>
+            </div>
+                    <br>
+
+            <div class="column">
             <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a>
-            
+            </div>
 <!--<h4></h4>-->
              <!--<a class="ui huge inverted download button" href="cprogrammingcontest.php">查看复赛情况</a>-->
         </div>
@@ -90,6 +137,7 @@ $homepage="";
         </div>
         <br><br>-->
         <a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
+        </div>
         <!--<div class="ui huge primary button" onclick="location.href='<?php if (isset($_SESSION['user_id'])) echo "problemset.php"; else echo "newloginpage.php"; ?>'"><?php if (!isset($_SESSION['user_id'])) echo "Login"; else echo "Get Started"; ?><i class="right arrow icon"></i></div>-->
     </div>
 
@@ -165,6 +213,7 @@ $homepage="";
     }
 
     $(document).ready(function () {
+        /*
         window.picid = 'bg' + getRandomIntInclusive(14, 18);
         $("#background")
         .addClass(window.picid)
@@ -227,6 +276,7 @@ $homepage="";
     $ver=$result[0]['version'];
     $vj_ver=$result[0]['vj_version'];
     ?>
+    
     $('.maintain').html("Version:<?=$time?>").attr("data-html", "<div class='ui header'>"+"升级维护内容"+"<div class='sub header'>引擎版本:<?=$ver?></div><div class='sub header'>VJ版本:<?=$vj_ver?></div></div><div class='content'><?=str_replace("\n","",str_replace("&gt;",">",str_replace("&lt;","<",htmlentities($msg,ENT_COMPAT))))?></div>")
         .popup({
             position: 'top center',
@@ -254,7 +304,13 @@ $homepage="";
   $(this).html($(this).attr("data-content").replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
 });
 
-anime.timeline({loop: false})
+document.getElementById('myVideo').addEventListener('ended',function(){
+    finished = true;
+    $(".ui.borderless.network.secondary.menu").addClass("inverted");
+    document.getElementById('myVideo').style.opacity = "0.4";
+    setTimeout(function(){
+        $(".unvisible").removeClass("unvisible");
+        anime.timeline({loop: false})
   .add({
     targets: '.ml14 .line',
     scaleX: [0,1],
@@ -278,7 +334,15 @@ anime.timeline({loop: false})
       opacity:[0,1],
       translateX:[-40,0],
       scaleX:[0.3,1],
-      easing: [.91,-0.54,.29,1.56],
+      easing: "easeOutExpo",
+      duration:500,
+      offset: '-=600'
+  }).add({
+      targets: '.buttonset',
+      opacity:[0,1],
+      translateX:[-40,0],
+      scaleX:[0.3,1],
+      easing: "easeOutExpo",
       duration:500,
       offset: '-=600'
   }).
@@ -292,6 +356,10 @@ anime.timeline({loop: false})
       duration: 500,
       offset: '-=300'
   })
+    },800);
+   },false);
+
+
   /*.
   add({
       targets: '.main.title',
