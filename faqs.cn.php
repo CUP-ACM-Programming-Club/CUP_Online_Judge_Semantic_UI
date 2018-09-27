@@ -30,7 +30,13 @@
 <div class="ui main container">
     <!-- Main component for a primary marketing message or call to action -->
 <script type="text/x-template" id="markdown_content">
-    
+<div class="ui warning message">
+<div class="header">提示</div>
+若您对平台使用方法、OJ模式相关问题不够了解，建议使用Google、百度等搜索引擎搜索后，再阅读本<b>FAQ</b>中的内容(如<a href="https://zh.wikipedia.org/wiki/%E5%9C%A8%E7%BA%BF%E5%88%A4%E9%A2%98%E7%B3%BB%E7%BB%9F" target="_blank">Wikipedia-在线评测系统</a>)。
+<br>平台开发相关信息，请访问<a href="about.php" target="_blank">关于</a><br>关于本平台使用的开源项目，请访问<a href="opensource.php" target="_blank">开放源代码声明</a><br>想要了解关于<b>ACM/ICPC竞赛</b>的资讯，请善用搜索引擎，并阅读<a href="icpc.php" target="_blank">什么是ACM/ICPC</a>
+</div>
+ 
+作者:[Ryan Lee(李昊元)](/userinfo.php?user=2016011253)
 ## 我如何能够提交我的代码?
 
 1. 注册一个账号
@@ -49,7 +55,11 @@
 - CPU:Intel(R) Xeon(R) CPU E5-2609 0 @ 2.40GHz
 - RAM:16G
 - OS:CentOS 7
-
+- GCC:8.2.0
+- Clang:3.4.2
+- Java:6/7/8/10(OpenJDK)
+- JavaScript:NodeJS 10.10.0
+- Python:CPython/PyPy
 ## 我的编译环境是什么？
 
 | Compiler(Language) | Command                                                                                                        |
@@ -79,12 +89,39 @@
 | Wrong Answer/答案错误          | 代码没有通过所有的评测样例                                |
 | Time Limit Exceeded/时间超限   | 代码运行的时间超出了题目的要求，程序被提前强行终止                    |
 | Memory Limit Exceeded/内存超限 | 代码运行的内存超出了题目的要求，程序被提前强行终止                    |
-| Output Limit Exceeded/输出超限 | 代码运行结果超出正确输出(一般是超出正确输出长度两倍以上)                |
+| Output Limit Exceeded/输出超限 | 代码运行结果超出正确输出(一般是超出正确输出长度两倍以上)或**超出评测机对输出文件的限制(256MB)**                |
 | Runtime Error/运行错误         | 代码在运行过程中出现段错误/访问非法内存空间/非法调用系统操作/浮点数除零错误/系统错误 |
 | Compile Error/编译错误         | 编译过程中发生错误，编译失败                               |
 | Add to queue/已加入队列         | 代码已加入爬虫提交队列，等待向远程服务器发送提交请求                   |
 | Server Refuse/提交被服务器拒绝     | 由于代码不合法/目标服务器状态非法等原因，代码没有成功提交至目标服务器          |
 | System Error/系统错误          | 由于不可预料的原因，系统无法完成评测                           |
+
+### 特别说明:格式错误(2018/09/24 新增)
+> 什么是格式错误？
+
+格式错误是你的答案和标准输出的答案一致，但是控制字符/换行字符/空格数量与标准答案不同的情况。
+例如:
+|期望输出|实际输出 |
+|:-|:-|
+|a&nbsp;&nbsp;=&nbsp;&nbsp;b(间隔两个空格)|a=b|
+这种时候判题机会返回**格式错误**
+以下情况也会被认为是格式错误:
+|期望输出|实际输出 |
+|:-|:-|
+|* * \*<br>&nbsp;* *<br>&nbsp;&nbsp;\*|* * \*<br>&nbsp;* *&nbsp;<br>&nbsp;&nbsp;\*&nbsp;&nbsp;|
+以上两个的区别是:期望输出的右边**直接是换行，没有空格**
+但是，以下的输出不会被认为是格式错误，而是认为是**答案正确**
+|期望输出|实际输出|
+|-|-|
+|Hello,world!\n|Hello,world!|
+这是因为判题机会**自动忽略最后一行行尾的换行符、空格以及控制字符**，至于为什么会做这个处理，将在其他的文章中讨论。
+
+### 特别说明:时间超限(2018/09/24 新增)
+> 时间超限指的是程序在执行过程中使用的CPU时间超过了题目的要求，抑或**由于程序基本没有使用CPU时间,但是始终处于运行状态超过了一定时间**(这里一般是10倍CPU限制时间)判题机将会返回时间超限。
+
+一般来说，时间超限可能因为程序的多项式时间超出题目要求所导致的。比如题目对于CPU时间限制为$1\text{sec}$,对应简单操作$3\times10^9$次。若输入规模$n$,程序多项式时间函数$f(x)$,则有$f(n) \leq 1\times3\times 10^9$(事实上这并不严谨，只是一个为了方便理解的类比)。若$f(x)$不能满足限制，则**大概率无法在指定时间内运行结束**(这里还有一些神奇的玄学或编译器的编译期优化，以及循环展开等问题造成的影响，不予讨论)
+
+但是有一些特殊情况也会造成时间超限。例如**程序无法申请足够的内存，导致在不占用CPU时间的情况保持使能状态直到运行时间耗尽**。这时我们不难发现CPU时间并未跑满，而评测机却返回了时间超限。
 
 ## 我如何针对OJ编写程序？
 
@@ -160,10 +197,12 @@ print(sum(map(int,input().split()))
 
 其他语言(包括Java)的时限和内存限制一般是C/C++的两倍
 
+## 我明明本地跑样例过了，为什么提交没有AC?
+样例只是题目所有测试点中的一个例子，不代表你的代码能够通过所有测试点的测试。请认真思考后修改你的代码
 
 
 </script>
-            <h1 class="ui dividing header"><?php echo $OJ_NAME?> FAQ</h1>
+            <h1 class="ui dividing header">FAQ(Version:2018/09/24)</h1>
             <div class="markdown target"></div>
             <!--
             <div class="ui info message">

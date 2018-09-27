@@ -78,7 +78,7 @@
 <?php include("template/semantic-ui/nav.php"); ?>
 <div>
     <!-- Main component for a primary marketing message or call to action -->
-    <div class="padding ui container">
+    <div class="padding ui container" v-cloak>
         <h2 class="ui dividing header">
             Status
         </h2>
@@ -91,16 +91,16 @@
                 <form id=simform class="ui form segment" action="status.php" method="get">
                     <div class="four fields">
                         <div class="field">
-                            <label> <?php echo $MSG_PROBLEM_ID ?></label>
+                            <label>{{target.problem_id}}</label>
                             <input v-model="problem_id" class="form-control" type=text size=4 name=problem_id>
                         </div>
                         <div class="field">
-                            <label><?php echo $MSG_USER ?></label>
+                            <label>{{target.user_id}}</label>
                             <input v-model="user_id" class="form-control" type=text size=4 name=user_id
                                    value=''>
                         </div>
                         <div class="field">
-                            <label><?php echo $MSG_LANG ?></label>
+                            <label>{{target.language}}</label>
                             <div class="ui fluid search dropdown selection" size="1">
                                 <input v-model="language" @change="language=$event.target.value"
                                        type="hidden" name="language">
@@ -117,7 +117,7 @@
                             </div>
                         </div>
                         <div class="field">
-                            <label><?php echo $MSG_RESULT ?></label>
+                            <label>{{target.result}}</label>
                             <div class="ui fluid search dropdown selection" size="1">
                                 <input v-model="problem_result" @change="problem_result=$event.target.value"
                                        type="hidden" name="jresult">

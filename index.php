@@ -242,6 +242,7 @@ $homepage="";
             transition: 'vertical flip in',
             duration: 500
         });
+        
         /*
         window.backpic = setInterval(function () {
                 $("#background").addClass('zoomed');
@@ -306,6 +307,49 @@ $homepage="";
 
 document.getElementById('myVideo').addEventListener('ended',function(){
     finished = true;
+    window.picid = 0;
+        window.backpic = setInterval(function(){
+            var index = getRandomIntInclusive(0,2);
+            while(index === window.picid) {
+                index = getRandomIntInclusive(0,2);
+            }
+            if(index > 0) {
+                $("#myVideo").css({
+                    opacity:"0"
+                });
+                $("#background").addClass('zoomed');
+                if(window.picid > 0) {
+                    setTimeout(function(){
+                        $("#background")
+                        .removeClass("gr" + window.picid)
+                        .addClass("gr"+(window.picid = index))
+                        .removeClass("zoomed");
+                    },4000)
+                }
+                else {
+                    setTimeout(function(){
+                        $("#background")
+                        .removeClass("gr" + window.picid)
+                        .addClass("gr"+(window.picid = index))
+                        .removeClass("zoomed");
+                    },4000)
+                }
+            }
+            else {
+                $("#background")
+                .addClass("zoomed")
+                setTimeout(function(){
+                    $("#background")
+                    .removeClass("gr" + window.picid)
+                    $("#myVideo").css({
+                    opacity:"0.4",
+                    display:"inline-block"
+                });
+                },4000);
+                
+                window.picid = index;
+            }
+        },15000);
     $(".ui.borderless.network.secondary.menu").addClass("inverted");
     document.getElementById('myVideo').style.opacity = "0.4";
     setTimeout(function(){

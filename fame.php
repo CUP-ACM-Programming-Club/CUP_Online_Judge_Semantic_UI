@@ -13,7 +13,7 @@
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php");
+<?php include("template/semantic-ui/nav.php");
 ?>
     <div class="ui text container">
         <div class="ui basic segment" id="mainContent">
@@ -111,6 +111,29 @@
             </div>
             <img class="ui image" src="/glory_image/2018NINGXIA.jpg">
         </div>
+        <div class="ui segment" id="ccpc2018jilin">
+            <h3 class="ui header contents">2018 吉林(北华大学)</h3>
+            <div class="right ui rail">
+                <div class="ui sticky 2018jilin">
+                    <h3 class="ui header">CCPC2018 Regional 吉林</h3>
+                    <h4>铜奖</h4>
+                    <p>队名：我为祖国献石油</p>
+                    <p>成员:冯云豪 李昊元 吕博枫</p>
+                </div>
+            </div>
+            <img class="ui image" src="/glory_image/2018JILIN.jpg">
+        </div>
+        <div class="ui segment" id="2018xiaomi">
+            <h3 class="ui header contents">2018 北京(小米)</h3>
+            <div class="right ui rail">
+                <div class="ui sticky 2018XIAOMI">
+                    <h3 class="ui header">首届小米高校编程大赛</h3>
+                    <h4>银奖(Rank.8) 银奖(Rank.14)</h4>
+                    <p>李昊元 吕博枫</p>
+                </div>
+            </div>
+            <img class="ui image" src="/glory_image/2018XIAOMI.jpg">
+        </div>
         </div>
         
     </div>
@@ -144,6 +167,16 @@
         $(".ui.sticky.2018tianti")
         .sticky({
             context: "#tianti2018",
+            offset: 50
+        });
+        $(".ui.sticky.2018jilin")
+        .sticky({
+            context: "#ccpc2018jilin",
+            offset: 50
+        });
+        $(".ui.sticky.2018XIAOMI")
+        .sticky({
+            context:"#2018xiaomi",
             offset: 50
         })
         $('.ui.sticky.two')
