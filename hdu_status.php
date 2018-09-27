@@ -99,7 +99,9 @@
                         <th><?php echo $MSG_USER ?>
                         <th><?php echo $MSG_PROBLEM ?>
                         <th width="10%"><?php echo $MSG_RESULT ?>
+                        <?php if(isset($_SESSION['administrator'])) {?>
                         <th>CONTEST_ID
+                        <?php } ?>
                         <th class='hidden-xs'><?php echo $MSG_MEMORY;
                             ?>
                         <th class='hidden-xs'><?php echo $MSG_TIME ?>

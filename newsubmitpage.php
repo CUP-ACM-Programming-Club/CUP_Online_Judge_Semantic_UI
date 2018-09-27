@@ -143,6 +143,14 @@
                             current_prepend:"",
                             current_append:""
                         };
+                        if(_data.input.indexOf(".in")!==-1)
+                        {
+                            _data.input += '\n\n**(输入文件不需要用户调用文件操作，仅需使用标准输入输出即可)**'
+                        }
+                        if(_data.output.indexOf(".out")!==-1)
+                        {
+                            _data.output += '\n\n**(输出文件不需要用户调用文件操作，仅需使用标准输入输出即可)**'
+                        }
                         if (id) {
                             _data.problem_id = d.problem_id;
                         }
@@ -1005,12 +1013,12 @@ SHOULD BE:
                 <h2 class='ui header hidden'><?= $MSG_Sample_Input ?></h2>
                 <div class="ui bottom attached segment hidden sample_input">
                 <div class="ui top attached label"><a data-clipboard-target=".sample_input" class="copy context">Copy Sample Input</a></div>
-                <pre v-text='sampleinput.trim()'></pre>
+                <pre v-text='sampleinput'></pre>
                             </div>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Output ?></h2>
                 <div class="ui bottom attached segment hidden">
                     <div class="ui top attached label"><a data-clipboard-target=".sample_output" class="copy context">Copy Sample Output</a></div>
-                <pre class='sample_output' v-text='sampleoutput.trim()'></pre>
+                <pre class='sample_output' v-text='sampleoutput'></pre>
                 </div>
                 <h2 class='ui header hidden'><?= $MSG_HINT ?></h2>
                 <div class='ui hidden' v-html="hint"></div>
