@@ -15,6 +15,7 @@
     <?php include("template/$OJ_TEMPLATE/js.php"); ?>
     <script src="/js/mavon-editor.js"></script>
     <script src="/js/markdown-it.js"></script>
+    <script src="/template/semantic-ui/js/clipboard.min.js"></script>
     <script>
      Vue.use(window["mavon-editor"]);
     </script>
@@ -73,6 +74,11 @@
               <div class="twelve wide column">
                  <div class="ui existing full segment">
                      <a v-if="thread_head.user_id + '' === owner" class="ui blue right ribbon label" :href="'discussedit.php?id='+id">Edit</a>
+                     <div class="ui info message">
+                         <div class="header">
+                             阅读本文需要大约{{readTime(thread_head.content)}}分钟
+                         </div>
+                     </div>
                      <div v-html="thread_head.content"></div>
                  </div>
               </div>
@@ -173,10 +179,27 @@
             var that = this;
             $.get("/api/discuss/"+this.id+"?page="+page,function(data){
                 that.table = data;
-            });
-            $.get("/api/discuss/"+this.id+"?page="+page,function(data){
+                $.get("/api/discuss/"+that.id+"?page="+page,function(data){
                 that.table = data;
             });
+            });
+            
+            this.$nextTick(function(){
+                var copy_content = new Clipboard(".copy.context",{
+                        text: function (trigger) {
+                            return $(trigger).parent().next().text();
+                        }
+                        });
+                    copy_content.on("success",function(e){
+                    $(e.trigger)
+                    .popup({
+                        title   : 'Finished',
+                    content : 'Context is in your clipboard',
+                        on      : 'click'
+                     })
+                     .popup("show");
+                    })
+            })
         },
         methods:{
             replyComment:function() {
@@ -204,10 +227,15 @@
                         alert("操作失败");
                     }
                 })
+            },
+            readTime:function(content){
+                var doc = document.createElement("div");
+                doc.innerHTML = content;
+                return parseInt(Math.ceil(doc.innerText.length / 300));
             }
         }
     })
 </script>
-    <?php include("template/$OJ_TEMPLATE/bottom.php") ?>
+    <?php include("template/semantic-ui/bottom.php") ?>
 </body>
 </html>

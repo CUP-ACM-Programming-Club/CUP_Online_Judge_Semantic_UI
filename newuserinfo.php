@@ -89,7 +89,7 @@
                             <div v-if="!online" class="ui header">
                                 离线
                                 <div  class="sub header">
-                                上次登录:{{new Date(last_login).toLocaleString()}}
+                                上次登录:{{last_login?new Date(last_login).toLocaleString():""}}
                             </div>
                             </div>
                         </div>
@@ -461,7 +461,7 @@
                 },
                 rank:d.data.rank,
                 online:false,
-                last_login:d.data.login_time ? d.data.login_time[0].time:"",
+                last_login:d.data.login_time? d.data.login_time[0] ? d.data.login_time[0].time:"":"",
                 local_accepted:local_accept.length,
                 other_accepted:hdu_accept.length + poj_accept.length + uva_accept.length + other_accept.length
             };
