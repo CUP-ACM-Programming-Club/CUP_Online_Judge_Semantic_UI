@@ -9,8 +9,8 @@
     <link rel="icon" href="../../favicon.ico">
     
     <title><?php echo $OJ_NAME?></title>  
-    <?php include("template/$OJ_TEMPLATE/css.php");?>	    
-<?php include("template/$OJ_TEMPLATE/js.php");?>
+    <?php include("template/semantic-ui/css.php");?>	    
+<?php include("template/semantic-ui/js.php");?>
 <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -177,7 +177,7 @@
                         problem_status:prob_stat,
                         solution_status:this.submit_stat,
                         total_status:this.problem_submit_stat,
-                        color:["black","black","black","green","red","yellow","yellow","yellow","yellow","yellow","yellow","yellow","","",""],
+                        color:["black","black","black","green","red","red","yellow","yellow","yellow","yellow","yellow","yellow","yellow","","",""],
                         statistic_name:this.stat_name,
                         language_name:this.language_name,
                         time_range:this.time_range,
@@ -273,9 +273,21 @@
                     return str;
                 });
                 labels.sort(function(a,b){
+                    if(a.indexOf(">")!==-1) {
+                        var s = parseFloat(a.substring(1,a.length));
+                        var t = parseFloat(b.split("-")[0]);
+                        return s - t;
+                    }
+                    else if(b.indexOf(">")!==-1) {
+                        var s = parseFloat(a.split("-")[0]);
+                        var t = parseFloat(b.substring(1,b.length));
+                        return s - t;
+                    }
+                    else {
                     var s = parseFloat(a.split("-")[0]);
                     var t = parseFloat(b.split("-")[0]);
-                    return s-t;
+                    return s - t;
+                    }
                 })
                 _.forEach(lang,function(val,index){
                     _.forEach(labels,function(v,idx){
@@ -311,6 +323,7 @@
                     mlang[val.language] = {};
                 })
                 mlabels = _.map(mlabels,function(val,index){
+                    if(index.indexOf("-")!==-1) {
                     var arr = index.split("-");
                     arr[0] = (parseFloat(arr[0]) / 1024).toFixed(2);
                     if(arr.length > 1)
@@ -319,11 +332,29 @@
                     if(arr.length > 1)
                         str += " - " + arr[1] + "MB";
                     return str;
+                    }
+                    else {
+                        var str = index.substring(1,index.length);
+                        str = (parseFloat(str) / 1024).toFixed(2);
+                        return ">" + str + "MB";
+                    }
                 })
                 mlabels.sort(function(a,b){
-                    var s = parseFloat(a.split("-")[0]);
-                    var t = parseFloat(b.split("-")[0]);
-                    return s - t;
+                    if(a.charAt(0) === '>') {
+                        var s = parseFloat(a.substring(1,a.length));
+                        var t = parseFloat(b.split("-")[0]);
+                        return s - t;
+                    }
+                    else if(b.charAt(0) === ">") {
+                        var s = parseFloat(a.split("-")[0]);
+                        var t = parseFloat(b.substring(1,b.length));
+                        return s - t;
+                    }
+                    else {
+                        var s = parseFloat(a.split("-")[0]);
+                        var t = parseFloat(b.split("-")[0]);
+                        return s - t;
+                    }
                 })
                 _.forEach(mlang,function(val,index){
                     _.forEach(mlabels,function(v,idx){
@@ -332,14 +363,21 @@
                 })
                 
                 _.forEach(that.submitStatus.memory_range,function(val,index){
-                    var arr = val.diff.split("-");
-                    arr[0] = (parseFloat(arr[0]) / 1024).toFixed(2);
-                    if (arr.length > 1)
-                        arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
-                    var diffstr =  arr[0] + "MB";
-                    if (arr.length > 1)
-                        diffstr +=  " - " + arr[1] + "MB";
-                    mlang[val.language][diffstr] = val.total;
+                    if(val.diff.indexOf("-")!== -1) {
+                        var arr = val.diff.split("-");
+                        arr[0] = (parseFloat(arr[0]) / 1024).toFixed(2);
+                        if (arr.length > 1)
+                            arr[1] = (parseFloat(arr[1]) / 1024).toFixed(2);
+                        var diffstr =  arr[0] + "MB";
+                        if (arr.length > 1)
+                            diffstr +=  " - " + arr[1] + "MB";
+                        mlang[val.language][diffstr] = val.total;
+                    }
+                    else {
+                        var str = val.diff.substring(1,val.diff.length);
+                        str = (parseFloat(str) / 1024).toFixed(2);
+                        mlang[val.language][">" + str + "MB"] = val.total;
+                    }
                 })
                 var config3 = {
                     type: 'bar',

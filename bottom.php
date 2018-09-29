@@ -11,6 +11,8 @@
                     <div class="ui inverted link list">
                         <a href="mailto:gxlhybh@gmail.com" class="item">联系开发者</a>
                         <a href="opensource.php" class="item">开放源代码声明</a>
+                        <a href="privacy.php" class="item">隐私政策</a>
+                        <a href="copyright.php" class="item">著作权声明</a>
                     </div>
                 </div>
                 <div class="five wide column">
@@ -30,9 +32,9 @@
                     </div>
                 </div>
                 <div class="five wide column">
-                    <h4 class="ui inverted header">© CUP Online Judge 2017-<?=date("Y")?>
-                       <div class="sub header">  Impressed by HUSTOJ & SYZOJ</div>
-                        <div class="sub header">  Powered By Vue.js</div>
+                    <h4 class="ui inverted header">© CUP Online Judge 2017-2018
+                       <div class="sub header">  Impressed by HUSTOJ & SYZOJ & ECNUOJ</div>
+                        <div class="sub header">  Powered By Vue.js,Node.js</div>
                         <div class="sub header">Software Designer:<a href="https://github.com/ryanlee2014" target="_blank">Ryan Lee(李昊元)</a></div>
                         </h4>
                 </div>
@@ -41,7 +43,7 @@
     </div>
     <script>
         $("form").append("<div id='csrf' class='csrf' />");
-	  $(".csrf").load("<?php echo $path_fix?>csrf.php");
+	  $(".csrf").load("csrf.php");
 	  var $logout=$(".logout");
 $logout.on('click',function(){
     $.get("/api/logout",function(data){
