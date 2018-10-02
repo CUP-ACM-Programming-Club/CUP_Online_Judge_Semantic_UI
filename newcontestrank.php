@@ -68,7 +68,16 @@ td{
     </style>
   </head>
   <body>
-<?php include("template/semantic-ui/nav.php");?>	   
+<?php include("template/semantic-ui/nav.php");?>
+<script type="text/x-template" id="time_tick">
+    <h3 class="ui header">
+        当前时间:{{current_time}}
+    <div class="sub header" v-if="start_time">
+        起始时间:{{dayjs(start_time).format("YYYY-MM-DD HH:mm:ss")}},已经过
+        {{format_date(dayjs().diff(start_time,"second"))}}
+    </div>
+    </h3>
+</script>
     <div class="contestrank scoreboard padding" v-cloak>
         <h2 class="ui dividing header">
             {{total === 0?"计算中,请稍后":"Contest Rank"}}
@@ -80,13 +89,9 @@ td{
      <div class="ui grid">
          <div class="row">
              <div class="left aligned twelve wide column">
-                 <h3 class="ui header">
-                     当前时间:{{current_time}}
-                     <div class="sub header" v-if="start_time">
-                         起始时间:{{dayjs(start_time).format("YYYY-MM-DD HH:mm:ss")}},已经过
-                         {{format_date(dayjs().diff(start_time,"second"))}}
-                     </div>
-                 </h3>
+                 <time_pattern
+                 :start_time="start_time"
+                 ></time_pattern>
              </div>
              <div class="right aligned four wide column">
                  <a class="ui primary mini button" @click="exportXLS">Save to XLS</a>
@@ -201,6 +206,43 @@ cell.className="ui grey";
         },100);
         
     })
+    
+Vue.component('time_pattern',{
+    template:"#time_tick",
+    props:{
+        start_time:Object
+    },
+    data:function(){return{
+        current_time:dayjs().format("YYYY-MM-DD HH:mm:ss")
+    };},
+    mounted:function(){
+        var that = this;
+        console.log(this);
+        setInterval(function(){
+            that.current_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
+        },1000);
+    },
+    methods:{
+        format_date:function(second) {
+               var fill_zero = function(str) {
+                   if(str.length < 2) {
+                       return "0" + str;
+                   }
+                   else {
+                       return str;
+                   }
+               }
+               var hour = String(parseInt(second / 3600));
+               hour = fill_zero(hour);
+               
+               var minute = String(parseInt(( second - hour * 3600 ) / 60));
+               minute = fill_zero(minute);
+               var sec = String(second % 60);
+               sec = fill_zero(sec);
+               return hour + ":" + minute + ":" + sec;
+           }
+    }
+});
 var contestrank = new Vue({
        el:".contestrank.scoreboard",
        data:{
@@ -212,8 +254,7 @@ var contestrank = new Vue({
            start_time:false,
            first_blood:{},
            title:"",
-           tmpboard:[],
-           current_time:dayjs().format("YYYY-MM-DD HH:mm:ss")
+           tmpboard:[]
        },
        computed:{
            scoreboard:{
@@ -371,10 +412,6 @@ var contestrank = new Vue({
                that.$nextTick(function(){
                    $(".ranking").height($(window).height()-($(".hidemenu").outerHeight())-150);
                })
-               
-               setInterval(function(){
-                   that.current_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
-               },1000);
        },
        created:function(){
            
@@ -447,7 +484,7 @@ var contestrank = new Vue({
         $.get("/api/scoreboard/"+cid,function(d){
             finished = true;
             window.contestrank.total = d.total;
-            window.contestrank.start_time = dayjs(d.start_time);
+            window.contestrank.start_time = window.start_time = dayjs(d.start_time);
             _.forEach(d.data,function(val){
                 val.start_time = dayjs(d.start_time);
             })
