@@ -85,6 +85,9 @@
         <div class="ui top attached tabular menu">
             <a v-cloak :class="(current_tag == 'status'?'active':'')+' item'" @click="tag('status',$event)" id="submitstatus">提交状态</a>
             <a v-cloak :class="(current_tag == 'graph'?'active':'')+' item'" @click="tag('graph',$event)" id="graph">提交图表</a>
+            <a :class="(current_tag == 'result'?'active':'') + ' item'" @click="tag('result',$event)">
+                结果统计
+            </a>
         </div>
         <div class="ui bottom attached segment" v-show="current_tag == 'status'">
             <div align=center class="input-append">
@@ -172,6 +175,11 @@
         <div class="ui attached bottom segment" v-show="current_tag == 'graph'">
             <div style="width:75%;margin:auto">
                 <canvas id="canvas"></canvas>
+            </div>
+        </div>
+        <div class="ui attached bottom segment" v-show="current_tag == 'result'">
+            <div style="width:75%;margin:auto">
+                <canvas id="bar"></canvas>    
             </div>
         </div>
     </div>
@@ -282,7 +290,67 @@
         var ctx = document.getElementById("canvas").getContext("2d");
         window.myLine = new Chart(ctx, config);
     }
-
+    function drawResult(data,labelName) {
+        data.sort(function(a,b){
+            return b.cnt - a.cnt;
+        });
+        console.log(data);
+        var color = window.chartColors;
+        var colorTocolor = {
+            0:color.blue,
+            1:color.blue,
+            2:color.blue,
+            3:color.blue,
+            4:color.green,
+            5:color.red,
+            6:color.red,
+            7:color.yellow,
+            8:color.yellow,
+            9:color.yellow,
+            10:color.yellow,
+            11:color.grey,
+            12:color.blue,
+            13:color.blue,
+            14:color.red,
+            15:color.red
+        };
+        var dataSet = [];
+        var labName = [];
+        dataSet.push({
+                label:"提交数",
+                backgroundColor: [],
+                borderColor:[],
+                borderWidth:1,
+                data:[]
+            });
+        _.forEach(data,function(val,idx){
+            labName.push(labelName[val.result]);
+            dataSet[0].backgroundColor.push(colorTocolor[val.result]);
+            dataSet[0].borderColor.push("white");
+            dataSet[0].data.push(val.cnt)
+        });
+        var barChartData = {
+            labels:labName,
+            datasets: dataSet
+        }
+        barChartData = JSON.parse(JSON.stringify(barChartData))
+        var ctx = document.getElementById('bar').getContext('2d');
+			window.myBar = new Chart(ctx, {
+				type: 'bar',
+				data: barChartData,
+				options: {
+					responsive: true,
+					legend: {
+					    display: false,
+						position: 'top',
+					},
+					title: {
+						display: false,
+						text: '提交统计'
+					}
+				}
+			});
+    }
 </script>
 <script>
     Vue.component("status-table", {
@@ -540,6 +608,9 @@
             $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/", function (data) {
                     that.dim = false;
                     that.search_func(data);
+                    $.get("../api/status/result",function(dat){
+                        drawResult(dat.data,data.const_list.result.cn);
+                    });
                     $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/", function (data) {
                     that.dim = false;
                     that.search_func(data);
@@ -556,7 +627,7 @@
         mounted: function () {
             $.get("../api/status/graph",function(data){
                 draw(data);
-            })
+            });
         }
     })
 </script>
