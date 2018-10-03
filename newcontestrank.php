@@ -217,7 +217,6 @@ Vue.component('time_pattern',{
     };},
     mounted:function(){
         var that = this;
-        console.log(this);
         setInterval(function(){
             that.current_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
         },1000);
@@ -243,18 +242,15 @@ Vue.component('time_pattern',{
            }
     }
 });
-var contestrank = new Vue({
+var temp_data = [];
+var contestrank = window.contestrank = new Vue({
        el:".contestrank.scoreboard",
        data:{
            cid: getParameterByName("cid"),
-           _scoreboard:null,
            submitter:{},
-           subback:[],
            total:0,
            start_time:false,
-           first_blood:{},
-           title:"",
-           tmpboard:[]
+           title:""
        },
        computed:{
            scoreboard:{
@@ -263,16 +259,27 @@ var contestrank = new Vue({
                },
                set:function(val){
                    var that = this;
+                   if(val && val.length) {
+                   _.forEach(val,function(v){
+                        temp_data.push(v);
+                   });
+                   }
+                   else {
+                       temp_data.push(val);
+                   }
+                   val = temp_data;
+                    console.log(val);
+                   var first_blood = [];
                    for(var i = 0;i<that.total;++i) {
-                       if(!that.first_blood)
-                       that.first_blood[i] = -1
+                       first_blood.push(-1);
                    }
                    var len = val.length;
-                   var submitter = this.submitter;
+                   var submitter = this.submitter = {};
                    var total = this.total;
                    var that = this;
                    for(var i = 0;i<len;++i)
                    {
+                       if(!val[i].nick)continue;
                        val[i].nick = val[i].nick.trim();
                        if(!submitter[val[i].user_id]) {
                            submitter[val[i].user_id] = {
@@ -303,8 +310,14 @@ var contestrank = new Vue({
                    }
                    var _submitter = [];
                    _.forEach(submitter,function(val,index){
+                       if(!index) {
+                           console.log(val);
+                           console.log(index);
+                       }
+                       else {
                        val.user_id = index;
                        _submitter.push(val);
+                       }
                    })
                    _.forEach(submitter,function(value,key){
                        var problems = submitter[key].problem;
@@ -338,11 +351,11 @@ var contestrank = new Vue({
                            if(v.accept.length > 0) {
                                var difftime =  v.accept[0].diff(v.start_time,'second');
                                val.penalty_time += difftime;
-                               if(~that.first_blood[idx]) {
-                                   that.first_blood[idx] = Math.min(that.first_blood[idx],difftime);
+                               if(~first_blood[idx]) {
+                                   first_blood[idx] = Math.min(first_blood[idx],difftime);
                                }
                                else {
-                                   that.first_blood[idx] = difftime;
+                                   first_blood[idx] = difftime;
                                }
                            }
                        })
@@ -350,7 +363,7 @@ var contestrank = new Vue({
                    
                    _.forEach(_submitter,function(val){
                        _.forEach(val.problem,function(v,idx){
-                           v.first_blood = Boolean(v.accept.length > 0 && v.accept[0].diff(v.start_time,'second') === that.first_blood[idx]);
+                           v.first_blood = Boolean(v.accept.length > 0 && v.accept[0].diff(v.start_time,'second') === first_blood[idx]);
                        })
                    })
                    
@@ -366,9 +379,8 @@ var contestrank = new Vue({
                    var rnk = 1;
                    _.forEach(_submitter,function(val){
                        val.rank = rnk++;
-                   })
-                   that.submitter = _submitter;
-                   //that._scoreboard = val;
+                   });
+                   window.datas = that.submitter = _submitter;
                }
            }
        },
@@ -402,6 +414,22 @@ var contestrank = new Vue({
                var filename = "Contest " + this.cid;
                filename = filename.substring(0,31);
                table.export2file(d.data,d.mimeType,filename,d.fileExtension,d.merges)
+           },
+           handleNewSubmit:function(data){
+               if(parseInt(data.contest_id) === parseInt(this.cid)) {
+                   if(data.finish === 1) {
+                       var ndata = {
+                           nick:data.nick,
+                           user_id:data.user_id,
+                           start_time:this.start_time,
+                           avatar:0,
+                           in_date:data.in_date,
+                           num:parseInt(data.num),
+                           result:data.state
+                       };
+                       this.scoreboard = ndata;
+                   }
+               }
            }
        },
        updated:function(){
@@ -448,28 +476,9 @@ var contestrank = new Vue({
                 finished = true;
                 window.contestrank.total = cnt;
                 window.contestrank.scoreboard = data;
-                //console.log(data);
-                //localforage.setItem(cstring,JSON.stringify({data:data,total:cnt}));
             }
         });
     }
-    /*
-  localforage.getItem(cstring).then(function(readValue){
-      if(readValue && !finished) {
-          console.log(readValue);
-          readValue = JSON.parse(readValue);
-        //window.contestrank.total = readValue.total;
-        if(cidArr.length  > 1) {
-            window.contestrank.start_time = dayjs(readValue.start_time);
-            window.contestrank.title = readValue.title;
-        }
-        _.forEach(readValue.data,function(val){
-             val.start_time = dayjs(readValue.start_time);
-        });
-        console.log(data);
-        //window.contestrank.scoreboard = readValue.data;
-      }
-  })*/
   function build_data(_data)
   {
       _data.start_time = window.contestrank.start_time;
@@ -489,9 +498,9 @@ var contestrank = new Vue({
                 val.start_time = dayjs(d.start_time);
             })
             window.contestrank.scoreboard = d.data;
+            window.temp_data = d.data;
             data = d.data;
             window.contestrank.title = d.title;
-            //localforage.setItem(cstring,d,function(){});
         });
     }
 </script>
