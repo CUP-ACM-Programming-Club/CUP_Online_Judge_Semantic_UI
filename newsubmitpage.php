@@ -35,29 +35,36 @@
         .not-compile {
             display: none;
         }
-        .sample_input{
-            color:#ad1457;
+
+        .sample_input {
+            color: #ad1457;
         }
-        .sample_output{
-            color:#ad1457;
+
+        .sample_output {
+            color: #ad1457;
         }
-        .following.bar.title.light.fixed{
-            top:40px;
-            transition:top 0.4s;
+
+        .following.bar.title.light.fixed {
+            top: 40px;
+            transition: top 0.4s;
         }
-        .following.bar.title{
-            top:60px;
-            transition:top 0.4s;
+
+        .following.bar.title {
+            top: 60px;
+            transition: top 0.4s;
         }
+
         .ui.vertical.center.aligned.grid {
             padding-top: 1em;
             padding-bottom: 2em;
         }
-        .row.no.padding{
-            padding-top:0em;
+
+        .row.no.padding {
+            padding-top: 0em;
             padding-bottom: 0em;
         }
-        .main.submit.layout img{
+
+        .main.submit.layout img {
             display: block;
             margin-left: auto;
             margin-right: auto;
@@ -72,7 +79,7 @@
         function qsa(sel) {
             return Array.apply(null, document.querySelectorAll(sel));
         }
-        
+
         function decodeHTML(str) {
             var doc = document.createElement("div");
             doc.innerHTML = str;
@@ -106,7 +113,7 @@
                             _title: d.title,
                             problem_id: d.problem_id,
                             original_id: d.problem_id,
-                            iscontest:getParameterByName("cid")!==null,
+                            iscontest: getParameterByName("cid") !== null,
                             description: d.description,
                             time: "时间限制:" + d.time_limit + "秒",
                             memory: "内存限制:" + d.memory_limit + "MB",
@@ -123,7 +130,7 @@
                             spj: Boolean(parseInt(d.spj)),
                             single_page: false,
                             bodyOnTop: true,
-                            isRenderBodyOnTop:false,
+                            isRenderBodyOnTop: false,
                             source_code: source_code,
                             language_name: d.language_name,
                             prepend: d.prepend,
@@ -131,24 +138,22 @@
                             langmask: d.langmask,
                             isadmin: isadmin,
                             iseditor: iseditor,
-                            share:false,
-                            selected_language: localStorage.getItem("lastlang") && Boolean(1<<parseInt(localStorage.getItem("lastlang")) & (~d.langmask)) ? parseInt(localStorage.getItem("lastlang")) : Math.log2(~d.langmask & -~d.langmask),
+                            share: false,
+                            selected_language: localStorage.getItem("lastlang") && Boolean(1 << parseInt(localStorage.getItem("lastlang")) & (~d.langmask)) ? parseInt(localStorage.getItem("lastlang")) : Math.log2(~d.langmask & -~d.langmask),
                             language_template: d.language_template,
                             fontSize: 18,
                             hide_warning: true,
                             confirm_text: "",
                             submitDisabled: false,
                             resume_time: 0,
-                            finished:false,
-                            current_prepend:"",
-                            current_append:""
+                            finished: false,
+                            current_prepend: "",
+                            current_append: ""
                         };
-                        if(_data.input.indexOf(".in")!==-1)
-                        {
+                        if (_data.input && _data.input.indexOf(".in") !== -1) {
                             _data.input += '\n\n**(输入文件不需要用户调用文件操作，仅需使用标准输入输出即可)**'
                         }
-                        if(_data.output.indexOf(".out")!==-1)
-                        {
+                        if (_data.output && _data.output.indexOf(".out") !== -1) {
                             _data.output += '\n\n**(输出文件不需要用户调用文件操作，仅需使用标准输入输出即可)**'
                         }
                         if (id) {
@@ -157,10 +162,10 @@
                         else {
                             _data.problem_id = 1001 + parseInt(pid);
                         }
-                        if(_data.prepend && _data.prepend[_data.selected_language]) {
+                        if (_data.prepend && _data.prepend[_data.selected_language]) {
                             _data.current_prepend = _data.prepend[_data.selected_language];
                         }
-                        if(_data.append && _data.append[_data.selected_language]) {
+                        if (_data.append && _data.append[_data.selected_language]) {
                             _data.current_append = _data.append[_data.selected_language];
                         }
                         $("title").html(_data.problem_id + ":" + _data._title + " -- CUP Online Judge");
@@ -191,8 +196,8 @@
                         }
                     },
                     watch: {
-                        selected_language: function(newVal,oldVal) {
-                            if(newVal === oldVal) {
+                        selected_language: function (newVal, oldVal) {
+                            if (newVal === oldVal) {
                                 return;
                             }
                             this.initHighlight();
@@ -206,60 +211,62 @@
                             editor.getSession().setMode("ace/mode/" + language[langn]);
                             var prepend = this.prepend;
                             var append = this.append;
-                            if(prepend && prepend[newVal]!==this.current_prepend) {
+                            if (prepend && prepend[newVal] !== this.current_prepend) {
                                 console.log("change");
                                 this.current_prepend = prepend[newVal];
                             }
-                            if(append && append[newVal]!==this.current_append) {
+                            if (append && append[newVal] !== this.current_append) {
                                 this.current_append = append[newVal];
                             }
                         },
-                        current_append: function(newVal,oldVal) {
+                        current_append: function (newVal, oldVal) {
                             this.initHighlight();
                             var highlight = this.highlight;
                             var dom = this.aceDom;
-                            this.$nextTick(function(){
-                                _.forEach(qsa(".append.code"),function(val,index){
+                            this.$nextTick(function () {
+                                _.forEach(qsa(".append.code"), function (val, index) {
                                     highlight(val, {
-                                mode: val.getAttribute("ace-mode"),
-                                theme: val.getAttribute("ace-theme"),
-                                startLineNumber: 1,
-                                showGutter: val.getAttribute("ace-gutter"),
-                                trim: true
-                            }, function (highlighted) {});
+                                        mode: val.getAttribute("ace-mode"),
+                                        theme: val.getAttribute("ace-theme"),
+                                        startLineNumber: 1,
+                                        showGutter: val.getAttribute("ace-gutter"),
+                                        trim: true
+                                    }, function (highlighted) {
+                                    });
                                 });
                             })
-                            
+
                         },
-                        current_prepend: function(newVal,oldVal) {
+                        current_prepend: function (newVal, oldVal) {
                             this.initHighlight();
                             var highlight = this.highlight;
                             var dom = this.aceDom;
-                            this.$nextTick(function(){
-                                _.forEach(qsa(".prepend.code"),function(val,index){
+                            this.$nextTick(function () {
+                                _.forEach(qsa(".prepend.code"), function (val, index) {
                                     highlight(val, {
-                                mode: val.getAttribute("ace-mode"),
-                                theme: val.getAttribute("ace-theme"),
-                                startLineNumber: 1,
-                                showGutter: val.getAttribute("ace-gutter"),
-                                trim: true
-                            }, function (highlighted) {});
+                                        mode: val.getAttribute("ace-mode"),
+                                        theme: val.getAttribute("ace-theme"),
+                                        startLineNumber: 1,
+                                        showGutter: val.getAttribute("ace-gutter"),
+                                        trim: true
+                                    }, function (highlighted) {
+                                    });
                                 });
                             })
-                            
+
                         }
                     }
                     ,
                     methods: {
-                        initHighlight:function(){
-                            if(!this.highlight) {
+                        initHighlight: function () {
+                            if (!this.highlight) {
                                 this.highlight = ace.require("ace/ext/static_highlight");
                             }
-                            if(!this.aceDom) {
+                            if (!this.aceDom) {
                                 this.aceDom = ace.require("ace/lib/dom");
                             }
                         },
-                        flush_theme:function(){
+                        flush_theme: function () {
                             var that = this;
                             this.initHighlight();
                             var highlight = this.highlight;
@@ -267,64 +274,66 @@
                             this.current_prepend = "";
                             this.current_append = "";
                             this.$forceUpdate();
-                            this.$nextTick(function(){
-                            that.current_prepend = that.prepend && 
-                            that.prepend[that.selected_language] ?that.prepend[that.selected_language] : "";
-                            that.current_append = that.append && that.append[that.selected_language]?that.append[that.selected_language]:"";
-                            that.$forceUpdate();
-                            that.$nextTick(function(){
-                                qsa(".prepend.code").forEach(function (codeEl) {
-                                  highlight(codeEl, {
-                    mode: codeEl.getAttribute("ace-mode"),
-                    theme: codeEl.getAttribute("ace-theme"),
-                    startLineNumber: 1,
-                    showGutter: codeEl.getAttribute("ace-gutter"),
-                    trim: true
-                }, function (highlighted) {});
-            });
-                                qsa(".append.code").forEach(function (codeEl) {
-                highlight(codeEl, {
-                    mode: codeEl.getAttribute("ace-mode"),
-                    theme: codeEl.getAttribute("ace-theme"),
-                    startLineNumber: 1,
-                    showGutter: codeEl.getAttribute("ace-gutter"),
-                    trim: true
-                }, function (highlighted) {});
-            });
+                            this.$nextTick(function () {
+                                that.current_prepend = that.prepend &&
+                                that.prepend[that.selected_language] ? that.prepend[that.selected_language] : "";
+                                that.current_append = that.append && that.append[that.selected_language] ? that.append[that.selected_language] : "";
+                                that.$forceUpdate();
+                                that.$nextTick(function () {
+                                    qsa(".prepend.code").forEach(function (codeEl) {
+                                        highlight(codeEl, {
+                                            mode: codeEl.getAttribute("ace-mode"),
+                                            theme: codeEl.getAttribute("ace-theme"),
+                                            startLineNumber: 1,
+                                            showGutter: codeEl.getAttribute("ace-gutter"),
+                                            trim: true
+                                        }, function (highlighted) {
+                                        });
+                                    });
+                                    qsa(".append.code").forEach(function (codeEl) {
+                                        highlight(codeEl, {
+                                            mode: codeEl.getAttribute("ace-mode"),
+                                            theme: codeEl.getAttribute("ace-theme"),
+                                            startLineNumber: 1,
+                                            showGutter: codeEl.getAttribute("ace-gutter"),
+                                            trim: true
+                                        }, function (highlighted) {
+                                        });
+                                    });
+                                })
                             })
-                            })
-                        
+
                         },
-                        judgeLength:function(str,flag){
-                            var alphaNum = ["one","two","three","four","five","six","seven","eight"]
+                        judgeLength: function (str, flag) {
+                            var alphaNum = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
                             var ans = 0;
-                            if(flag) ans = 8;
+                            if (flag) ans = 8;
                             var isalpha = true;
-                            _.forEach(str,function(val,index){
-                                if(!(val >= "a" && val <= "z" || val >= "A" && val <= "Z" || val == " ")) {
+                            _.forEach(str, function (val, index) {
+                                if (!(val >= "a" && val <= "z" || val >= "A" && val <= "Z" || val == " ")) {
                                     isalpha = false;
                                 }
                             });
-                            if(isalpha) {
+                            if (isalpha) {
                                 ans -= str.length / 5;
                             }
-                            return alphaNum[Math.abs(ans)-1];
+                            return alphaNum[Math.abs(ans) - 1];
                         },
                         switch_screen: function ($event) {
                             this.single_page = !this.single_page;
                             document.documentElement.scrollTop = 0;
-                            if(this.single_page) {
-                            $(".topmenu").css({
-                                borderBottom:"none",
-                                boxShadow:"none"
-                            });
-                        }
-                        else {
-                            $(".topmenu").css({
-                                borderBottom:"",
-                                boxShadow:""
-                            });
-                        }
+                            if (this.single_page) {
+                                $(".topmenu").css({
+                                    borderBottom: "none",
+                                    boxShadow: "none"
+                                });
+                            }
+                            else {
+                                $(".topmenu").css({
+                                    borderBottom: "",
+                                    boxShadow: ""
+                                });
+                            }
                         },
                         resize: function ($event) {
                             var size = $event.target.value;
@@ -415,8 +424,8 @@
                             else if (status == 4) {
                                 //count=0;
                                 var str = judge_result[status] + " 内存使用:" + memory + "KB 运行时间:" + time + "ms";
-                                if(sim) {
-                                    str += " 触发判重 与运行号: "+sim_s_id+"代码重复 重复率:"+sim+"%";
+                                if (sim) {
+                                    str += " 触发判重 与运行号: " + sim_s_id + "代码重复 重复率:" + sim + "%";
                                 }
                                 $("#progess_text").text(str);
                                 $('#progress').progress({
@@ -471,9 +480,9 @@
                                 $("#progress").progress('set warning');
                             }
                         },
-                        
+
                         do_submit: function () {
-                            if(!window.connected) {
+                            if (!window.connected) {
                                 alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
                                 return;
                             }
@@ -495,27 +504,25 @@
                                 this.presubmit();
                             }
                         },
-                        checkJava: function(submit_language) {
-                            switch (submit_language)
-                            {
+                        checkJava: function (submit_language) {
+                            switch (submit_language) {
                                 case 3:
                                 case 23:
                                 case 24:
                                     var code = window.editor.getValue();
-                                    if(code.indexOf("Main") === -1 || code.indexOf("main") === -1 || code.indexOf("package") !== -1)
-                                    {
+                                    if (code.indexOf("Main") === -1 || code.indexOf("main") === -1 || code.indexOf("package") !== -1) {
                                         alert("Java语言提交时必须使用Main作为主类\n使用static main作为入口函数\n并且不能存在包名(如package helloworld)");
                                         return false;
                                     }
                                 default:
-                                return true;
+                                    return true;
                             }
                             return true;
                         },
                         presubmit: function () {
                             var qstring = getParameterByName;
                             var submit_language = parseInt($("#language").val());
-                            if(!this.checkJava(submit_language)) {
+                            if (!this.checkJava(submit_language)) {
                                 return;
                             }
                             var type = "problem";
@@ -540,9 +547,9 @@
                                 input_text: $("#ipt").val(),
                                 language: submit_language,
                                 source: window.editor.getValue(),
-                                share:this.share,
+                                share: this.share,
                                 type: type,
-                                fingerprint:window.fingerprint,
+                                fingerprint: window.fingerprint,
                                 csrf: "<?=$token?>"
                             };
                             window.postdata = postdata;
@@ -579,13 +586,13 @@
                             }
                         },
                         test_run: function () {
-                            if(!window.connected) {
+                            if (!window.connected) {
                                 alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
                                 return;
                             }
                             this.hide_warning = true;
                             var submit_language = parseInt($("#language").val());
-                            if(!this.checkJava(submit_language)) {
+                            if (!this.checkJava(submit_language)) {
                                 return;
                             }
                             var that = this;
@@ -627,13 +634,13 @@
                                     cid: -Math.abs(parseInt(qstring("cid"))) || null,
                                     tid: -Math.abs(parseInt(qstring("tid"))) || null,
                                     pid: qstring("pid"),
-                                    share:this.share,
+                                    share: this.share,
                                     input_text: window.problemsubmitter.$data.sampleinput,
                                     language: $("#language").val(),
                                     source: window.editor.getValue(),
                                     type: type,
                                     csrf: "<?=$token?>",
-                                    fingerprint:window.fingerprint
+                                    fingerprint: window.fingerprint
                                 };
                                 window.postdata = postdata;
                             }
@@ -655,132 +662,134 @@
                             window.handler_interval = setTimeout(that.resume, 1000);
                         }
                     },
-                    updated:function(){
+                    updated: function () {
                         var that = this;
-                        this.$nextTick(function(){
-                            if(that.single_page && !that.isRenderBodyOnTop){
+                        this.$nextTick(function () {
+                            if (that.single_page && !that.isRenderBodyOnTop) {
                                 that.isRenderBodyOnTop = true;
                                 $('.ui.vertical.center.aligned.segment.single')
-                        .visibility({
-                          once: false,
-                          offset: 30,
-                         observeChanges: false,
-                         continuous: false,
-                          refreshOnLoad: true,
-                          refreshOnResize: true,
-                          onTopPassedReverse: function(){
-                        that.bodyOnTop = true;
-                        },
-                        onTopPassed: function(){
-                            that.bodyOnTop = false;
-                        }
-                            });
-                            that.bodyOnTop = true;
+                                    .visibility({
+                                        once: false,
+                                        offset: 30,
+                                        observeChanges: false,
+                                        continuous: false,
+                                        refreshOnLoad: true,
+                                        refreshOnResize: true,
+                                        onTopPassedReverse: function () {
+                                            that.bodyOnTop = true;
+                                        },
+                                        onTopPassed: function () {
+                                            that.bodyOnTop = false;
+                                        }
+                                    });
+                                that.bodyOnTop = true;
                             }
                         })
                     },
                     mounted: function () {
                         var that = this;
-                        this.description = markdownIt.render(this.description);
-                        this.input = markdownIt.render(this.input);
-                        this.output = markdownIt.render(this.output);
-                        this.hint = markdownIt.render(this.hint);
+                        this.description = markdownIt.render(this.description || '');
+                        this.input = markdownIt.render(this.input || '');
+                        this.output = markdownIt.render(this.output || '');
+                        this.hint = markdownIt.render(this.hint || '');
                         this.bodyOnTop = true;
                         $(".not-compile").removeClass("not-compile");
                         $(".loading.dimmer").remove();
+
                         function load_editor() {
-            ace.require("ace/ext/language_tools");
-            var editor = ace.edit("source");
-            window.editor = editor;
-            var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
-            var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
-            editor.$blockScrolling = Infinity;
-            if (localStorage.getItem('theme')) {
-                editor.setTheme(localStorage.getItem('theme'));
-                qsa(".code").forEach(function (codeEl) {
-                    codeEl.setAttribute("ace-theme", localStorage.getItem('theme'));
-                });
-                setTimeout(function () {
-                        console.log("刷新前后置代码主题");
-                        that.flush_theme();
-                    }, 0);
-            }
-            else {
-                editor.setTheme("ace/theme/monokai");
-                console.log("使用默认主题作为前后置代码主题");
-                that.flush_theme();
-            }
-            editor.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: true,
-                enableEmmet: true
-            });
-            editor.getSession().setMode("ace/mode/" + language[that.selected_language]);
-            console.log(language[that.selected_language]);
-            //editor.setValue("//Please paste your code here");
-            /*editor.addEventListener("focus",function(){
-             var v=editor.getValue();
-             if(v=="//Please paste your code here")
-             {
-             editor.setValue("");
-             }
-             });*/
-            // editor.addEventListener("blur",function(){
-            // var v=editor.getValue();
-            // if(v=="")
-            // {
-            //      editor.setValue("//Please paste your code here");
-            //  }
-            //  });
-            if (localStorage.getItem('font-size')) {
-                document.getElementById('source').style.fontSize = localStorage.getItem('font-size') + 'px';
-                document.getElementById('fontsize').value = localStorage.getItem('font-size');
-                console.log("从Cookie中获取字体大小成功");
-                //  document.getElementById('prepend').style.fontSize='18px';
-                // document.getElementById('append').style.fontSize='18px';
-            }
-            else {
-                document.getElementById('source').style.fontSize = '18px';
-                console.log("未设置字体大小，使用默认字体大小");
-                // document.getElementById('prepend').style.fontSize='18px';
-                //  document.getElementById('append').style.fontSize='18px';
-            }
-            var theme_n;
-            if (localStorage.getItem('theme')) {
-                theme_n = localStorage.getItem('theme');
-            }
-            else {
-                theme_n = "ace/theme/monokai";
-            }
-            //console.log(theme_n);
-            var arr = document.getElementsByTagName("option");
-            var len = arr.length;
-            for (var i = 0; i < len; i++) {
-                //  console.log(arr[i].value);
-                if (arr[i].value == theme_n) {
-                    arr[i].selected = true;
-                    break;
-                }
-            }
-            $("#theme").on('change', function () {
-                var this_theme = this.value;
-                localStorage.setItem('theme', this.value);
-                console.log("设置主题成功！主题为:" + this.value);
-                localStorage.setItem('theme-name', $(this).find("option:selected").text());
-                console.log("设置主题名称成功！主题名称为:" + $(this).find("option:selected").text());
-                editor.setTheme(this.value);
-                qsa(".code").forEach(function (codeEl) {
-                    codeEl.setAttribute("ace-theme", this_theme);
-                });
-                that.flush_theme();
-                setTimeout(function () {
-                    $("#total_control").height($("#right-side").height());
-                }, 0);
-            });
-            var fonts = document.getElementById('source').style.fontSize;
-            $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
-        }
+                            ace.require("ace/ext/language_tools");
+                            var editor = ace.edit("source");
+                            window.editor = editor;
+                            var StatusBar = ace.require("ace/ext/statusbar").StatusBar;
+                            var statusBar = new StatusBar(editor, document.getElementById("statusBar"));
+                            editor.$blockScrolling = Infinity;
+                            if (localStorage.getItem('theme')) {
+                                editor.setTheme(localStorage.getItem('theme'));
+                                qsa(".code").forEach(function (codeEl) {
+                                    codeEl.setAttribute("ace-theme", localStorage.getItem('theme'));
+                                });
+                                setTimeout(function () {
+                                    console.log("刷新前后置代码主题");
+                                    that.flush_theme();
+                                }, 0);
+                            }
+                            else {
+                                editor.setTheme("ace/theme/monokai");
+                                console.log("使用默认主题作为前后置代码主题");
+                                that.flush_theme();
+                            }
+                            editor.setOptions({
+                                enableBasicAutocompletion: true,
+                                enableSnippets: true,
+                                enableLiveAutocompletion: true,
+                                enableEmmet: true
+                            });
+                            editor.getSession().setMode("ace/mode/" + language[that.selected_language]);
+                            console.log(language[that.selected_language]);
+                            //editor.setValue("//Please paste your code here");
+                            /*editor.addEventListener("focus",function(){
+                             var v=editor.getValue();
+                             if(v=="//Please paste your code here")
+                             {
+                             editor.setValue("");
+                             }
+                             });*/
+                            // editor.addEventListener("blur",function(){
+                            // var v=editor.getValue();
+                            // if(v=="")
+                            // {
+                            //      editor.setValue("//Please paste your code here");
+                            //  }
+                            //  });
+                            if (localStorage.getItem('font-size')) {
+                                document.getElementById('source').style.fontSize = localStorage.getItem('font-size') + 'px';
+                                document.getElementById('fontsize').value = localStorage.getItem('font-size');
+                                console.log("从Cookie中获取字体大小成功");
+                                //  document.getElementById('prepend').style.fontSize='18px';
+                                // document.getElementById('append').style.fontSize='18px';
+                            }
+                            else {
+                                document.getElementById('source').style.fontSize = '18px';
+                                console.log("未设置字体大小，使用默认字体大小");
+                                // document.getElementById('prepend').style.fontSize='18px';
+                                //  document.getElementById('append').style.fontSize='18px';
+                            }
+                            var theme_n;
+                            if (localStorage.getItem('theme')) {
+                                theme_n = localStorage.getItem('theme');
+                            }
+                            else {
+                                theme_n = "ace/theme/monokai";
+                            }
+                            //console.log(theme_n);
+                            var arr = document.getElementsByTagName("option");
+                            var len = arr.length;
+                            for (var i = 0; i < len; i++) {
+                                //  console.log(arr[i].value);
+                                if (arr[i].value == theme_n) {
+                                    arr[i].selected = true;
+                                    break;
+                                }
+                            }
+                            $("#theme").on('change', function () {
+                                var this_theme = this.value;
+                                localStorage.setItem('theme', this.value);
+                                console.log("设置主题成功！主题为:" + this.value);
+                                localStorage.setItem('theme-name', $(this).find("option:selected").text());
+                                console.log("设置主题名称成功！主题名称为:" + $(this).find("option:selected").text());
+                                editor.setTheme(this.value);
+                                qsa(".code").forEach(function (codeEl) {
+                                    codeEl.setAttribute("ace-theme", this_theme);
+                                });
+                                that.flush_theme();
+                                setTimeout(function () {
+                                    $("#total_control").height($("#right-side").height());
+                                }, 0);
+                            });
+                            var fonts = document.getElementById('source').style.fontSize;
+                            $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
+                        }
+
                         load_editor();
                         window.editor.getSession().setValue(this.source_code);
                         $('.ui.accordion')
@@ -790,7 +799,7 @@
                         $('.ui.dropdown.selection').dropdown({
                             on: 'hover'
                         });
-                        
+
                         resolve();
                         if (getParameterByName("sid")) {
                             $.get("/api/status/solution?sid=" + getParameterByName("sid"), function (data) {
@@ -800,20 +809,20 @@
                         }
                     }
                 });
-                var copy_content = new Clipboard(".copy.context",{
-                        text: function (trigger) {
-                            return $(trigger).parent().next().text();
-                        }
-                        });
-                    copy_content.on("success",function(e){
+                var copy_content = new Clipboard(".copy.context", {
+                    text: function (trigger) {
+                        return $(trigger).parent().next().text();
+                    }
+                });
+                copy_content.on("success", function (e) {
                     $(e.trigger)
-                    .popup({
-                        title   : 'Finished',
-                    content : 'Context is in your clipboard',
-                        on      : 'click'
-                     })
-                     .popup("show");
-                    })
+                        .popup({
+                            title: 'Finished',
+                            content: 'Context is in your clipboard',
+                            on: 'click'
+                        })
+                        .popup("show");
+                })
                 <?php if(isset($_SESSION["administrator"])) { ?>
                 window.problemsubmitter = problemsubmitter;
                 <?php } ?>
@@ -888,12 +897,12 @@
                     <?php echo $MSG_Input ?>:<textarea style="height:100%;resize: none;border-radius:10px" cols=40
                                                        rows=5
                                                        id="input_text"
-                                                        v-model="sampleinput"></textarea>
+                                                       v-model="sampleinput"></textarea>
                 </div>
                 <div class="column">
                     <?php echo $MSG_Output ?>:
                     <textarea style="height:100%;resize: none;border-radius:10px" cols=40 rows=5 id="out" name="out"
-                               :placeholder="'SHOULD BE:'+sampleoutput">
+                              :placeholder="'SHOULD BE:'+sampleoutput">
                         <?php echo $view_sample_output ?></textarea>
                     <textarea style="display:none" id="hidden_sample_output" class="sample_output">
 SHOULD BE:
@@ -917,56 +926,61 @@ SHOULD BE:
                 border: solid lightgrey 1px
             }
         </style>
-        
+
         <!-- Main component for a primary marketing message or call to action -->
         <div v-show="single_page === true" class="ui container not-compile" v-cloak>
             <div class="not-compile">
-                <div class="following bar title"  v-show="!bodyOnTop" :style="(!bodyOnTop?'opacity:1;':'opacity:0;') + 'z-index:99'">
-                <div :class="'ui vertical center aligned grid'">
-                    <div class="row no padding">
-                    <div :class="'sixteen wide center aligned column'">
-                    <h2 class="ui header" id="probid" v-text="title">
-                    </h2></div>
-                    <div class="eight wide center aligned column">
-                    <div class='ui labels'>
-                        <li class='ui label red' id="tlimit"
-                            v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
-                        <li class='ui label red' id="mlimit"
-                            v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
-                        <li class='ui label orange' id="spj" v-cloak v-show="spj">Special Judge</li>
-                        <li class='ui label grey' id="totsub"
-                            v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
-                        <li class='ui label green' id="totac"
-                            v-text="accepted"><?php echo "$MSG_SOVLED:$row->accepted" ?> </li>
-                    </div></div>
-                    </div>
-                    <div class="row no padding">
-                    <div class="column">
-                    <div class='ui buttons'>
-                        <a :href="'problemstatus.php?id='+original_id" class='ui button orange'><?= $MSG_STATUS ?></a>
-                        <a @click.prevent="switch_screen($event)" href='problem.php?<?= $_SERVER['QUERY_STRING'] ?>'
-                           class='ui button blue'>切换双屏</a>
-                        <a v-if="!getParameterByName('cid') && !getParameterByName('tid')"
-                           :href="'tutorial.php?id='+original_id" class="ui button teal">
-                            查看题解
-                        </a>
+                <div class="following bar title" v-show="!bodyOnTop"
+                     :style="(!bodyOnTop?'opacity:1;':'opacity:0;') + 'z-index:99'">
+                    <div :class="'ui vertical center aligned grid'">
+                        <div class="row no padding">
+                            <div :class="'sixteen wide center aligned column'">
+                                <h2 class="ui header" id="probid" v-text="title">
+                                </h2></div>
+                            <div class="eight wide center aligned column">
+                                <div class='ui labels'>
+                                    <li class='ui label red' id="tlimit"
+                                        v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
+                                    <li class='ui label red' id="mlimit"
+                                        v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
+                                    <li class='ui label orange' id="spj" v-cloak v-show="spj">Special Judge</li>
+                                    <li class='ui label grey' id="totsub"
+                                        v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
+                                    <li class='ui label green' id="totac"
+                                        v-text="accepted"><?php echo "$MSG_SOVLED:$row->accepted" ?> </li>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row no padding">
+                            <div class="column">
+                                <div class='ui buttons'>
+                                    <a :href="'problemstatus.php?id='+original_id"
+                                       class='ui button orange'><?= $MSG_STATUS ?></a>
+                                    <a @click.prevent="switch_screen($event)"
+                                       href='problem.php?<?= $_SERVER['QUERY_STRING'] ?>'
+                                       class='ui button blue'>切换双屏</a>
+                                    <a v-if="!getParameterByName('cid') && !getParameterByName('tid')"
+                                       :href="'tutorial.php?id='+original_id" class="ui button teal">
+                                        查看题解
+                                    </a>
 
-                        <a class='ui button violet' v-if="iseditor||isadmin"
-                           :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
-                        <?php
-                        if (isset($_SESSION['administrator'])) {
-                            require_once("include/set_get_key.php");
-                            ?>
-                            <a class='ui button purple'
-                               :href="'admin/quixplorer/index.php?action=list&dir='+original_id+'&order=name&srt=yes'">TestData</a>
-                            <?php
-                        }
-                        ?>
-                    </div></div>
+                                    <a class='ui button violet' v-if="iseditor||isadmin"
+                                       :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
+                                    <?php
+                                    if (isset($_SESSION['administrator'])) {
+                                        require_once("include/set_get_key.php");
+                                        ?>
+                                        <a class='ui button purple'
+                                           :href="'admin/quixplorer/index.php?action=list&dir='+original_id+'&order=name&srt=yes'">TestData</a>
+                                        <?php
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                </div>
-                   <div class="ui vertical center aligned segment single" :style="bodyOnTop?'opacity:1':'opacity:0'">
+                <div class="ui vertical center aligned segment single" :style="bodyOnTop?'opacity:1':'opacity:0'">
                     <h2 class="ui header" id="probid" v-text="title">
                     </h2>
                     <div class='ui labels'>
@@ -1007,18 +1021,20 @@ SHOULD BE:
                 <h2 class='ui header hidden'><?= $MSG_Description ?></h2>
                 <div class='ui hidden' v-html="description"></div>
                 <h2 class='ui header hidden'><?= $MSG_Input ?></h2>
-                <div class='ui hidden' v-html="input"></div>
+                <div class='ui hidden' v-html="input||''"></div>
                 <h2 class='ui header hidden'><?= $MSG_Output ?></h2>
-                <div class='ui hidden' v-html="output"></div>
+                <div class='ui hidden' v-html="output||''"></div>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Input ?></h2>
                 <div class="ui bottom attached segment hidden sample_input">
-                <div class="ui top attached label"><a data-clipboard-target=".sample_input" class="copy context">Copy Sample Input</a></div>
-                <pre v-text='sampleinput'></pre>
-                            </div>
+                    <div class="ui top attached label"><a data-clipboard-target=".sample_input" class="copy context">Copy
+                            Sample Input</a></div>
+                    <pre v-text='sampleinput'></pre>
+                </div>
                 <h2 class='ui header hidden'><?= $MSG_Sample_Output ?></h2>
                 <div class="ui bottom attached segment hidden">
-                    <div class="ui top attached label"><a data-clipboard-target=".sample_output" class="copy context">Copy Sample Output</a></div>
-                <pre class='sample_output' v-text='sampleoutput'></pre>
+                    <div class="ui top attached label"><a data-clipboard-target=".sample_output" class="copy context">Copy
+                            Sample Output</a></div>
+                    <pre class='sample_output' v-text='sampleoutput'></pre>
                 </div>
                 <h2 class='ui header hidden'><?= $MSG_HINT ?></h2>
                 <div class='ui hidden' v-html="hint"></div>
@@ -1045,7 +1061,7 @@ SHOULD BE:
                         <li class='ui label grey' id="totsub"
                             v-text="submit"></li>
                         <li class='ui label green' id="totac"
-                            v-text="accepted"> </li>
+                            v-text="accepted"></li>
                     </div>
                     <br>
                     <div class='ui buttons'>
@@ -1076,27 +1092,29 @@ SHOULD BE:
                     <div class='content' id='problem_description' v-html="description">
                     </div>
                     <div class='title'><?= $MSG_Input ?><i class="dropdown icon"></i></div>
-                    <div class='content' id='problem_input' v-html="input">
+                    <div class='content' id='problem_input' v-html="input||''">
                     </div>
                     <div class='title'><?= $MSG_Output ?><i class="dropdown icon"></i></div>
-                    <div class='content' id='problem_output' v-html="output"></div>
+                    <div class='content' id='problem_output' v-html="output||''"></div>
                     <div class='title'><?= $MSG_Sample_Input ?><i class="dropdown icon"></i>
                     </div>
                     <div class='content'>
                         <div class="ui bottom attached segment">
-                            <div class="ui top attached label"><a data-clipboard-target=".sample_input" class="copy context">Copy Sample Input</a></div>
+                            <div class="ui top attached label"><a data-clipboard-target=".sample_input"
+                                                                  class="copy context">Copy Sample Input</a></div>
                             <pre><span id='problem_sample_input' class='sample_input'
-                                                                          v-text='sampleinput'></span></pre>
-                                                                          </div>
+                                       v-text='sampleinput'></span></pre>
+                        </div>
                     </div>
                     <div class='title'><?= $MSG_Sample_Output ?><i class="dropdown icon"></i></div>
                     <div class='content'>
-                    <div class="ui bottom attached segment">
-                        <div class="ui top attached label"><a data-clipboard-target=".sample_output" class="copy context">Copy Sample Output</a></div>
+                        <div class="ui bottom attached segment">
+                            <div class="ui top attached label"><a data-clipboard-target=".sample_output"
+                                                                  class="copy context">Copy Sample Output</a></div>
                             <pre><span id='problem_sample_output'
-                                                                          class='sample_output'
-                                                                          v-text='sampleoutput'></span></pre>
-                            </div>
+                                       class='sample_output'
+                                       v-text='sampleoutput'></span></pre>
+                        </div>
                     </div>
                     <div class='title'><?= $MSG_HINT ?><i class="dropdown icon"></i></div>
                     <div class='content' v-html="hint">
@@ -1205,12 +1223,12 @@ SHOULD BE:
                     <div style="text-align:center;" class="item">
                         <?php echo $OJ_NAME ?>&nbsp;&nbsp;
                         <div class="item">
-    <div class="ui toggle checkbox" v-cloak v-if="!iscontest">
-  <input type="checkbox" name="share" v-model="share">
-  <label>允许他人查看代码</label>
-    </div>
-</div>
+                            <div class="ui toggle checkbox" v-cloak v-if="!iscontest">
+                                <input type="checkbox" name="share" v-model="share">
+                                <label>允许他人查看代码</label>
+                            </div>
                         </div>
+                    </div>
                     <div class="ui right menu">
                         <div class="ui buttons">
                             <input id="Submit" class="ui button green " :disabled="submitDisabled" type=button
@@ -1240,7 +1258,7 @@ SHOULD BE:
                     var i = 0;
                     var using_blockly = false;
                     var count = 0;
-                    
+
                     console.timeEnd("function");
                 </script>
                 <div id="clipcp" style="display:none"></div>
@@ -1259,8 +1277,8 @@ SHOULD BE:
 
 </body>
 <script>
-  new Fingerprint2().get(function(result, components) {
-  window.fingerprint = result;
-})
+    new Fingerprint2().get(function (result, components) {
+        window.fingerprint = result;
+    })
 </script>
 </html>

@@ -140,6 +140,10 @@
             {
                 problemStatus.submit(data);
             }
+            if(typeof window.contestrank == "object" && typeof window.contestrank.handleNewSubmit == "function")
+            {
+                window.contestrank.handleNewSubmit(data);
+            }
         })
         
         socket.on("result",function(data){
@@ -155,6 +159,10 @@
             if(typeof problemStatus == "object" && problemStatus.update)
             {
                 problemStatus.update(data);
+            }
+            if(typeof window.contestrank == "object" && typeof window.contestrank.handleNewSubmit == "function")
+            {
+                window.contestrank.handleNewSubmit(data);
             }
         })
         socket.on('msg',function(data){
