@@ -19,7 +19,7 @@
         window.lastlang = parseInt("<?=$lastlang?>")||1;
     </script>
     <script>
-        $.get("https://uhunt.onlinejudge.org/api/p/num/<?=$pid?>", function (result) {
+        $.get("https://uhunt.onlinejudge.org/api/p/num/" + getParameterByName("pid"), function (result) {
             //  console.log(result);
             $spj = $("#spj");
             if (result['status'] == 2) {
@@ -30,7 +30,7 @@
                 $spj.show();
             }
         });
-        $.get("/api/problem/UVA/<?=$pid?>", function (data) {
+        $.get("/api/problem/UVA/" + getParameterByName("pid"), function (data) {
             var result = data.problem;
             //result=JSON.parse(result);
             $title = $("#ptitle");
@@ -43,6 +43,21 @@
             $smt.html($smt.html() + result['submit']);
             $acp.html($acp.html() + result['accepted']);
         });
+        function flush_theme() {
+            var highlight = ace.require("ace/ext/static_highlight")
+            var dom = ace.require("ace/lib/dom")
+            qsa(".code").forEach(function (codeEl) {
+                highlight(codeEl, {
+                    mode: codeEl.getAttribute("ace-mode"),
+                    theme: codeEl.getAttribute("ace-theme"),
+                    startLineNumber: 1,
+                    showGutter: codeEl.getAttribute("ace-gutter"),
+                    trim: true
+                }, function (highlighted) {
+
+                });
+            });
+        }
     </script>
 </head>
 <body>
