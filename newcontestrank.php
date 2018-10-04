@@ -133,7 +133,7 @@ td{
         <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
         <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{convertHTML(row.nick)}}</a></td>
         <td style="text-align:center"><a :href="'status.php?user_id=' + row.user_id + '&cid=' + cid">{{row.ac}}</a></td>
-        <td style="text-align:center">{{format_date(row.penalty_time)}}</td>
+        <td style="text-align:center">{{format_date(row.penalty_time,1)}}</td>
         <td v-for="p in row.problem" style="text-align:center" 
         :class="p.accept.length > 0?p.first_blood ? 'first accept':'accept':''">
             <b :class="'text '+ (p.accept.length > 0 ? p.first_blood?'first accept':'accept':'red')">
@@ -222,7 +222,7 @@ Vue.component('time_pattern',{
         },1000);
     },
     methods:{
-        format_date:function(second) {
+        format_date:function(second,mode = 0) {
                var fill_zero = function(str) {
                    if(str.length < 2) {
                        return "0" + str;
@@ -238,7 +238,11 @@ Vue.component('time_pattern',{
                minute = fill_zero(minute);
                var sec = String(second % 60);
                sec = fill_zero(sec);
-               return hour + ":" + minute + ":" + sec;
+               if(mode) {
+                   return hour + " : " + minute + " : " + sec;
+               }
+               else
+                    return hour + ":" + minute + ":" + sec;
            }
     }
 });
@@ -385,7 +389,7 @@ var contestrank = window.contestrank = new Vue({
            }
        },
        methods:{
-           format_date:function(second) {
+           format_date:function(second,mode = 0) {
                var fill_zero = function(str) {
                    if(str.length < 2) {
                        return "0" + str;
@@ -401,7 +405,11 @@ var contestrank = window.contestrank = new Vue({
                minute = fill_zero(minute);
                var sec = String(second % 60);
                sec = fill_zero(sec);
-               return hour + ":" + minute + ":" + sec;
+               if(mode) {
+                   return hour + "：" + minute + "：" + sec;
+               }
+               else
+                    return hour + ":" + minute + ":" + sec;
            },
            convertHTML:function(str){
                var d = document.createElement("div");
@@ -459,6 +467,7 @@ var contestrank = window.contestrank = new Vue({
     var cstring = cidArr.join(",");
     function work(){
         cid = cidArr.shift();
+        $.get("/api/scoreboard/"+cid);
         $.get("/api/scoreboard/"+cid,function(d){
             _.forEach(d.data,function(val,idx){
                 val.num += cnt;
@@ -490,6 +499,7 @@ var contestrank = window.contestrank = new Vue({
     }
     else {
         cid = cidArr.shift();
+        $.get("/api/scoreboard/"+cid);
         $.get("/api/scoreboard/"+cid,function(d){
             finished = true;
             window.contestrank.total = d.total;

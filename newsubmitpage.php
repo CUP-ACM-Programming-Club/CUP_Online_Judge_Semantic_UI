@@ -560,7 +560,7 @@
                             }, function (data) {
                                 var running_id = parseInt(data);
                                 if (isNaN(running_id)) {
-                                    alert("提交被服务器拒绝\n");
+                                    alert("提交被服务器拒绝\n请重新正确的访问题面\n");
                                 }
                                 else {
                                     if (typeof window.socket == "object" && socket.connected) {
@@ -1005,7 +1005,7 @@ SHOULD BE:
                         </a>
 
                         <a class='ui button violet' v-if="iseditor||isadmin"
-                           :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
+                           :href="'/problem_edit.php?id='+original_id" target="_blank">Edit</a>
                         <?php
                         if (isset($_SESSION['administrator'])) {
                             require_once("include/set_get_key.php");
@@ -1073,7 +1073,7 @@ SHOULD BE:
                             查看题解
                         </a>
                         <a v-if="iseditor||isadmin" class='ui button violet'
-                           :href="'/problem_edit.php'+location.search" target="_blank">Edit</a>
+                           :href="'/problem_edit.php?id='+original_id" target="_blank">Edit</a>
                         <?php
                         if (isset($_SESSION['administrator'])) {
                             require_once("include/set_get_key.php");

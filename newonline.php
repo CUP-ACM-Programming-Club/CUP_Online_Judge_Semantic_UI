@@ -161,11 +161,11 @@ include("csrf.php");
                 else if (tmp.intranet_ip.match(/10\.200\.33\.[0-9]{1,3}/)) {
                     tmp.place = "润杰机房六楼";
                 }
+                else if (tmp.intranet_ip.match(/2001:[\s\S]+/) && tmp.ip && !tmp.ip.match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "IPv6";
+                }
                 else if (tmp.intranet_ip && tmp.ip && tmp.intranet_ip != tmp.ip) {
                     tmp.place = "外网";
-                }
-                else if (tmp.intranet_ip.match(/2001:[\s\S]+/)) {
-                    tmp.place = "IPv6";
                 }
                 else if (tmp.intranet_ip.match(/10\.3\.[\s\S]+/)) {
                     tmp.place = "地质楼";
@@ -258,7 +258,8 @@ include("csrf.php");
             updated: function () {
                 $("td").popup({
                     on: 'hover',
-                    positon: "top center"
+                    positon: "top center",
+                    hoverable  : true
                 })
             }
         }
