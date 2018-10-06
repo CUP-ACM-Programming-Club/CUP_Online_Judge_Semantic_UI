@@ -201,6 +201,13 @@
                 <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+(i)+'&jresult='+key">{{row}}</a></td>
                  <td>{{statistics.totalSumResult[i]}}</td>
             </tr>
+            <tr>
+                <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
+                <td v-for="(row,key) in statistics.stat_sum" :class="row > 0?'active':''">
+                    <a :href="'status.php?cid='+cid+'&jresult='+key" target="_blank">{{row}}</a>
+                </td>
+                <td>{{statistics.total_submit}}</td>
+            </tr>
         </tbody>
     </table>
     </div>
@@ -219,6 +226,13 @@
                 <td><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)" target="_blank">{{(1001 + i)}}</a></td>
                 <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)+'&language='+key">{{row}}</a></td>
                 <td>{{statistics.totalSumProblem[i]}}</td>
+            </tr>
+            <tr>
+                <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
+                <td v-for="(row,key) in statistics.lang_sum" :class="row > 0?'active':''">
+                    <a :href="'status.php?cid='+cid+'&language='+key" target="_blank">{{row}}</a>
+                </td>
+                <td>{{statistics.total_submit}}</td>
             </tr>
         </tbody>
     </table>
@@ -539,6 +553,29 @@
                             totalSumResult[index] += val2;
                         })
                     })
+                    var langsum = {};
+                    _.forEach(lang,function(val){
+                        _.forEach(val,function(v,idx){
+                            if(!langsum[idx]) {
+                                langsum[idx] = v;
+                            }
+                            else {
+                                langsum[idx] += v;
+                            }
+                        });
+                    });
+                    var statsum = {};
+                    _.forEach(status,function(val){
+                        _.forEach(val,function(v,idx){
+                            if(!statsum[idx]) {
+                                statsum[idx] = v;
+                            }
+                            else {
+                                statsum[idx] += v;
+                            }
+                        })
+                    })
+                    var d = _.reduce(totalSumProblem,function(a,b){return a + b},0);
                     if(maxResult === 0) {
                         maxNum = -1;
                     }
@@ -551,8 +588,11 @@
                         stat_data:status||[],
                         used_lang:used_lang,
                         lang_data:lang,
+                        lang_sum:langsum||[],
+                        stat_sum:statsum||[],
                         totalSumResult:totalSumResult,
-                        totalSumProblem:totalSumProblem
+                        totalSumProblem:totalSumProblem,
+                        total_submit:d
                     }
                 },
                 set:function(val) {
