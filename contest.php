@@ -12,8 +12,8 @@ $pass_st=["negative","","positive"];
     <link rel="icon" href="../../favicon.ico">
 
     <title><?php echo $OJ_NAME?></title>
-    <?php include("template/$OJ_TEMPLATE/css.php");?>
-    <?php include("template/$OJ_TEMPLATE/js.php");?>
+    <?php include("template/semantic-ui/css.php");?>
+    <?php include("template/semantic-ui/js.php");?>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -23,7 +23,7 @@ $pass_st=["negative","","positive"];
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php");?>
+<?php include("template/semantic-ui/nav.php");?>
 <div class="pusher">
 
     <!-- Main component for a primary marketing message or call to action -->
@@ -74,7 +74,7 @@ $pass_st=["negative","","positive"];
   <h2 class="ui header" style="text-align:center"><?php echo $view_title ?></h2>
   <center>
  <p><?php echo $view_description?></p>
- <!--2017年 中国石油大学（北京）团委 不发蓝桥杯奖学金-->
+ <!--2018年 中国石油大学（北京）团委 不发ICPC/CCPC奖学金-->
  </center>
  <center>Start Time <?php echo $view_start_time?>
 <br> &nbsp;Now&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id=nowdate ><?php echo date("Y-m-d H:i:s")?></span>
@@ -143,6 +143,6 @@ $pass_st=["negative","","positive"];
     }
     clock();
 </script>
-<?php include("template/$OJ_TEMPLATE/bottom.php");?>
+<?php include("template/semantic-ui/bottom.php");?>
 </body>
 </html>
