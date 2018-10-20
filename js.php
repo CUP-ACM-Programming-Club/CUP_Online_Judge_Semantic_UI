@@ -6,13 +6,14 @@ if(result.name === "ie" && result.versionNumber < 10 || (result.name == "chrome"
 }
 </script>
 <script src="/template/semantic-ui/js/jquery-3.3.1.min.js"></script>
-<script src="/semantic-ui/semantic.min.js?ver=1.0.5"></script>
+<script src="/semantic-ui/semantic.min.js?ver=1.0.6"></script>
 <script src="/js/markdown-it.js?ver=1.0.5"></script>
 
 <script src="/js/vue.min.js?ver=2.5.17"></script>
 <script src="/template/semantic-ui/js/base64.js?type=min&ver=1.0"></script>
 <script src="/template/semantic-ui/js/utils.js?ver=1.0.4"></script>
 <script src="/template/semantic-ui/js/anime.min.js"></script>
+<script src="/js/dayjs.min.js"></script>
 <script src="/js/lodash.min.js?ver=4.7.11"></script>
 <script>
     $(document).ready(function(){

@@ -13,10 +13,10 @@
 
  <?php include("template/semantic-ui/js.php");?>
  <script src="/js/dayjs.min.js"></script>
-<script src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.4/xlsx.core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/TableExport/5.0.0/js/tableexport.min.js"></script>
-<script src="https://cdn.rawgit.com/mozilla/localForage/master/dist/localforage.js"></script>
+<script src="/js/FileSaver.min.js"></script>
+ <script src="/js/xlsx.core.min.js"></script>
+<script src="/js/tableexport.min.js"></script>
+<script src="/js/localforage.js"></script>
 <script>
 /*
     localforage.setDriver([
@@ -133,7 +133,7 @@ td{
         <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
         <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{convertHTML(row.nick)}}</a></td>
         <td style="text-align:center"><a :href="'status.php?user_id=' + row.user_id + '&cid=' + cid">{{row.ac}}</a></td>
-        <td style="text-align:center">{{format_date(row.penalty_time,1)}}</td>
+        <td style="text-align:center">Total {{format_date(row.penalty_time)}}</td>
         <td v-for="p in row.problem" style="text-align:center" 
         :class="p.accept.length > 0?p.first_blood ? 'first accept':'accept':''">
             <b :class="'text '+ (p.accept.length > 0 ? p.first_blood?'first accept':'accept':'red')">

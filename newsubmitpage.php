@@ -119,6 +119,7 @@
                             memory: "内存限制:" + d.memory_limit + "MB",
                             input: d.input,
                             output: d.output,
+                            uploader:d.uploader,
                             sampleinput: d.sample_input,
                             sampleoutput: d.sample_output,
                             hint: d.hint,
@@ -173,7 +174,7 @@
                     },
                     computed: {
                         title: function () {
-                            return this.problem_id + ": " + d.title;
+                            return this.problem_id + ": " + markdownIt.renderRaw(d.title);
                         },
                         lang_list: function () {
                             var len = this.language_name.length - 1;
@@ -649,7 +650,7 @@
                                 json: JSON.stringify(window.postdata),
                                 csrf: "<?=$token?>"
                             }, function (data) {
-                                if (typeof window.socket == "object" && window.socket.connected) {
+                                if (!isNaN(parseInt(data)) && typeof window.socket == "object" && window.socket.connected) {
                                     window.socket.emit("submit", {submission_id: parseInt(data), val: window.postdata});
                                 }
                                 else {
@@ -903,10 +904,10 @@
                     <?php echo $MSG_Output ?>:
                     <textarea style="height:100%;resize: none;border-radius:10px" cols=40 rows=5 id="out" name="out"
                               :placeholder="'SHOULD BE:'+sampleoutput">
-                        <?php echo $view_sample_output ?></textarea>
+                        </textarea>
                     <textarea style="display:none" id="hidden_sample_output" class="sample_output">
 SHOULD BE:
-                        <?php echo $view_sample_output ?>
+                        
 </textarea>
                 </div>
                 <br>
@@ -935,19 +936,19 @@ SHOULD BE:
                     <div :class="'ui vertical center aligned grid'">
                         <div class="row no padding">
                             <div :class="'sixteen wide center aligned column'">
-                                <h2 class="ui header" id="probid" v-text="title">
-                                </h2></div>
+                                <div class="ui header" id="probid" v-html="title" style="font-size:1.71428571rem"></div>
+                                </div>
                             <div class="eight wide center aligned column">
                                 <div class='ui labels'>
                                     <li class='ui label red' id="tlimit"
-                                        v-text="time"><?php echo "$MSG_Time_Limit:$row->time_limit" ?></li>
+                                        v-text="time"></li>
                                     <li class='ui label red' id="mlimit"
-                                        v-text="memory"><?php echo "$MSG_Memory_Limit: $row->memory_limit" ?></li>
+                                        v-text="memory"></li>
                                     <li class='ui label orange' id="spj" v-cloak v-show="spj">Special Judge</li>
                                     <li class='ui label grey' id="totsub"
-                                        v-text="submit"><?php echo "$MSG_SUBMIT: $row->submit" ?></li>
+                                        v-text="submit"></li>
                                     <li class='ui label green' id="totac"
-                                        v-text="accepted"><?php echo "$MSG_SOVLED:$row->accepted" ?> </li>
+                                        v-text="accepted"></li>
                                 </div>
                             </div>
                         </div>
@@ -981,8 +982,7 @@ SHOULD BE:
                     </div>
                 </div>
                 <div class="ui vertical center aligned segment single" :style="bodyOnTop?'opacity:1':'opacity:0'">
-                    <h2 class="ui header" id="probid" v-text="title">
-                    </h2>
+                    <div class="ui header" id="probid" v-html="title"  style="font-size:1.71428571rem"></div>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
                             v-text="time"></li>
@@ -1040,6 +1040,7 @@ SHOULD BE:
                 <div class='ui hidden' v-html="hint"></div>
                 <h2 class='ui header hidden'><?= $MSG_Source ?></h2>
                 <div class='ui hidden'><p v-text="source"></p>
+                <p>上传者:<a target="_blank" v-if="uploader!=='Administrator'" :href="'userinfo.php?user='+uploader">{{uploader}}</a><a v-else>Administrator</a></p>
                 </div>
             </div>
         </div>
@@ -1049,8 +1050,7 @@ SHOULD BE:
             <div class="padding ui container mainwindow"
                  style="height:100%;width: 35%;overflow-y: auto;float:left;-webkit-border-radius: ;-moz-border-radius: ;border-radius: 10px;">
                 <div class="ui vertical center aligned segment">
-                    <h2 class="ui header" id="probid" v-text="title">
-                    </h2>
+                    <div class="ui header" id="probid" v-html="title" style="font-size:1.71428571rem"></div>
                     <div class='ui labels'>
                         <li class='ui label red' id="tlimit"
                             v-text="time"></li>
@@ -1119,15 +1119,12 @@ SHOULD BE:
                     <div class='title'><?= $MSG_HINT ?><i class="dropdown icon"></i></div>
                     <div class='content' v-html="hint">
                     </div>
-                    <?php
-                    if ($pr_flag) {
-                        ?>
+                    
                         <div class='title'><?= $MSG_Source ?><i class="dropdown icon"></i></div>
                         <div class='content'><p><a :href='"problemset.php?tag="+escape(source)' id='problem_source'
-                                                   v-text='source'></a></p></div>
-                        <?php
-                    }
-                    ?>
+                                                   v-text='source'></a></p>
+                                                   <p>上传者:<a target="_blank" v-if="uploader!=='Administrator'" :href="'userinfo.php?user='+uploader">{{uploader}}</a><a v-else>Administrator</a></p></div>
+                        
                 </div>
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">

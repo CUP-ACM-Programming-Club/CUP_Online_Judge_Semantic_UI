@@ -10,7 +10,7 @@
     <title>Status -- <?=$OJ_NAME ?></title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
-    <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
+    <script src="/template/semantic-ui/js/Chart.bundle.min.js"></scripet>
     <script src="/js/dayjs.min.js"></script>
 </head>
 
@@ -414,6 +414,9 @@
                 }
                 else if (tmp.intranet_ip.match(/10\.102\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "第三教学楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.105\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "逸夫楼Wi-Fi";
                 }
                 else if (tmp.intranet_ip.match(/10\.103\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "地质楼Wi-Fi";
