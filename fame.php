@@ -50,6 +50,18 @@
             </div>
             <img class="ui image" src="/glory_image/2015BEIJING.jpg">
         </div>
+        <div class="ui segment" id="icpc2016qingdao">
+            <h3 class="ui header contents">2016 青岛(中国石油大学(华东))</h3>
+            <div class="right ui rail">
+                <div class="ui sticky 2016qingdao">
+                    <h3 class="ui header">ICPC2016 华东</h3>
+                    <h4>纪念奖</h4>
+                    <p>队名:菜鸟</p>
+                    <p>成员:冯云豪 吕博枫 季来虎</p>
+                </div>
+            </div>
+            <img class="ui image" src="/assets/images/wireframe/white-image.png">
+        </div>
         <div class="ui segment" id="ccpc2017">
             <h3 class="ui header contents">2017 秦皇岛(东北大学秦皇岛分校)</h3>
         <div class="right ui rail">
@@ -134,6 +146,37 @@
             </div>
             <img class="ui image" src="/glory_image/2018XIAOMI.jpg">
         </div>
+        <div class="ui segment" id="ccpc2018qinhuangdao">
+            <h3 class="ui header contents">2018 秦皇岛(东北大学秦皇岛分校)</h3>
+            <div class="ui right rail">
+                <div class="ui sticky CCPC2018QINHUANGDAO">
+            <h3 class="ui header">CCPC2018 秦皇岛</h3>
+            <h4>铜奖</h4>
+            <p>队名:我为石油献代码</p>
+            <p>成员:高宇翔 连浩丞 许思睿</p>
+            <h4>纪念奖</h4>
+            <p>队名:祖国盛开石油花</p>
+            <p>成员:季来虎 陈哲 王智健</p>
+            </div>
+            </div>
+            <img src="/glory_image/CCPC2018QINHUANGDAO.jpg" class="ui image">
+        </div>
+        <div class="ui segment" id="icpc2018nanjing">
+            <h3 class="ui header contents">2018 南京(南京航空航天大学)</h3>
+            <div class="ui right rail">
+                <div class="ui sticky ICPC2018NANJING">
+            <h3 class="ui header">ICPC2018 南京</h3>
+            <h4>铜奖</h4>
+            <p>队名:我为祖国献石油</p>
+            <p>成员:冯云豪 李昊元 吕博枫</p>
+            <h4>纪念奖</h4>
+            <p>队名:我为石油献代码</p>
+            <p>成员:高宇翔 连浩丞 许思睿</p>
+            </div>
+            </div>
+            <img src="/glory_image/ICPC2018NANJING.jpg" class="ui image">
+            <img src="/glory_image/ICPC2018NANJING2.jpg" class="ui image">
+        </div>
         </div>
         
     </div>
@@ -154,6 +197,11 @@
             context:"#icpc2017beijing",
             offset: 50
         });
+        $(".ui.sticky.2016qingdao")
+        .sticky({
+            context:"#icpc2016qingdao",
+            offset: 50
+        })
         $(".ui.sticky.2018ningxia")
         .sticky({
             context:"#icpc2018ningxia",
@@ -177,6 +225,16 @@
         $(".ui.sticky.2018XIAOMI")
         .sticky({
             context:"#2018xiaomi",
+            offset: 50
+        });
+        $(".ui.sticky.CCPC2018QINHUANGDAO")
+        .sticky({
+            context:"#ccpc2018qinhuangdao",
+            offset: 50
+        });
+        $(".ui.sticky.ICPC2018NANJING")
+        .sticky({
+            context:"#icpc2018nanjing",
             offset: 50
         })
         $('.ui.sticky.two')
