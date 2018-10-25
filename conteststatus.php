@@ -449,7 +449,7 @@
             }
         }
     })
-    var problemStatus = new Vue({
+    var problemStatus = window.problemStatus = new Vue({
         el: ".ui.container.padding",
         data: function(){
             return {
@@ -680,13 +680,13 @@
             },
             submit: function (data) {
                 var obj = {};
-                if((!this.user_id || this.user_id === data.user_id)&&(!this.problem_result||data.val.result === this.problem_result) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt) {
+                if((!this.user_id || this.user_id === data.user_id)&&(!~this.problem_result||data.val.result === this.problem_result) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt) {
                 obj.problem_id = Math.abs(data.val.id);
                 obj.solution_id = data.submission_id;
                 obj.nick = data.nick;
                 obj.user_id = data.user_id;
                 obj.contest_id = parseInt(data.contest_id);
-                obj.num = parseInt(data.num);
+                obj.num = parseInt(data.val.pid);
                 obj.length = data.val.source.length;
                 obj.sim = false;
                 obj.language = data.val.language;

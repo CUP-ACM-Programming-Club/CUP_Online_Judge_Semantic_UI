@@ -9,11 +9,14 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title>CUP Online Judge</title>
-    <?php include("template/$OJ_TEMPLATE/js.php"); 
-          include("template/$OJ_TEMPLATE/css.php");
+    <?php include("template/semantic-ui/js.php"); 
+          include("template/semantic-ui/css.php");
     ?>
+  <script src="/js/d3.v5.min.js" charset="utf-8"></script>
+  <script src="/js/moment.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/css/calendar-heatmap.css" />
+  <script src="/js/calendar-heatmap.js?ver=1.0.0"></script>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
-    <script src="/js/dayjs.min.js"></script>
     <script>
         function checkOnline(online_list) {
             var user_id = getParameterByName("user");
@@ -41,6 +44,11 @@
             
         }
     </script>
+    <style>
+        text{
+            font-size:10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -127,6 +135,7 @@
                         <div class="row">
                             <div class="sixteen wide column">
                                 <div class="ui grid">
+                                    <div class="row">
                                     <div class="eight wide column">
                                         <div class="ui grid">
                                             <div class="row">
@@ -159,7 +168,44 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
+                                        </div>
+                                    </div>
+                                    <div class="eight wide column">
+                                        <h4 class="ui top attached block header"><i class="pie chart icon"></i>提交统计</h4>
+                                        <div class="ui bottom attached segment">
+                                            <div id="pie_chart_legend">
+
+                                            </div>
+                                            <div>
+                                                <iframe class="chartjs-hidden-iframe" tabindex="-1"
+                                                        style="display: block; overflow: hidden; border: 0px; margin: 0px; top: 0px; left: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; position: absolute; pointer-events: none; z-index: -1;"></iframe>
+                                                <canvas style="width: 260px; display: block; height: 260px;"
+                                                        id="pie_chart" width="455" height="455"></canvas>
+                                            </div>
+                                        </div>
+                                        <!--
+                                        <h4 class="ui top attached block header">
+                                            <i class="pie chart icon"></i>
+                                            能力雷达图(维护中)
+                                        </h4>
+                                        <div class="ui attached segment">
+                                            <div style="width:100%;">
+                                                <canvas id="canvat"></canvas>
+                                            </div>
+                                        </div>-->
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="sixteen wide column">
+                                        <h4 class="ui top attached block header">提交热力图</h4>
+                                        <div class="ui bottom attached segment heatmap">
+                                        
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="eight wide column">
+                                                                                        <div class="row">
                                                 <div class="column">
                                                     <h4 class="ui top attached block header">CUP Online Judge</h4>
                                                     <div class="ui attached segment">
@@ -198,21 +244,8 @@
 
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="eight wide column">
-                                        <h4 class="ui top attached block header"><i class="pie chart icon"></i>提交统计</h4>
-                                        <div class="ui bottom attached segment">
-                                            <div id="pie_chart_legend">
-
-                                            </div>
-                                            <div>
-                                                <iframe class="chartjs-hidden-iframe" tabindex="-1"
-                                                        style="display: block; overflow: hidden; border: 0px; margin: 0px; top: 0px; left: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; position: absolute; pointer-events: none; z-index: -1;"></iframe>
-                                                <canvas style="width: 260px; display: block; height: 260px;"
-                                                        id="pie_chart" width="455" height="455"></canvas>
-                                            </div>
-                                        </div>
-                                        <h4 class="ui top attached block header"><i class="pie chart icon"></i>编程语言</h4>
+                                        <div class="eight wide column">
+                                            <h4 class="ui top attached block header"><i class="pie chart icon"></i>编程语言</h4>
                                         <div class="ui bottom attached segment">
                                             <div id="pie_chart_language_legend">
 
@@ -232,16 +265,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!--
-                                        <h4 class="ui top attached block header">
-                                            <i class="pie chart icon"></i>
-                                            能力雷达图(维护中)
-                                        </h4>
-                                        <div class="ui attached segment">
-                                            <div style="width:100%;">
-                                                <canvas id="canvat"></canvas>
-                                            </div>
-                                        </div>-->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -385,6 +409,7 @@
             });
             var timeobj = {};
             var acobj = {};
+            
             _.forEach(analsubmission,function(val){
                 var daystr = val.time.format("YYYY-MM-DD");
                 if(!timeobj[daystr]) {
@@ -471,9 +496,41 @@
             $title = $("title").html();
             this.$nextTick(function(){
                 checkOnline();
-            })
-            $("title").html(that.user_id + " " + that.nick + " " + $title);
-            var pie = new Chart(document.getElementById('pie_chart').getContext('2d'), {
+                var now = dayjs().endOf('day').toDate();
+                var yearAgo = dayjs().startOf('day').subtract(1, 'year').toDate();
+                var submission_cnt = d.data.submission_count;
+                var countForDate = {};
+                _.forEach(submission_cnt,function(row){
+                    if(row.day < 10)row.day = "0" + row.day;
+                    if(row.month < 10)row.month = "0" + row.month;
+                    var date = row.year + "-" + row.month + "-" + row.day;
+                    if(!countForDate[date]) {
+                        countForDate[date] = row.cnt;
+                    }
+                    else {
+                        countForDate[date] += row.cnt;
+                    }
+                });
+    var chartData = d3.timeDays(yearAgo, now).map(function (dateElement) {
+      return {
+        date: dateElement,
+        count: countForDate[dayjs(dateElement).format("YYYY-MM-DD")]||0
+      };
+    });
+
+    var heatmap = calendarHeatmap()
+      .data(chartData)
+      .selector('.heatmap')
+      .tooltipEnabled(true)
+      .colorRange(['#c6e48b','#7bc96f','#239a3b', '#196127'],'#dfdfdf')
+      .onClick(function (data) {
+        console.log('data', data);
+      })
+      .tooltipEnabled(true)
+      .legendEnabled(true);
+    heatmap();
+    that.$nextTick(function(){
+        var pie = new Chart(document.getElementById('pie_chart').getContext('2d'), {
             type: 'pie',
             data: {
                 datasets: [
@@ -754,13 +811,17 @@
             }
         }
     };
-    var ctx = document.getElementById("canvas").getContext("2d");
-    window.myLine = new Chart(ctx, config);
+        var ctx = document.getElementById("canvas").getContext("2d");
+        window.myLine = new Chart(ctx, config);
+    })
+            });
+            $("title").html(that.user_id + " " + that.nick + " " + $title);
+            
         }
     })
     })
     
 </script>
-<?php include("template/$OJ_TEMPLATE/bottom.php") ?>
+<?php include("template/semantic-ui/bottom.php") ?>
 </body>
 </html>

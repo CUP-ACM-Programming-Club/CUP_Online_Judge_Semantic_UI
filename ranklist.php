@@ -9,8 +9,8 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title>Ranklist -- <?php echo $OJ_NAME ?></title>
-    <?php include("template/$OJ_TEMPLATE/css.php"); ?>
-    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
+    <?php include("template/semantic-ui/css.php"); ?>
+    <?php include("template/semantic-ui/js.php"); ?>
     <style>
         .center.head{
             text-align:center!important;
@@ -28,6 +28,10 @@
 <?php include("template/semantic-ui/nav.php"); ?>
 <script type="text/x-template" id="ranklist_template">
 <div>
+    
+    <div class="ui top attached tabular menu">
+    <a @click="mode=1" :class="(mode === 1?'active':'')+' item'">所有用户</a><a @click="mode=2" :class="(mode === 2?'active':'')+' item'">ACM队员</a></div>
+    <div class="ui bottom attached segment" v-show="mode === 1">
     <div class="ui stack segment">
 
     <div class="ui grid">
@@ -69,7 +73,6 @@
     </div>
     </div>
     </div>
-    <div class="ui stack segment">
     <table style="width:100%" class="ui padded borderless selectable table">
     <thead>
         <tr>
@@ -92,7 +95,7 @@
                 <img class="ui avatar image" :src="'../avatar/'+row.user_id+'.jpg'" v-if="row.avatar" style="object-fit: cover;">
             </td>
             <td>
-                    {{row.nick}}
+                    {{convertHTML(row.nick)}}
             </td>
             <td class="center head" v-html="markdownIt.renderRaw(row.biography||'')"></td>
             <td class="center head"><a :href="'status.php?user_id='+row.user_id+'&jresult=4'">{{row.solved||0}}</a></td>
@@ -102,7 +105,6 @@
         </tr>
     </tbody>
 </table>
-</div>
 <a v-cloak :class="'ui button '+(page == 0?'disabled':'')" @click="page != 0 && _page(-page,$event)" class="ui button">
     Top
 </a>
@@ -115,6 +117,41 @@
      <i class="right arrow icon"></i>
     Next
 </a>
+</div>
+<div class="ui bottom attached segment" v-show="mode === 2" @click="mode = 2">
+    <table style="width:100%" class="ui padded borderless selectable table">
+    <thead>
+        <tr>
+            <th width="7%" class="center head">{{_name.rank}}</th>
+            <th width="10%" class="center head"><b>{{_name.user}}</b></th>
+            <th width="3%"></th>
+            <th width="15%"><b>{{_name.nick}}</b></th>
+            <th width="55%" class="center head">个人介绍</th>
+            <th width="10%"  class="center head"><b>{{_name.accept}}</b></th>
+            <!--<th width="7%"><b>{{_name.vjudge_accept}}</b></th>
+            <th width="7%"><b>{{_name.submit}}</b></th>
+            <th width="7%"><b>{{_name.ratio}}</b></th>-->
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="(row,key,index) in acmmem">
+            <td  class="center head">{{page*50+key+1}}</td>
+            <td class="center head"><a :href="'/userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
+            <td>
+                <img class="ui avatar image" :src="'../avatar/'+row.user_id+'.jpg'" v-if="row.avatar" style="object-fit: cover;">
+            </td>
+            <td>
+                    {{convertHTML(row.nick)}}
+            </td>
+            <td class="center head" v-html="markdownIt.renderRaw(row.biography||'')"></td>
+            <td class="center head"><a :href="'status.php?user_id='+row.user_id+'&jresult=4'">{{row.solved||0}}</a></td>
+            <!--<td><a :href="'hdu_status.php?user_id='+row.user_id+'&jresult=4'">{{row.vjudge_solved||0}}</a></td>
+            <td><a :href="'status.php?user_id='+row.user_id">{{row.submit||0}}</a></td>
+            <td>{{(((row.solved*100/(row.submit||0)||0)).toString().substring(0,5)+"%")}}</td>-->
+        </tr>
+    </tbody>
+</table>
+</div>
 </div>
 </script>
 <div class="ui container padding">
@@ -129,10 +166,7 @@
 
 </div> <!-- /container -->
 
-<?php include("template/$OJ_TEMPLATE/bottom.php"); ?>
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
+<?php include("template/semantic-ui/bottom.php"); ?>
 <script>
 Vue.component("ranklist",{
     template:"#ranklist_template",
@@ -143,9 +177,11 @@ Vue.component("ranklist",{
         return {
             registed_user:0,
             acm_user:0,
+            mode:1,
             page:parseInt(getParameterByName("page"))||0,
             search:getParameterByName("search")||"",
-            time_stamp:""
+            time_stamp:"",
+            acmmember:{ranklist:[]}
         };
     },
     computed:{
@@ -154,9 +190,22 @@ Vue.component("ranklist",{
        },
        ranklist:function(){
            return this.data.ranklist;
+       },
+       acmmem:{
+           get:function(){
+               return this.acmmember.ranklist;
+           },
+           set:function(val) {
+               this.acmmember = val;
+           }
        }
     },
     methods:{
+        convertHTML:function(str) {
+            var doc = document.createElement("div");
+            doc.innerHTML = str;
+            return doc.innerText;
+        },
         search_user:function($event){
             var that = this;
             this.search = $event.target.value;
@@ -184,7 +233,10 @@ Vue.component("ranklist",{
         $.get("/api/ranklist/user",function(data){
             that.registed_user = data[0].tot_user;
             that.acm_user = data[0].acm_user;
-        })
+        });
+        $.get("/api/ranklist/acmmember",function(data){
+            that.acmmem = data;
+        });
     }
 });
 $.get("/api/ranklist",function(data){
