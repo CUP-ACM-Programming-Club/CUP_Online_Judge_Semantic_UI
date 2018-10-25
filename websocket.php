@@ -138,7 +138,7 @@
             }
             if(typeof window.problemStatus == "object" && typeof window.problemStatus.submit == "function")
             {
-                problemStatus.submit(data);
+                window.problemStatus.submit(data);
             }
             if(typeof window.contestrank == "object" && typeof window.contestrank.handleNewSubmit == "function")
             {
@@ -156,9 +156,9 @@
             {
                 problemsubmitter.wsfs_result(data);
             }
-            if(typeof problemStatus == "object" && problemStatus.update)
+            if(typeof window.problemStatus == "object" && window.problemStatus.update)
             {
-                problemStatus.update(data);
+                window.problemStatus.update(data);
             }
             if(typeof window.contestrank == "object" && typeof window.contestrank.handleNewSubmit == "function")
             {

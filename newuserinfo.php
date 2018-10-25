@@ -15,7 +15,7 @@
   <script src="/js/d3.v5.min.js" charset="utf-8"></script>
   <script src="/js/moment.min.js"></script>
   <link rel="stylesheet" type="text/css" href="/css/calendar-heatmap.css" />
-  <script src="/js/calendar-heatmap.js"></script>
+  <script src="/js/calendar-heatmap.js?ver=1.0.0"></script>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
     <script>
         function checkOnline(online_list) {

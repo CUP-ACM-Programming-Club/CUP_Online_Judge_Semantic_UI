@@ -591,6 +591,15 @@
                                 alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
                                 return;
                             }
+                            var test_run_time = parseInt(localStorage.getItem("test_run"));
+                            var after_one_minute = dayjs(test_run_time).add(5,'minute');
+                            if(test_run_time && after_one_minute.isAfter(dayjs()))
+                            {
+                                alert("两次测试运行间必须间隔5分钟\n请" + after_one_minute.subtract(dayjs()).format("m分s秒后再测试运行"));
+                                return;
+                            }
+                            localStorage.setItem("test_run",dayjs()+"");
+
                             this.hide_warning = true;
                             var submit_language = parseInt($("#language").val());
                             if (!this.checkJava(submit_language)) {
@@ -659,7 +668,7 @@
                                 }
                             });
                             this.submitDisabled = true;
-                            this.resume_time = 20;
+                            this.resume_time = 60;
                             window.handler_interval = setTimeout(that.resume, 1000);
                         }
                     },
