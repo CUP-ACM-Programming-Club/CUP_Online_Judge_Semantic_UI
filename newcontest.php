@@ -33,7 +33,8 @@
                 <center>
                 <div class="row padding">
                 <div class="ui buttons mini">
-                    <a class="ui button orange" :href="'copystatus.php?cid='+cid" v-if="admin">判重</a>
+                    <a class="ui button orange" :href="'copystatus.php?cid='+cid" v-if="admin">判重表</a>
+                    <a class="ui button yellow" :href="'copymap.php?cid='+cid" v-if="admin">判重图</a>
                 </div>
                 </div>
                 </center>
@@ -84,9 +85,9 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="row in problem_table">
+                    <tr v-for="row in problem_table" :class="row.ac === 1?'positive':row.ac === -1?'negative':''">
                         <td>{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.num + 1001}}</td>
-                        <td><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.num">{{row.title}}</a></td>
+                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.num">{{row.title}}</a></td>
                         <td>{{row.accepted}}</td>
                         <td>{{row.submit}}</td>
                     </tr>
@@ -190,19 +191,19 @@ Vue.component("contest-detail",{
                     var diff = val !== this.current_mode;
                     this.current_mode = val;
                     if(diff) {
-                        this.run();
+                        this.run(this.run);
                     }
                 }
             }
         },
         mounted:function(){
-            this.run();
+            this.run(this.run);
         },
         updated:function(){
             
         },
         methods:{
-            run:function(){
+            run:function(resolve){
                 var contest_id = getParameterByName("cid");
                 var that = this;
                 this.cid = parseInt(contest_id);
@@ -226,6 +227,9 @@ Vue.component("contest-detail",{
                 that.admin = _d.admin;
                 that.contest_mode = info.contest_mode;
                 that.private = Boolean(info.private);
+                if(typeof resolve === "function") {
+                    resolve();
+                }
             });
             }
         }
