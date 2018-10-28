@@ -173,12 +173,12 @@
             </div>
         </div>
         <div class="ui attached bottom segment" v-show="current_tag == 'graph'">
-            <div style="width:75%;margin:auto">
+            <div style="width:90%;margin:auto">
                 <canvas id="canvas"></canvas>
             </div>
         </div>
         <div class="ui attached bottom segment" v-show="current_tag == 'result'">
-            <div style="width:75%;margin:auto">
+            <div style="width:90%;margin:auto">
                 <canvas id="bar"></canvas>    
             </div>
         </div>
@@ -405,8 +405,7 @@
                 else if(tmp.intranet_ip == "202.204.193.82") {
                     tmp.place = "网络中心出口";
                 }
-                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
-                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
+                else if (tmp.intranet_ip.match(/10\.200\.2[5-8]{1}\.[0-9]{1,3}/)) {
                     tmp.place = "机房";
                 }
                 else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {

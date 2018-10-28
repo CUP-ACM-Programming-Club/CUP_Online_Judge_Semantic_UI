@@ -39,12 +39,38 @@
                 </center>
 </div>
 </script>
-<div class="ui container">
-     <div class="padding ui container">
+<script type="text/x-template" id="login_form">
+<div>
+    <h2 class="ui dividing header">私有竞赛/作业</h2>
+    <form id='contest_form' method='post' class="ui form">
+        <div class="fields">
+            <div class="six wide field">
+                <label>请输入密码</label>
+                <input id='contest_pass' class="input-mini" type="password" name="password">
+            </div>
+        </div>
+        <input class='ui primary button' type="submit">
+        </form>
+<div>
+</script>
+<script type="text/x-template" id="not_start">
+<div>
+<div class="ui negative message">
+  <div class="header"><i class="ban icon"></i>
+   竞赛尚未开始
+  </div>
+  <p>请等待竞赛开始后刷新
+</p></div>
+</div>
+</script>
+<div class="ui container"  id="contest_table" v-cloak>
+    <not-start v-if="mode === 2"></not-start>
+    <login-form v-if="mode === 1"></login-form>
+     <div class="padding ui container" v-if="mode === 0">
         <h2 class="ui dividing header">
             Contest Problem Set
         </h2>
-        <div class="ui grid" id="contest_table">
+        <div class="ui grid">
             <div class="row">
                 <div class="eleven wide column">
                     <table id='problemset' class='ui padded celled selectable table'  width='95%'>
@@ -85,6 +111,33 @@
     </div>
 </div>
 <script>
+Vue.component("login-form",{
+    template:"#login_form",
+    props:{
+        
+    },
+    data:function(){return{};},
+    mounted:function(){
+        console.log(this.$root);
+        var that = this;
+        $('#contest_form').submit(function() {
+            $.post('../api/contest/password/' + getParameterByName("cid"),{
+            password:$('#contest_pass').val()
+            },function(data){
+            if(data.status=="OK") {
+                that.$root.mode = 0;
+            }
+            });
+            return false; // return false to cancel form action
+        });
+    }
+});
+Vue.component("not-start",{
+    template:"#not_start",
+    props:{},
+    data:function(){return{};},
+    mounted:function(){}
+});
 Vue.component("contest-detail",{
     template:"#contest_detail",
     props:{
@@ -123,18 +176,47 @@ Vue.component("contest-detail",{
                 description:"",
                 title:"",
                 contest_mode:0,
+                current_mode:0,
                 admin:false,
                 private:0
             }
         },
         computed:{
-            
+            mode:{
+                get:function(){
+                    return this.current_mode;
+                },
+                set:function(val) {
+                    var diff = val !== this.current_mode;
+                    this.current_mode = val;
+                    if(diff) {
+                        this.run();
+                    }
+                }
+            }
         },
         mounted:function(){
-            var contest_id = getParameterByName("cid");
-            var that = this;
-            this.cid = parseInt(contest_id);
-            $.get("/api/contest/problem/" + contest_id,function(_d){
+            this.run();
+        },
+        updated:function(){
+            
+        },
+        methods:{
+            run:function(){
+                var contest_id = getParameterByName("cid");
+                var that = this;
+                this.cid = parseInt(contest_id);
+                $.get("/api/contest/problem/" + contest_id,function(_d){
+                if(_d.status !== "OK") {
+                    if(_d.statement === "Permission denied") {
+                        that.mode = 1;
+                        return;
+                    }
+                    else if(_d.error_code === 101){
+                        that.mode = 2;
+                        return;
+                    }
+                }
                 that.problem_table = _d.data;
                 var info = _d.info;
                 that.start_time = dayjs(info.start_time);
@@ -145,9 +227,7 @@ Vue.component("contest-detail",{
                 that.contest_mode = info.contest_mode;
                 that.private = Boolean(info.private);
             });
-        },
-        updated:function(){
-            
+            }
         }
     })
 </script>

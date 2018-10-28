@@ -1,7 +1,7 @@
 <div class="ui inverted vertical footer segment" style="margin-top:150px">
         <div class="ui container">
-            <div class="ui stackable inverted divided equal height stackable grid">
-                <div class="five wide column">
+            <div class="ui stackable inverted equal height stackable grid">
+                <div class="three wide column">
                     <h3 class="ui inverted header"><a href="about.php" class="white link" target="_blank">关于
                         <div class="sub header">
                             常见问题
@@ -15,7 +15,7 @@
                         <a href="copyright.php" class="item">著作权声明</a>
                     </div>
                 </div>
-                <div class="five wide column">
+                <div class="four wide column">
                     <h3 class="ui inverted header">知识共享许可协议
                         <div class="sub header">
                             <a class="white link" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank">署名-非商业性使用-禁止演绎 4.0
@@ -31,12 +31,29 @@
                         <img class="ui image" src="/img/nd_white_x2.png"> 
                     </div>
                 </div>
+                <div class="four wide column">
+                    <h3 class="ui inverted header">
+                        ACM Programming Club
+                        <div class="sub header">
+                            <i class="github icon"></i>
+                            GitHub:<a href="https://github.com/CUP-ACM-Programming-Club" target="_blank">CUPACM Programming Club</a>
+                        </div>
+                        <div class="sub header">
+                            <i class="address card outline icon"></i>
+                            Current Member:
+                            <a href="/ranklist.php?acm" target="_blank">List</a>
+                        </div>
+                    </h3>
+                </div>
                 <div class="five wide column">
-                    <h4 class="ui inverted header">© CUP Online Judge 2017-2018
+                    <h3 class="ui inverted header">© CUP Online Judge 2017-2018
                        <div class="sub header">  Impressed by HUSTOJ & SYZOJ & ECNUOJ</div>
-                        <div class="sub header">  Powered By Vue.js,Node.js</div>
+                        <div class="sub header">  Powered By Vue.js,Node.js,Semantic-UI</div>
                         <div class="sub header">Software Designer:<a href="https://github.com/ryanlee2014" target="_blank">Ryan Lee(李昊元)</a></div>
-                        </h4>
+                        <div class="sub header">
+                            Maintained by CUPACM Club
+                        </div>
+                        </h3>
                 </div>
             </div>
         </div>

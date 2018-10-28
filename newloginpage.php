@@ -70,7 +70,9 @@
                 check();
             }
         }
-
+        $(document).ready(function(){
+            $.get("/api/system/stat/loadAvg");
+        })
     </script>
 </head>
 <body>
