@@ -177,7 +177,7 @@ Vue.component("ranklist",{
         return {
             registed_user:0,
             acm_user:0,
-            mode:1,
+            mode:getParameterByName("acm")!==null?2:1,
             page:parseInt(getParameterByName("page"))||0,
             search:getParameterByName("search")||"",
             time_stamp:"",

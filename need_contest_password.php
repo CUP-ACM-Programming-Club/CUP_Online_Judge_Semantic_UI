@@ -24,7 +24,7 @@
         <input class='ui primary button' type=submit>
         </form>
     <script>$('#contest_form').submit(function() {
-        $.post('../api/contest/password/$cid',{
+        $.post('../api/contest/password/' + getParameterByName("cid"),{
             password:$('#contest_pass').val()
         });
     return true; // return false to cancel form action
