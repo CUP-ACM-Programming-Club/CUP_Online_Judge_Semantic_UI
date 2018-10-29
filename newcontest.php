@@ -33,7 +33,8 @@
                 <center>
                 <div class="row padding">
                 <div class="ui buttons mini">
-                    <a class="ui button orange" :href="'copystatus.php?cid='+cid" v-if="admin">判重</a>
+                    <a class="ui button orange" :href="'copystatus.php?cid='+cid" v-if="admin">判重表</a>
+                    <a class="ui button yellow" :href="'copymap.php?cid='+cid" v-if="admin">判重图</a>
                 </div>
                 </div>
                 </center>
@@ -73,22 +74,23 @@
         <div class="ui grid">
             <div class="row">
                 <div class="eleven wide column">
-                    <table id='problemset' class='ui padded celled selectable table'  width='95%'>
+                    <table id='problemset' class='ui basic unstackable table'  width='95%'>
                 <thead>
                 <tr align=center class='toprow'>
-                    <th style="cursor:hand" onclick="sortTable('problemset', 1, 'int');" width="15%" ><?php echo $MSG_PROBLEM_ID?>
-                    <th width='60%'><?php echo $MSG_TITLE?></th>
-                    <th style="cursor:hand" onclick="sortTable('problemset', 4, 'int');" width='8%'>
-                        正确</th>
-                    <th style="cursor:hand" onclick="sortTable('problemset', 5, 'int');" width='8%'><?php echo $MSG_SUBMIT?></th>
+                    <th style="cursor:hand" onclick="sortTable('problemset', 1, 'int');" width="18%" ><?php echo $MSG_PROBLEM_ID?>
+                    <th width='58%'><?php echo $MSG_TITLE?></th>
+                    <th style="cursor:hand" width='14%'>
+                        正确/提交</th>
+                    <th style="cursor:hand" width='10%'>
+                        通过率</th>
                 </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="row in problem_table">
-                        <td>{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.num + 1001}}</td>
-                        <td><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.num">{{row.title}}</a></td>
-                        <td>{{row.accepted}}</td>
-                        <td>{{row.submit}}</td>
+                    <tr v-for="row in problem_table" :class="row.ac === 1?'positive':row.ac === -1?'negative':''">
+                        <td class="center aligned">{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.num + 1001}}</td>
+                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.num">{{row.title}}</a></td>
+                        <td style="text-align:center">{{row.accepted}}/{{row.submit}}</td>
+                        <td>{{(row.accepted * 100 / row.submit).toString().substring(0,4)}} %</td>
                     </tr>
                 </tbody>
             </table>
@@ -190,19 +192,19 @@ Vue.component("contest-detail",{
                     var diff = val !== this.current_mode;
                     this.current_mode = val;
                     if(diff) {
-                        this.run();
+                        this.run(this.run);
                     }
                 }
             }
         },
         mounted:function(){
-            this.run();
+            this.run(this.run);
         },
         updated:function(){
             
         },
         methods:{
-            run:function(){
+            run:function(resolve){
                 var contest_id = getParameterByName("cid");
                 var that = this;
                 this.cid = parseInt(contest_id);
@@ -226,6 +228,9 @@ Vue.component("contest-detail",{
                 that.admin = _d.admin;
                 that.contest_mode = info.contest_mode;
                 that.private = Boolean(info.private);
+                if(typeof resolve === "function") {
+                    resolve();
+                }
             });
             }
         }
