@@ -254,7 +254,8 @@ var contestrank = window.contestrank = new Vue({
            submitter:{},
            total:0,
            start_time:false,
-           title:""
+           title:"",
+           users:[]
        },
        computed:{
            scoreboard:{
@@ -263,6 +264,7 @@ var contestrank = window.contestrank = new Vue({
                },
                set:function(val){
                    var that = this;
+                   var total = this.total;
                    if(val && val.length) {
                    _.forEach(val,function(v){
                         temp_data.push(v);
@@ -277,15 +279,34 @@ var contestrank = window.contestrank = new Vue({
                    for(var i = 0;i<that.total;++i) {
                        first_blood.push(-1);
                    }
-                   var len = val.length;
                    var submitter = this.submitter = {};
-                   var total = this.total;
-                   var that = this;
+                   _.forEach(this.users,function(val){
+                       console.log(val);
+                       if(!submitter[val.user_id]) {
+                           submitter[val.user_id] = {
+                               ac:0,
+                               nick:val.nick ? val.nick.trim():"未注册",
+                               problem:{},
+                               penalty_time:0
+                           }
+                           for(var j = 0;j<total;++j) {
+                               submitter[val.user_id].problem[j] = {
+                                   submit:[],
+                                   accept:[]
+                                }
+                           }
+                       }
+                   });
+                   var len = val.length;
+                   var private_contest = this.users.length > 0;
                    for(var i = 0;i<len;++i)
                    {
                        if(!val[i].nick)continue;
                        val[i].nick = val[i].nick.trim();
                        if(!submitter[val[i].user_id]) {
+                           if(private_contest) {
+                                continue;
+                           }
                            submitter[val[i].user_id] = {
                                ac:0,
                                nick:val[i].nick,
@@ -382,7 +403,10 @@ var contestrank = window.contestrank = new Vue({
                    
                    var rnk = 1;
                    _.forEach(_submitter,function(val){
-                       val.rank = rnk++;
+                       if(val.ac > 0)
+                            val.rank = rnk++;
+                        else
+                            val.rank = rnk;
                    });
                    window.datas = that.submitter = _submitter;
                }
@@ -484,6 +508,7 @@ var contestrank = window.contestrank = new Vue({
             else {
                 finished = true;
                 window.contestrank.total = cnt;
+                window.contestrank.users = d.users
                 window.contestrank.scoreboard = data;
             }
         });
@@ -503,6 +528,7 @@ var contestrank = window.contestrank = new Vue({
         $.get("/api/scoreboard/"+cid,function(d){
             finished = true;
             window.contestrank.total = d.total;
+            window.contestrank.users = d.users;
             window.contestrank.start_time = window.start_time = dayjs(d.start_time);
             _.forEach(d.data,function(val){
                 val.start_time = dayjs(d.start_time);
