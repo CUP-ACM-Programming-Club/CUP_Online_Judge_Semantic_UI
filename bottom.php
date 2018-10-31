@@ -50,9 +50,6 @@
                        <div class="sub header">  Impressed by HUSTOJ & SYZOJ & ECNUOJ</div>
                         <div class="sub header">  Powered By Vue.js,Node.js,Semantic-UI</div>
                         <div class="sub header">Software Designer:<a href="https://github.com/ryanlee2014" target="_blank">Ryan Lee(李昊元)</a></div>
-                        <div class="sub header">
-                            Maintained by CUPACM Club
-                        </div>
                         </h3>
                 </div>
             </div>

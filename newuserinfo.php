@@ -129,6 +129,64 @@
                             </table>
                         </div>
                     </div>
+                    <div class="ui card" style="width:100%" v-if="admin">
+                        <div class="content">
+                            <div class="header">
+                                使用的操作系统
+                            </div>
+                        </div>
+                        <div class="content">
+                            <table class="ui very basic table">
+                                <thead>
+                                    <th>系统</th>
+                                    <th>版本</th>
+                                    <th>频率</th>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="row in os">
+                                        <td>
+                                            {{row.os_name}}
+                                        </td>
+                                        <td>
+                                            {{row.os_version}}
+                                        </td>
+                                        <td>
+                                            {{row.cnt}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="ui card" style="width:100%" v-if="admin">
+                        <div class="content">
+                            <div class="header">
+                                使用的浏览器
+                            </div>
+                        </div>
+                        <div class="content">
+                            <table class="ui very basic table">
+                                <thead>
+                                    <th>浏览器</th>
+                                    <th>版本</th>
+                                    <th>频率</th>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="row in browser">
+                                        <td>
+                                            {{row.browser_name}}
+                                        </td>
+                                        <td>
+                                            {{row.browser_version}}
+                                        </td>
+                                        <td>
+                                            {{row.cnt}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="eleven wide column">
                     <div class="ui grid">
@@ -452,8 +510,14 @@
                 if(typeof privilege !== "string") {
                     privilege = "普通用户";
                 }
+                var dsort = function(a,b){
+                    return b.cnt - a.cnt;
+                };
+                d.data.os.sort(dsort);
+                d.data.browser.sort(dsort);
             return {
                 award:d.data.award,
+                admin:d.isadmin,
                 biography:d.data.information.biography,
                 const_variable:d.data.const_variable,
                 article_publish:d.data.article_publish,
@@ -461,6 +525,8 @@
                 school:d.data.information.school,
                 github:d.data.information.github,
                 email:d.data.information.email,
+                os:d.data.os,
+                browser:d.data.browser,
                 blog:d.data.information.blog,
                 recent_submission:{
                     submission:timeobj,

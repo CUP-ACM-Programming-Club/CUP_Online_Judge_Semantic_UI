@@ -18,6 +18,7 @@ $homepage="";
     <script src="template/<?= $OJ_TEMPLATE ?>/js/countdown.js"></script>
     <script>
         var homepage = true;
+        var finished = true;
     </script>
     <style>
         a{
@@ -49,8 +50,8 @@ $homepage="";
                 CUP Virtual Judge
                 <a class="ui white top right attached label maintain"></a>
             </h1>
-            
-            <h2>由 <a class="club white" href="https://github.com/CUP-ACM-Programming-Club" target="_blank">ACM程序设计俱乐部</a> <span class="maintainer">维护开发</span> <a class="support white">点此支持</a><div class='ui flowing popup  hidden'><div class='ui image' style="width:220px"><img src='/img/wechat.png'></div><div class="ui image" style="width:220px"><img src="/img/alipay_2.jpg"></div><div class="ui image" style="width:220px"><img src="/img/alipay.jpg"></div></div></h2>
+            <!--
+            <h2>由 <a class="club white" href="https://github.com/CUP-ACM-Programming-Club" target="_blank">ACM程序设计俱乐部</a> <span class="maintainer">维护开发</span> <a class="support white">点此支持</a><div class='ui flowing popup  hidden'><div class='ui image' style="width:220px"><img src='/img/wechat.png'></div><div class="ui image" style="width:220px"><img src="/img/alipay_2.jpg"></div><div class="ui image" style="width:220px"><img src="/img/alipay.jpg"></div></div></h2>-->
 <!--<h4></h4>-->
              <a class="ui huge inverted download button" target="_blank" href='update_log.php'>更新日志</a>
         </div>
