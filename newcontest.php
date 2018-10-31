@@ -87,10 +87,10 @@
                 </thead>
                 <tbody>
                     <tr v-for="row in problem_table" :class="row.ac === 1?'positive':row.ac === -1?'negative':''">
-                        <td class="center aligned">{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.num + 1001}}</td>
-                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.num">{{row.title}}</a></td>
+                        <td class="center aligned">{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.pnum + 1001}}</td>
+                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum">{{row.title}}</a></td>
                         <td style="text-align:center">{{row.accepted}}/{{row.submit}}</td>
-                        <td>{{(row.accepted * 100 / row.submit).toString().substring(0,4)}} %</td>
+                        <td>{{(row.accepted * 100 / Math.max(row.submit,1)).toString().substring(0,4)}} %</td>
                     </tr>
                 </tbody>
             </table>
@@ -219,7 +219,12 @@ Vue.component("contest-detail",{
                         return;
                     }
                 }
+                _.forEach(_d.data,function(val){
+                    if(!val.accepted)val.accepted = 0;
+                    if(!val.submit)val.submit = 0;
+                })
                 that.problem_table = _d.data;
+                
                 var info = _d.info;
                 that.start_time = dayjs(info.start_time);
                 that.end_time = dayjs(info.end_time);
