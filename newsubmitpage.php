@@ -592,13 +592,15 @@
                                 return;
                             }
                             var test_run_time = parseInt(localStorage.getItem("test_run"));
-                            var after_one_minute = dayjs(test_run_time).add(5,'minute');
-                            if(test_run_time && after_one_minute.isAfter(dayjs()))
+                            var after_one_minute = test_run_time + 300 * 1000;
+                            var now = parseInt(dayjs() + "");
+                            if(test_run_time && after_one_minute > now)
                             {
-                                alert("两次测试运行间必须间隔5分钟\n请" + after_one_minute.subtract(dayjs()).format("m分s秒后再测试运行"));
+                                var tmp = (after_one_minute - now) / 1000;
+                                alert("两次测试运行间必须间隔5分钟\n请" + parseInt((tmp / 60)) + "分" + parseInt((tmp % 60)) + "秒后再测试运行");
                                 return;
                             }
-                            localStorage.setItem("test_run",dayjs()+"");
+                            localStorage.setItem("test_run",now);
 
                             this.hide_warning = true;
                             var submit_language = parseInt($("#language").val());
