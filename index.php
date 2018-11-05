@@ -11,7 +11,7 @@ $homepage="";
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <?php include("template/$OJ_TEMPLATE/css.php"); ?>
+    <?php include("template/semantic-ui/css.php"); ?>
     <script>
         var homepage = true;
         var finished = false;
@@ -117,7 +117,7 @@ $homepage="";
             </a>
             <a href="fame.php" target="_blank" class="ui inverted large button download basic">
               <i class="chess queen icon"></i>
-              Hall of Fame
+              Hall of Fame(NEW!)
             </a>
             </div>
                     <br>
@@ -157,7 +157,7 @@ $homepage="";
                 <p>一个优秀的浏览器可以更加完美高效的绘制页面，提升使用的舒适度。基于V8引擎的Chrome浏览器能够让每一个题目的启动和提交都能行云流水。</p>
             </div>
             <div class="six wide right floated column">
-                <img src="/template/<?= $OJ_TEMPLATE ?>/picture/jetbrains.png"
+                <img src="/template/semantic-ui/picture/jetbrains.png"
                      class="ui large borderless rounded image">
             </div>
         </div>
@@ -309,9 +309,9 @@ document.getElementById('myVideo').addEventListener('ended',function(){
     finished = true;
     window.picid = 0;
         window.backpic = setInterval(function(){
-            var index = getRandomIntInclusive(0,2);
+            var index = getRandomIntInclusive(0,4);
             while(index === window.picid) {
-                index = getRandomIntInclusive(0,2);
+                index = getRandomIntInclusive(0,4);
             }
             if(index > 0) {
                 $("#myVideo").css({
