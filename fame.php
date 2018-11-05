@@ -54,7 +54,7 @@
             <h3 class="ui header contents">2016 青岛(中国石油大学(华东))</h3>
             <div class="right ui rail">
                 <div class="ui sticky 2016qingdao">
-                    <h3 class="ui header">ICPC2016 华东</h3>
+                    <h3 class="ui header">ICPC2016 青岛</h3>
                     <h4>纪念奖</h4>
                     <p>队名:菜鸟</p>
                     <p>成员:冯云豪 吕博枫 季来虎</p>
@@ -177,6 +177,26 @@
             <img src="/glory_image/ICPC2018NANJING.jpg" class="ui image">
             <img src="/glory_image/ICPC2018NANJING2.jpg" class="ui image">
         </div>
+        <div class="ui segment" id="icpc2018qingdao">
+            <h3 class="ui header contents">2018 青岛(中国石油大学(华东))</h3>
+            <div class="ui right rail">
+                <div class="ui sticky ICPC2018QINGDAO">
+            <h3 class="ui header">ICPC2018 青岛</h3>
+            <h4>铜奖</h4>
+            <p>队名:我为祖国献石油</p>
+            <p>成员:冯云豪 李昊元 吕博枫</p>
+            <h4>纪念奖</h4>
+            <p>队名:锦绣河山美如画</p>
+            <p>成员:高宇翔 连浩丞 许思睿</p>
+            <h4>纪念奖</h4>
+            <p>队名:石油滚滚流</p>
+            <p>成员:夏方略 赵云霄 王亚奇</p>
+            </div>
+            </div>
+            <img src="/glory_image/ICPC2018QINGDAO1.jpg" class="ui image">
+            <img src="/glory_image/ICPC2018QINGDAO2.jpg" class="ui image">
+            <img src="/glory_image/ICPC2018QINGDAO3.jpg" class="ui image">
+        </div>
         </div>
         
     </div>
@@ -236,7 +256,12 @@
         .sticky({
             context:"#icpc2018nanjing",
             offset: 50
-        })
+        });
+        $(".ui.sticky.ICPC2018QINGDAO")
+        .sticky({
+            context:"#icpc2018qingdao",
+            offset: 50
+        });
         $('.ui.sticky.two')
         .sticky({
           context: '#example2',

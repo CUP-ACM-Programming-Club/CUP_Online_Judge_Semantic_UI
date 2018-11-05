@@ -78,7 +78,29 @@ td{
     </div>
     </h3>
 </script>
-    <div class="contestrank scoreboard padding" v-cloak>
+<script type="text/x-template" id="error_handle">
+    <div class="ui container padding">
+    <h2 class="ui dividing header">
+        发生错误
+        <div class="sub header">
+            请把以下内容反馈给老师、助教或本平台的开发者Ryan Lee(李昊元)
+        </div>
+    </h2>
+    <div class="ui segment">
+        <div class="ui error message">
+            <div class="header">
+                错误信息内容
+            </div>
+            <br>
+            <h5 class="ui header">URL:{{location.href}}</h5>
+            <p v-html="errormsg"></p>
+        </div>
+    </div>
+    </div>
+</script>
+<div id="root">
+<error-handle :errormsg="errormsg" v-if="!state"></error-handle>
+    <div class="contestrank scoreboard padding" v-cloak v-show="state">
         <h2 class="ui dividing header">
             {{total === 0?"计算中,请稍后":"Contest Rank"}}
             <div class="sub header">
@@ -116,7 +138,7 @@ td{
                 {{ (p.accept.length > 0 || p.submit.length > 0)?'+':''}}
                 {{p.try_time > 0 ? p.try_time : p.submit.length > 0?p.submit.length : ""}}</b>
             <br v-if="p.accept.length > 0">
-            <span v-if="p.accept.length > 0" :class="p.first_blood?'first accept text':''">
+            <span v-if="p.accept.length > 0 && typeof p.accept[0].diff === 'function'" :class="p.first_blood?'first accept text':''">
                 {{format_date(p.accept[0].diff(p.start_time,'second'))}}
             </span>
         </td>
@@ -146,7 +168,7 @@ td{
          </div>
      </div>
     
-
+</div>
 </div>
 
     <!-- Bootstrap core JavaScript
@@ -205,7 +227,14 @@ cell.className="ui grey";
             $(".ranking").height(window.innerHeight-($(".ui.vertical.center").outerHeight()+$(".dividing.header").outerHeight())-85);
         },100);
         
-    })
+    });
+Vue.component('error-handle',{
+    template:"#error_handle",
+    props:{
+        errormsg:String
+    },
+    data:function(){return{};}
+});
     
 Vue.component('time_pattern',{
     template:"#time_tick",
@@ -248,14 +277,16 @@ Vue.component('time_pattern',{
 });
 var temp_data = [];
 var contestrank = window.contestrank = new Vue({
-       el:".contestrank.scoreboard",
+       el:"#root",
        data:{
            cid: getParameterByName("cid"),
            submitter:{},
            total:0,
            start_time:false,
            title:"",
-           users:[]
+           users:[],
+           state:true,
+           errormsg:""
        },
        computed:{
            scoreboard:{
@@ -265,6 +296,7 @@ var contestrank = window.contestrank = new Vue({
                set:function(val){
                    var that = this;
                    var total = this.total;
+                   try {
                    if(val && val.length) {
                    _.forEach(val,function(v){
                         temp_data.push(v);
@@ -320,6 +352,9 @@ var contestrank = window.contestrank = new Vue({
                                 }
                            }
                        }
+                       if(submitter[val[i].user_id].problem[val[i].num] === undefined) {
+                            continue;
+                        }
                        if(val[i].result == 4) {
                             submitter[val[i].user_id].problem[val[i].num].accept.push(
                                 val[i].in_date
@@ -409,6 +444,15 @@ var contestrank = window.contestrank = new Vue({
                             val.rank = rnk;
                    });
                    window.datas = that.submitter = _submitter;
+                   }
+                   catch (e) {
+                       that.state = false;
+                       that.submitter = {};
+                       console.log(typeof e);
+                       var str = e.stack;
+                       str = str.replace(/\n/g,"<br>");
+                       that.errormsg = str;
+                   }
                }
            }
        },
