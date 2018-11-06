@@ -113,7 +113,7 @@
                 <td>
                     <div class="left aligned">
                         <a :href="'newsubmitpage.php?id='+row.problem_id+'&js'" target="_blank"
-                        v-html="markdownIt.renderRaw(row.title)">
+                        v-html="markdownIt.renderRaw(row.title)" :style="show_tag ? 'vertical-align:sub':''">
                         </a>
                         <sub v-if="row.new">New</sub>
                         <div class="show_tag_controled" style="float:right;">
