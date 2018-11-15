@@ -28,7 +28,7 @@
 <div :class="'ui top right attached label ' + (private ?'red':'green')">{{private?'Private':'Public'}}</div>
 <div :class="'ui top left attached ' + (now.isAfter(end_time)?'red':now.isBefore(start_time)?'grey':'green') + ' label'">
     <span class="red" v-if="now.isAfter(end_time)">Ended</span>
-    <span class="red" v-else-if="now.isBefore(start_time)"></span>
+    <span class="red" v-else-if="now.isBefore(start_time)">Pending</span>
     <span class="green" v-else>Running</span></div>
                 <center>
                 <div class="row padding">

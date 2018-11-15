@@ -372,7 +372,7 @@
                             tb.innerHTML += "Time:" + time + "ms";
                             if (state >= 4) {
                                 if (test_run_result || compile_info) {
-                                    $("#out").text("运行结果  :\n" + (test_run_result || "") + (compile_info || ""));
+                                    $("#out").text("运行结果:\n" + (test_run_result || "") + (compile_info || ""));
                                 }
                                 //    else
                                 //      window.setTimeout("print_result(" + solution_id + ")", 2000);
@@ -591,16 +591,19 @@
                                 alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
                                 return;
                             }
-                            var test_run_time = parseInt(localStorage.getItem("test_run"));
-                            var after_one_minute = test_run_time + 300 * 1000;
+                            localStorage.removeItem("test_run");
+                            var test_run_time = parseInt(localStorage.getItem("test_run_time"));
                             var now = parseInt(dayjs() + "");
-                            if(test_run_time && after_one_minute > now)
+                            
+                            if(test_run_time && test_run_time > now)
                             {
-                                var tmp = (after_one_minute - now) / 1000;
+                                if(test_run_time < now + 300 * 1000) {
+                                    var tmp = (test_run_time - now) / 1000;
                                 alert("两次测试运行间必须间隔5分钟\n请" + parseInt((tmp / 60)) + "分" + parseInt((tmp % 60)) + "秒后再测试运行");
                                 return;
+                                }
                             }
-                            localStorage.setItem("test_run",now);
+                            localStorage.setItem("test_run_time",now + 300 * 1000);
 
                             this.hide_warning = true;
                             var submit_language = parseInt($("#language").val());
@@ -906,14 +909,14 @@
         <div class="content">
             <div class="ui two column grid" style="height:70%;margin:auto;text-align: center">
                 <div class="column">
-                    <?php echo $MSG_Input ?>:<textarea style="height:100%;resize: none;border-radius:10px" cols=40
+                    <?php echo $MSG_Input ?>:<textarea style="height:100%;resize: none;border-radius:10px;font-family:SF Mono,Monaco,monospace" cols=40
                                                        rows=5
                                                        id="input_text"
                                                        v-model="sampleinput"></textarea>
                 </div>
                 <div class="column">
                     <?php echo $MSG_Output ?>:
-                    <textarea style="height:100%;resize: none;border-radius:10px" cols=40 rows=5 id="out" name="out"
+                    <textarea style="height:100%;resize: none;border-radius:10px;font-family:SF Mono,Monaco,monospace" cols=40 rows=5 id="out" name="out"
                               :placeholder="'SHOULD BE:'+sampleoutput">
                         </textarea>
                     <textarea style="display:none" id="hidden_sample_output" class="sample_output">
