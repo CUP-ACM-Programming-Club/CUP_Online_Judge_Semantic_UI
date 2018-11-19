@@ -88,6 +88,9 @@
             <a :class="(current_tag == 'result'?'active':'') + ' item'" @click="tag('result',$event)">
                 结果统计
             </a>
+            <a :class="(current_tag == 'user'?'active':'') + ' item'" @click="tag('user',$event)">
+                用户统计
+            </a>
         </div>
         <div class="ui bottom attached segment" v-show="current_tag == 'status'">
             <div align=center class="input-append">
@@ -176,11 +179,29 @@
             <div style="width:90%;margin:auto">
                 <canvas id="canvas"></canvas>
             </div>
+            <div class="ui grid">
+                <div class="row">
+                    <div class="eight wide column">
+                        <div style="width:550px;">
+                            <canvas id="subtime"></canvas>
+                        </div>
+                    </div>
+                    <div class="eigth wide column">
+                        <div style="width:550px;">
+                            <canvas id="logtime"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
         <div class="ui attached bottom segment" v-show="current_tag == 'result'">
             <div style="width:90%;margin:auto">
                 <canvas id="bar"></canvas>    
             </div>
+        </div>
+        <div class="ui attached bottom segment" v-show="current_tag == 'user'">
+            
         </div>
     </div>
 </div>
@@ -350,6 +371,58 @@
 					}
 				}
 			});
+    }
+    function drawBar(data) {
+        var login = data.login;
+        data = data.submit;
+        var color = Chart.helpers.color;
+        var config = {
+			type: 'radar',
+			data: {
+				labels: [],
+				datasets: [{
+					label: '提交分布',
+					backgroundColor: color(window.chartColors.red).alpha(0.2).rgbString(),
+					borderColor: window.chartColors.red,
+					pointBackgroundColor: window.chartColors.red,
+					data: []
+				}]
+			},
+			options: {
+				legend: {
+					position: 'top',
+				},
+				title: {
+					display: true,
+					text: '提交时间分布'
+				},
+				scale: {
+					ticks: {
+						beginAtZero: true
+					}
+				}
+			}
+		};
+		_.forEach(data,function(val){
+		    config.data.labels.push(val.hour+":00");
+		    config.data.datasets[0].data.push(val.cnt);
+		});
+		var copyconfig = JSON.parse(JSON.stringify(config));
+		copyconfig.data.datasets = [{
+					label: '登录分布',
+					backgroundColor: color(window.chartColors.blue).alpha(0.2).rgbString(),
+					borderColor: window.chartColors.blue,
+					pointBackgroundColor: window.chartColors.blue,
+					data: []
+				}];
+		_.forEach(login,function(val) {
+		    copyconfig.data.datasets[0].data.push(val.cnt);
+		});
+		copyconfig.options.title.text = "登录时间分布";
+		new Chart(document.getElementById('subtime'), config);
+		new Chart(document.getElementById('logtime'), copyconfig);
+		//console.log(data);
+		//console.log(config);
     }
 </script>
 <script>
@@ -613,6 +686,14 @@
                     $.get("../api/status/result",function(dat){
                         drawResult(dat.data,data.const_list.result.cn);
                     });
+                    $.get("../api/status/submit_hour",function(dat){
+                        var func = function(a,b){
+                            return a.hour - b.hour;
+                        };
+                        dat.data.submit.sort(func);
+                        dat.data.login.sort(func);
+                        drawBar(dat.data);
+                    })
                     $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/0/", function (data) {
                     that.dim = false;
                     that.search_func(data);
