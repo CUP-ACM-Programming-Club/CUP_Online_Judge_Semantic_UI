@@ -94,8 +94,8 @@ $homepage="";
 
 <!-- Page Contents -->
 <div>
-    <div class="ui inverted vertical masthead center aligned segment zoomed" id="background">
-        <video autoplay muted id="myVideo">
+    <div class="ui inverted vertical masthead center aligned segment gr5" id="background">
+        <video autoplay muted id="myVideo" style="display:none">
   <source src="/video/icpc.mp4" type="video/mp4">
 </video>
 <div class="unvisible">
@@ -113,7 +113,7 @@ $homepage="";
 <div class="column buttonset">
 <a href="icpc.php" target="_blank" class="ui inverted large button download basic">
               <i class="newspaper outline icon"></i>
-              关于ACM/ICPC
+              关于ICPC
             </a>
             <a href="fame.php" target="_blank" class="ui inverted large button download basic">
               <i class="chess queen icon"></i>
@@ -149,7 +149,7 @@ $homepage="";
             <div class="eight wide column">
                 <h3 class="ui header">推荐使用<a href="https://www.jetbrains.com" target="_blank">JetBrains系列IDE套件</a>完成编程
                 </h3>
-                <p>ACM/ICPC World Final 指定IDE:<b>CLion,PyCharm,Intellij IDEA</b><br><br>基于CMake与GNU Compile
+                <p>ICPC World Final 指定IDE:<b>CLion,PyCharm,Intellij IDEA</b><br><br>基于CMake与GNU Compile
                     Collection的CLion,业界推荐的Intellij Idea,简单容易上手的PyCharm，这些跨平台IDE将会减少许多做题过程中不必要的麻烦，更加集中精力打出AK</p>
                 <h3 class="ui header">推荐使用高效的<a class="chrome" target="_blank"
                                                 href="software/63.0.3239.84_chrome_installer.exe">Chrome浏览器</a>使用评测系统
@@ -184,9 +184,9 @@ $homepage="";
 
 <div class="ui vertical stripe segment">
     <div class="ui text container">
-        <h3 class="ui header">ACM/ICPC</h3>
-        <p>ACM国际大学生程序设计竞赛（英语：ACM International Collegiate Programming Contest,
-            ICPC）是由美国电脑协会（ACM）主办的，一项旨在展示大学生创新能力、团队精神和在压力下编写程序、分析和解决问题能力的年度竞赛。经过30多年的发展，ACM国际大学生程序设计竞赛已经发展成为最具影响力的大学生计算机竞赛。（Wikipedia）</p>
+        <h3 class="ui header">ICPC</h3>
+        <p>
+国际大学生程序设计竞赛（英语：International Collegiate Programming Contest, ICPC）是一项旨在展示大学生创新能力、团队精神和在压力下编写程序、分析和解决问题能力的年度竞赛。经过30多年的发展，国际大学生程序设计竞赛已经发展成为最具影响力的大学生计算机竞赛。赛事之前仅由IBM公司赞助，2017年新增JetBrains公司赞助, 2018年起，美国计算机协会（ACM）不再赞助ICPC。（Wikipedia）</p>
         <a class="ui large button" href="icpc.php" target="_blank">More Information</a>
         <h4 class="ui horizontal header divider">
             <a href="#">Developer</a>
@@ -305,13 +305,15 @@ $homepage="";
   $(this).html($(this).attr("data-content").replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
 });
 
-document.getElementById('myVideo').addEventListener('ended',function(){
+//document.getElementById('myVideo').addEventListener('ended',false);
+
+(function(){
     finished = true;
-    window.picid = 0;
+    window.picid = 5;
         window.backpic = setInterval(function(){
-            var index = getRandomIntInclusive(0,4);
+            var index = getRandomIntInclusive(1,5);
             while(index === window.picid) {
-                index = getRandomIntInclusive(0,4);
+                index = getRandomIntInclusive(1,5);
             }
             if(index > 0) {
                 $("#myVideo").css({
@@ -400,10 +402,8 @@ document.getElementById('myVideo').addEventListener('ended',function(){
       duration: 500,
       offset: '-=300'
   })
-    },800);
-   },false);
-
-
+    },0);
+   })();
   /*.
   add({
       targets: '.main.title',
