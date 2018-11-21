@@ -76,13 +76,21 @@
                 <div class="eleven wide column">
                     <table id='problemset' class='ui basic unstackable table'  width='95%'>
                 <thead>
-                <tr align=center class='toprow'>
-                    <th style="cursor:hand" onclick="sortTable('problemset', 1, 'int');" width="18%" ><?php echo $MSG_PROBLEM_ID?>
-                    <th width='58%'><?php echo $MSG_TITLE?></th>
-                    <th style="cursor:hand" width='14%'>
-                        正确/提交</th>
-                    <th style="cursor:hand" width='10%'>
-                        通过率</th>
+                <tr class='toprow'>
+                    <th @click="orderBy(0)" style="text-align: center;"  width="18%" ><a style="cursor:pointer">
+                        <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 0"></i>
+                        <?php echo $MSG_PROBLEM_ID?></th></a>
+                    <th @click="orderBy(1)" width='54%'><a style="cursor:pointer">
+                        <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 1"></i>
+                        <?php echo $MSG_TITLE?></a></th>
+                    <th style="text-align: center;" width='16%' >
+                        <a style="cursor:pointer"><span @click="orderBy(2)">
+                            <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 2"></i>
+                            正确</span></a>/<a style="cursor:pointer"><span @click="orderBy(3)">
+                                <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 3"></i>提交</span></a></th>
+                    <th @click="orderBy(4)" style="text-align: center;" width='12%'>
+                        <a style="cursor:pointer"><i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 4"></i>
+                        通过率</a></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -90,7 +98,7 @@
                         <td class="center aligned">{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.pnum + 1001}}</td>
                         <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum">{{row.title}}</a></td>
                         <td style="text-align:center">{{row.accepted}}/{{row.submit}}</td>
-                        <td>{{(row.accepted * 100 / Math.max(row.submit,1)).toString().substring(0,4)}} %</td>
+                        <td style="text-align: center;">{{(row.accepted * 100 / Math.max(row.submit,1)).toString().substring(0,4)}} %</td>
                     </tr>
                 </tbody>
             </table>
@@ -179,6 +187,8 @@ Vue.component("contest-detail",{
                 title:"",
                 contest_mode:0,
                 current_mode:0,
+                order:1,
+                type:0,
                 admin:false,
                 private:0
             }
@@ -237,6 +247,32 @@ Vue.component("contest-detail",{
                     resolve();
                 }
             });
+            },
+            orderBy: function(type) {
+                var that = this;
+                if(that.type === type) {
+                    that.order = -that.order;
+                }
+                var problemIdComparator = function(a,b) {
+                    return that.order * (a.pnum - b.pnum);
+                }
+                var titleComparator = function(a,b) {
+                    return that.order * (a.title > b.title ? 1:(a.title < b.title ? -1:0));
+                }
+                var submitComparator = function(a,b) {
+                    return that.order * (a.submit - b.submit);
+                }
+                var acceptedComparator = function(a,b) {
+                    return that.order * (a.accepted - b.accepted);
+                }
+                var correctPercentageComparator = function(a,b) {
+                    var currentA = a.accepted / Math.max(a.submit,1);
+                    var currentB = b.accepted / Math.max(b.submit,1);
+                    return that.order * (currentA - currentB);
+                };
+                var comparatorSet = [problemIdComparator,titleComparator,acceptedComparator,submitComparator,correctPercentageComparator];
+                that.problem_table.sort(comparatorSet[type]);
+                that.type = type;
             }
         }
     })

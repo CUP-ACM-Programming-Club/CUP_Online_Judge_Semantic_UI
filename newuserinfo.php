@@ -73,8 +73,10 @@
                                         <i  v-if="user_id === '2016011253'" class="user circle outline icon"></i><a v-if="user_id === '2016011253'" class="group">
                                         系统开发/维护
                                         </a>
-                                    <br>
+                                    <br v-if="acm_user">
                                     <a class='group' v-if="acm_user"><i class='user icon'></i>ACM{{acm_user.level?"正式":"后备"}}队员</a>
+                                    <br>
+                                    注册时间: {{dayjs(reg_time).format("YYYY-MM-DD")}}
                                         <a v-for="row in award" class="group"><br>
                                             <i class="trophy icon"></i>
                                         {{row.year + "年" + row.award}}</a>
@@ -522,6 +524,7 @@
                 const_variable:d.data.const_variable,
                 article_publish:d.data.article_publish,
                 nick:d.data.information.nick,
+                reg_time:d.data.information.reg_time,
                 school:d.data.information.school,
                 github:d.data.information.github,
                 email:d.data.information.email,
