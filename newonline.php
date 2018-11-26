@@ -91,7 +91,7 @@ include("csrf.php");
 <!-- Placed at the end of the document so the pages load faster -->
 
 
-    <?php include("template/$OJ_TEMPLATE/bottom.php") ?>
+    <?php include("template/semantic-ui/bottom.php") ?>
 </body>
 <script>
     function detect_ip(tmp) {
@@ -102,8 +102,7 @@ include("csrf.php");
                 if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
                     tmp.place = "润杰有线";
                 }
-                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
-                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
+                else if (tmp.intranet_ip.match(/10\.200\.2[5-8]{1}\.[0-9]{1,3}/)) {
                     tmp.place = "机房";
                 }
                 else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
@@ -142,8 +141,7 @@ include("csrf.php");
                 if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
                     tmp.place = "润杰有线";
                 }
-                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
-                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
+                else if (tmp.intranet_ip.match(/10\.200\.2[5-8]{1}\.[0-9]{1,3}/)) {
                     tmp.place = "机房";
                 }
                 else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
@@ -189,7 +187,8 @@ include("csrf.php");
     var user_list = new Vue({
         el: "#user_list_table",
         data: {
-            userlist: window.online_list
+            userlist: window.online_list,
+            tmp_userlist:[]
         },
         computed:
             {
@@ -213,15 +212,27 @@ include("csrf.php");
                         return this.userlist;
                     },
                     set: function (newval) {
-                        this.userlist = newval;
+                        if(!this.userlist) {
+                            this.userlist = newval;
+                        }
+                        else {
+                            this.tmp_userlist = newval;
+                        }
                     }
                 }
+            },
+            mounted:function() {
+                var that = this;
+                setInterval(function(){
+                    that.userlist = JSON.parse(JSON.stringify(that.tmp_userlist));
+                },1000);
             }
     });
     var $online_list = new Vue({
             el: "#online_user_table",
             data: {
-                userlist: window.online_list
+                userlist: window.online_list,
+                tmp_userlist:[]
             },
             computed:
                 {
@@ -257,7 +268,12 @@ include("csrf.php");
                             return newlist;
                         },
                         set: function (newval) {
-                            this.userlist = newval;
+                            if(!this.userlist) {
+                                this.userlist = newval;
+                            }
+                            else {
+                                this.tmp_userlist = newval;
+                            }
                         }
                     }
                 },
@@ -267,6 +283,12 @@ include("csrf.php");
                     positon: "top center",
                     hoverable  : true
                 })
+            },
+            mounted:function() {
+                var that = this;
+                setInterval(function(){
+                    that.userlist = JSON.parse(JSON.stringify(that.tmp_userlist));
+                },1000);
             }
         }
     );
