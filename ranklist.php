@@ -30,7 +30,10 @@
 <div>
     
     <div class="ui top attached tabular menu">
-    <a @click="mode=1" :class="(mode === 1?'active':'')+' item'">所有用户</a><a @click="mode=2" :class="(mode === 2?'active':'')+' item'">ACM队员</a></div>
+    <a @click="mode=1" :class="(mode === 1?'active':'')+' item'">所有用户</a>
+    <a @click="mode=2" :class="(mode === 2?'active':'')+' item'">现役队员</a>
+    <a @click="mode=3" :class="(mode === 3?'active':'')+' item'">退役队员</a>
+    </div>
     <div class="ui bottom attached segment" v-show="mode === 1">
     <div class="ui stack segment">
 
@@ -38,7 +41,7 @@
     
     <div class="row">
     <div class="four wide column">
-    <div class="ui mini statistic">
+    <div class="ui mini statistic" style="margin:0">
                     <div class="value">
                         <i class="user icon"></i>{{registed_user}}
                     </div>
