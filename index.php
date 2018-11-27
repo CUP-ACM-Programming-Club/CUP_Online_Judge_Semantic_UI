@@ -103,12 +103,13 @@ $homepage="";
             <div class="ui large secondary inverted pointing menu">
             </div>
         </div>
-
+        
         <div class="ui text container transition main title">
             <h1 class="ui inverted header ml14">
   <span class="text-wrapper">
     <span class="letters" data-content="CUP Online Judge"></span>
   </span>
+  
 </h1>
 <div class="column buttonset">
 <a href="icpc.php" target="_blank" class="ui inverted large button download basic">
@@ -119,11 +120,14 @@ $homepage="";
               <i class="chess queen icon"></i>
               Hall of Fame(NEW!)
             </a>
+            
             </div>
                     <br>
 
             <div class="column">
-            <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a>
+            <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a><!-- Place this tag where you want the button to render. -->
+            <iframe class="github_button" src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="30px"></iframe>
+
             </div>
 <!--<h4></h4>-->
              <!--<a class="ui huge inverted download button" href="cprogrammingcontest.php">查看复赛情况</a>-->
@@ -195,7 +199,7 @@ $homepage="";
         <h4>由 <a class="club" href="https://github.com/CUP-ACM-Programming-Club" target="_blank">ACM程序设计俱乐部</a> <span class="maintainer">维护开发</span> <a class="support">点此支持</a><div class='ui flowing popup  hidden'><div class='ui image' style="width:220px"><img src='/img/wechat.png'></div><div class="ui image" style="width:220px"><img src="/img/alipay_2.jpg"></div><div class="ui image" style="width:220px"><img src="/img/alipay.jpg"></div></div></h4>
         <h4 class="ui content">技术栈:Linux + C/C++ + MySQL + PHP + Node.js + ExpressJS + Apache</h4>
         <h4 class="ui content">由Vue.js强力驱动</h4>
-        <a class="ui large disabled button" href="https://coding.net/u/RyanLee/p/CUPOJ" target="_blank">部分代码暂未开源</a>
+        <a class="ui large button" href="https://github.com/CUP-ACM-Programming-Club" target="_blank"><i class="github icon"></i>GitHub</a>
     </div>
 </div>
 
@@ -312,9 +316,9 @@ $homepage="";
     window.picid = 5;
         window.backpic = setInterval(function(){
             var index = getRandomIntInclusive(1,5);
-            while(index === window.picid) {
-                index = getRandomIntInclusive(1,5);
-            }
+           // while(index === window.picid) {
+           //     index = getRandomIntInclusive(1,5);
+           // }
             if(index > 0) {
                 $("#myVideo").css({
                     opacity:"0"
@@ -378,29 +382,31 @@ $homepage="";
   }).add({
       targets: '.maintain',
       opacity:[0,1],
-      translateX:[-40,0],
-      scaleX:[0.3,1],
-      easing: "easeOutExpo",
+      easing: [.91,-0.54,.29,1.56],
       duration:500,
       offset: '-=600'
   }).add({
       targets: '.buttonset',
       opacity:[0,1],
-      translateX:[-40,0],
-      scaleX:[0.3,1],
-      easing: "easeOutExpo",
+      easing: [.91,-0.54,.29,1.56],
       duration:500,
       offset: '-=600'
   }).
   add({
       targets: '.vultr',
       opacity:[0,1],
-      translateX:[40,0],
-      translateZ:0,
-      scaleX:[0.3,1],
       easing: "easeOutExpo",
       duration: 500,
       offset: '-=300'
+  }).
+  add({
+      targets: '.github_button',
+      opacity:[0,1],
+      translateY:17,
+      paddingLeft:20,
+      scale:1.25,
+      duration: 500,
+      offset: '-=600'
   })
     },0);
    })();

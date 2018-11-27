@@ -224,7 +224,7 @@
                                                         <i class="github icon"></i>GitHub
                                                     </h4>
                                                     <div class="ui bottom attached segment">
-                                                        <a target="_blank" :href="github">{{github}}</a>
+                                                        <iframe :src="'https://ghbtns.com/github-btn.html?user='+github+'&type=follow&count=true'" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
                                                     </div>
                                                 </div>
                                             </div>
@@ -517,6 +517,13 @@
                 };
                 d.data.os.sort(dsort);
                 d.data.browser.sort(dsort);
+                var github_info = d.data.information.github;
+                if(github_info.lastIndexOf("/") == github_info.length - 1) {
+                    github_info = github_info.substring(0,github_info.length - 1);
+                }
+                if(github_info.indexOf("github.com") !== -1) {
+                    github_info = github_info.substring(github_info.lastIndexOf("/") + 1);
+                }
             return {
                 award:d.data.award,
                 admin:d.isadmin,
@@ -526,7 +533,7 @@
                 nick:d.data.information.nick,
                 reg_time:d.data.information.reg_time,
                 school:d.data.information.school,
-                github:d.data.information.github,
+                github:github_info,
                 email:d.data.information.email,
                 os:d.data.os,
                 browser:d.data.browser,

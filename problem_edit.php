@@ -20,7 +20,7 @@
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php");
+<?php include("template/semantic-ui/nav.php");
 include("csrf.php");
 ?>
 <div class="container">
@@ -33,7 +33,7 @@ include("csrf.php");
                 </h2>
             </div>
             <div class="row">
-                <div class="ui input">
+                <div class="ui input" style="width:40%">
                   <input type="text" v-model="title">
                 </div>
             </div>
