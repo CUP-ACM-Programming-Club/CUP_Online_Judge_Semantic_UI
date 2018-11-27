@@ -224,7 +224,7 @@
                                                         <i class="github icon"></i>GitHub
                                                     </h4>
                                                     <div class="ui bottom attached segment">
-                                                        <iframe :src="'https://ghbtns.com/github-btn.html?user='+github+'&type=follow&count=true'" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+                                                        <iframe v-if="github" :src="'https://ghbtns.com/github-btn.html?user='+github+'&type=follow&count=true'" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
                                                     </div>
                                                 </div>
                                             </div>
