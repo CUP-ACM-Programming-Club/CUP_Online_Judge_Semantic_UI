@@ -7,7 +7,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <?php include("csrf.php"); ?>
     <title>
     </title>
     <?php include("template/semantic-ui/css.php"); ?>
@@ -289,6 +288,9 @@
                                             showGutter: codeEl.getAttribute("ace-gutter"),
                                             trim: true
                                         }, function (highlighted) {
+                                            $("#left-side").css({
+                                                height:$("#right-side").height()
+                                            });
                                         });
                                     });
                                     qsa(".append.code").forEach(function (codeEl) {
@@ -299,6 +301,9 @@
                                             showGutter: codeEl.getAttribute("ace-gutter"),
                                             trim: true
                                         }, function (highlighted) {
+                                            $("#left-side").css({
+                                                height:$("#right-side").height()
+                                            });
                                         });
                                     });
                                 })
@@ -699,6 +704,11 @@
                                     });
                                 that.bodyOnTop = true;
                             }
+                            if (!that.single_page) {
+                                $("#left-side").css({
+                                    height:$("#right-side").height()
+                                });
+                            }
                         })
                     },
                     mounted: function () {
@@ -816,6 +826,9 @@
                         });
 
                         resolve();
+                        $("#left-side").css({
+                            height:$("#right-side").height()
+                        });
                         if (getParameterByName("sid")) {
                             $.get("/api/status/solution?sid=" + getParameterByName("sid"), function (data) {
                                 that.selected_language = parseInt(data.data.language);
@@ -838,9 +851,7 @@
                         })
                         .popup("show");
                 })
-                <?php if(isset($_SESSION["administrator"])) { ?>
                 window.problemsubmitter = problemsubmitter;
-                <?php } ?>
                 window.problem_detail = data;
                 //MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             });
@@ -1062,7 +1073,7 @@ SHOULD BE:
              style="max-width:1300px;position:relative;margin:auto;height: 540px;border-radius: 10px"
              id="total_control">
             <div class="padding ui container mainwindow"
-                 style="height:100%;width: 35%;overflow-y: auto;float:left;-webkit-border-radius: ;-moz-border-radius: ;border-radius: 10px;">
+                 style="height:100%;width: 35%;overflow-y: auto;float:left;-webkit-border-radius: ;-moz-border-radius: ;border-radius: 10px;" id="left-side">
                 <div class="ui vertical center aligned segment">
                     <div class="ui header" id="probid" v-html="title" style="font-size:1.71428571rem"></div>
                     <div class='ui labels'>
@@ -1232,7 +1243,7 @@ SHOULD BE:
         height: 30px;
         color: black;width:100%" class="ui menu borderless">
                     <div style="text-align:center;" class="item">
-                        <?php echo $OJ_NAME ?>&nbsp;&nbsp;
+                        CUP Online Judge&nbsp;&nbsp;
                         <div class="item">
                             <div class="ui toggle checkbox" v-cloak v-if="!iscontest">
                                 <input type="checkbox" name="share" v-model="share">

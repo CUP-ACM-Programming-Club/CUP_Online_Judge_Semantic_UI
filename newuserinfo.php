@@ -52,7 +52,12 @@
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<?php include("template/semantic-ui/nav.php"); ?>
+<div class="ui text main container" style="padding-top:1em" id="preload">
+    <h2 class="ui dividing header">
+            加载中,请稍后
+    </h2>
+</div>
 <div class="ui container pusher" v-cloak>
     <div class="padding">
         <div class="ui grid">
@@ -224,7 +229,7 @@
                                                         <i class="github icon"></i>GitHub
                                                     </h4>
                                                     <div class="ui bottom attached segment">
-                                                        <iframe :src="'https://ghbtns.com/github-btn.html?user='+github+'&type=follow&count=true'" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+                                                        <iframe v-if="github" :src="'https://ghbtns.com/github-btn.html?user='+github+'&type=follow&count=true'" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
                                                     </div>
                                                 </div>
                                             </div>
@@ -517,7 +522,7 @@
                 };
                 d.data.os.sort(dsort);
                 d.data.browser.sort(dsort);
-                var github_info = d.data.information.github;
+                var github_info = d.data.information.github || "";
                 if(github_info.lastIndexOf("/") == github_info.length - 1) {
                     github_info = github_info.substring(0,github_info.length - 1);
                 }
@@ -569,6 +574,7 @@
         },
         mounted:function(){
             var that = this;
+            $("#preload").hide();
             $title = $("title").html();
             this.$nextTick(function(){
                 checkOnline();

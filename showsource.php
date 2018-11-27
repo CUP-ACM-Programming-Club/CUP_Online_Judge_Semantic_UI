@@ -31,7 +31,7 @@
   </head>
 
   <body>
- <?php include("template/$OJ_TEMPLATE/nav.php");?>	 
+ <?php include("template/semantic-ui/nav.php");?>	 
     <div class="ui container padding">
       <h2 class="ui dividing header">
             Source Code
@@ -109,13 +109,22 @@ SyntaxHighlighter.all();
             </div>
         </div>
         <div class="statistic">
-            <div  :class="'value none-transform '+judge_color">
+            <div :class="'value none-transform '+judge_color">
                 <i :class="icon+' icon'"></i>
                 {{result}}
              <span class="subscript">&nbsp;</span>
             </div>
             <div class="label none-transform">
                 Result
+            </div>
+        </div>
+        <div class="statistic" v-if="privilege">
+            <div class="value none-transform">
+                <a @click="rejudge" style="cursor:pointer">重新判题</a>
+                <span class="subscript">&nbsp;</span>
+            </div>
+            <div class="label none-transform">
+                <a @click="ban" style="cursor:pointer">封禁</a>
             </div>
         </div>
     </div>
@@ -143,12 +152,15 @@ SyntaxHighlighter.all();
     })
     var local;
     var id;
+    var rejudge_mode;
     if(getParameterByName("id")) {
         local = "local";
         id = getParameterByName("id");
+        rejudge_mode = true;
     }
     else {
         local = "vjudge"
+        rejudge_mode = false;
         id = getParameterByName("hid");
     }
         $.get("/api/source/" + local + "/"+ id,function(data){
@@ -167,7 +179,23 @@ SyntaxHighlighter.all();
                         judge_color:data.data.judge_color,
                         icon:data.data.icon,
                         from:data.data.from||"",
-                        statement:false
+                        statement:false,
+                        privilege:data.privilege && rejudge_mode
+                    }
+                },
+                methods:{
+                    ban: function() {
+                        var that = this;
+                        $.post("../api/status/ban_submission",{solution_id:id}, function(data) {
+                            alert("Server receive your request");
+                            console.log(data);
+                        })
+                    },
+                    rejudge: function() {
+                        $.post("../api/status/rejudge", {solution_id:id}, function(data) {
+                            alert("Server receive youre request");
+                            console.log(data);
+                        })
                     }
                 }
             })
@@ -265,6 +293,6 @@ echo "I am sorry, You could not view this code!";
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-     <?php include("template/$OJ_TEMPLATE/bottom.php");?>
+     <?php include("template/semantic-ui/bottom.php");?>
   </body>
 </html>
