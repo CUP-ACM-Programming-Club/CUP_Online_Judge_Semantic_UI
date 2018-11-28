@@ -8,10 +8,10 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
     <title><?php echo $OJ_NAME ?></title>
-    <?php include("template/$OJ_TEMPLATE/css.php"); ?>
-    <?php include("template/$OJ_TEMPLATE/extra_css.php") ?>
-    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
-    <?php include("template/$OJ_TEMPLATE/extra_js.php") ?>
+    <?php include("template/semantic-ui/css.php"); ?>
+    <?php include("template/semantic-ui/extra_css.php") ?>
+    <?php include("template/semantic-ui/js.php"); ?>
+    <?php include("template/semantic-ui/extra_js.php") ?>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
@@ -98,6 +98,72 @@ include("csrf.php");
                 </div>
                 <div class="row">
                 <mavon-editor v-model="sampleoutput"></mavon-editor>
+                </div>
+                <div class="row">
+                    <h2 class="ui header">
+                        Prepend Code
+                    </h2>
+                </div>
+                <div class="row">
+                    <div class="four wide column">
+                        <div class="ui attached vertical fluid pointing menu" style="height: 370px; overflow-y: scroll; overflow-x: hidden;">
+                            <a class="item">C
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">GNU C99/C11 LLVM Clang</div>
+                            </a>
+                            <a class="item">C++
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">GNU C++11/C++89/C++17 LLVM Clang++</div>
+                            </a>
+                            <a class="item">Pascal
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">fpc Pascal</div>
+                            </a>
+                            <a class="item">Java
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">openJDK 1.6/1.7/1.8/1.10</div>
+                            </a>
+                            <a class="item">JavaScript
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">NodeJS 10.13.0</div>
+                            </a>
+                            <a class="item">Python
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">Python 2.7/3.6 PyPy2/3</div>
+                            </a>
+                            <a class="item">C#
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">Mono</div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ten wide column"></div>
+                </div>
+                <div class="row">
+                    <h2 class="ui header">
+                        Append Code
+                    </h2>
+                </div>
+                <div class="row">
+                    <div class="four wide column">
+                        <div class="ui attached vertical fluid pointing menu" style="height: 370px; overflow-y: scroll; overflow-x: hidden;">
+                            <a class="item">C
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">GNU C99/C11 LLVM Clang</div>
+                            </a>
+                            <a class="item">C++
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">GNU C++11/C++89/C++17 LLVM Clang++</div>
+                            </a>
+                            <a class="item">Pascal
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">fpc Pascal</div>
+                            </a>
+                            <a class="item">Java
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">openJDK 1.6/1.7/1.8/1.10</div>
+                            </a>
+                            <a class="item">JavaScript
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">NodeJS 10.13.0</div>
+                            </a>
+                            <a class="item">Python
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">Python 2.7/3.6 PyPy2/3</div>
+                            </a>
+                            <a class="item">C#
+                            <div class="ui right floated" style="opacity: 0.4; margin-top: 8px; font-size: 0.7em; ">Mono</div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ten wide column"></div>
                 </div>
                 <div class="row"  v-if="from === 'local'">
                 <h2 class="ui header">
