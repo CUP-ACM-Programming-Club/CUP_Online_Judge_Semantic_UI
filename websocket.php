@@ -105,7 +105,8 @@
         })
         socket.on('judgerChange',function(data){
             vonline_num.judgers = data.length;
-        })
+        });
+        
         socket.on('user', function (data) {
             var user = data.user;
             var judger = data.judger;
@@ -143,6 +144,12 @@
             if(typeof window.contestrank == "object" && typeof window.contestrank.handleNewSubmit == "function")
             {
                 window.contestrank.handleNewSubmit(data);
+            }
+        })
+        socket.on('reject_submit', function(data) {
+            console.log(data);
+            if(typeof problemsubmitter == "object") {
+                problemsubmitter.error_callback(data);
             }
         })
         

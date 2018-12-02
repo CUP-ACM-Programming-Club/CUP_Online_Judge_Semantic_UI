@@ -583,6 +583,12 @@ var contestrank = window.contestrank = new Vue({
             window.contestrank.title = d.title;
         });
     }
+    var $logout=$(".logout");
+    $logout.on('click',function(){
+    $.get("/api/logout",function(data){
+        location.href="../logout.php";
+    });
+});
 </script>
   </body>
 </html>
