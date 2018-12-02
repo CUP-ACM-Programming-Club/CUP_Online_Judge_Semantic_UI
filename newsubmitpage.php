@@ -527,6 +527,7 @@
                         },
                         presubmit: function () {
                             var qstring = getParameterByName;
+                            var isadmin = this.isadmin;
                             var submit_language = parseInt($("#language").val());
                             if (!this.checkJava(submit_language)) {
                                 return;
@@ -560,6 +561,13 @@
                             };
                             window.postdata = postdata;
                             var that = this;
+                            if (true) {
+                                window.socket.emit("submit", {
+                                            submission_id: "",
+                                            val: window.postdata
+                                        });
+                            }
+                            else {
                             $.post("submit.php", {
                                 json: JSON.stringify(postdata),
                                 csrf: "<?=$token?>"
@@ -581,6 +589,11 @@
                                     window.handler_interval = setTimeout(that.resume, 1000);
                                 }
                             });
+                            }
+                        },
+                        error_callback: function(data) {
+                            alert(data.statement);
+                            this.resume();
                         },
                         resume: function () {
                             if (--this.resume_time <= 0) {
@@ -596,11 +609,11 @@
                                 alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
                                 return;
                             }
-                            localStorage.removeItem("test_run");
+                            //localStorage.removeItem("test_run");
                             var test_run_time = parseInt(localStorage.getItem("test_run_time"));
                             var now = parseInt(dayjs() + "");
                             
-                            if(test_run_time && test_run_time > now)
+                            if(false && test_run_time && test_run_time > now)
                             {
                                 if(test_run_time < now + 300 * 1000) {
                                     var tmp = (test_run_time - now) / 1000;
@@ -665,7 +678,15 @@
                                 window.postdata = postdata;
                             }
                             console.log(window.postdata);
-                            $.post("submit.php?ajax", {
+                            var isadmin = this.isadmin;
+                            if (true) {
+                                window.socket.emit("submit", {
+                                            submission_id: "",
+                                            val: window.postdata
+                                        });
+                            }
+                            else {
+                                $.post("submit.php?ajax", {
                                 json: JSON.stringify(window.postdata),
                                 csrf: "<?=$token?>"
                             }, function (data) {
@@ -677,6 +698,7 @@
                                     //fresh_result(data);
                                 }
                             });
+                            }
                             this.submitDisabled = true;
                             this.resume_time = 60;
                             window.handler_interval = setTimeout(that.resume, 1000);

@@ -198,12 +198,12 @@
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
                 <td><a :href="'status.php?cid='+cid+'&problem_id='+(i)" target="_blank">{{(1001 + i)}}</a></td>
-                <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+(i)+'&jresult='+key">{{row}}</a></td>
+                <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active positive':''"><a :href="'status.php?cid='+cid+'&problem_id='+(i)+'&jresult='+key">{{row}}</a></td>
                  <td>{{statistics.totalSumResult[i]}}</td>
             </tr>
             <tr>
                 <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
-                <td v-for="(row,key) in statistics.stat_sum" :class="row > 0?'active':''">
+                <td v-for="(row,key) in statistics.stat_sum" :class="row > 0?'active positive':''">
                     <a :href="'status.php?cid='+cid+'&jresult='+key" target="_blank">{{row}}</a>
                 </td>
                 <td>{{statistics.total_submit}}</td>
@@ -224,12 +224,12 @@
         <tbody>
             <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
                 <td><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)" target="_blank">{{(1001 + i)}}</a></td>
-                <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active':''"><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)+'&language='+key">{{row}}</a></td>
+                <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active positive':''"><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)+'&language='+key">{{row}}</a></td>
                 <td>{{statistics.totalSumProblem[i]}}</td>
             </tr>
             <tr>
                 <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
-                <td v-for="(row,key) in statistics.lang_sum" :class="row > 0?'active':''">
+                <td v-for="(row,key) in statistics.lang_sum" :class="row > 0?'active positive':''">
                     <a :href="'status.php?cid='+cid+'&language='+key" target="_blank">{{row}}</a>
                 </td>
                 <td>{{statistics.total_submit}}</td>
@@ -692,7 +692,7 @@
                 obj.language = data.val.language;
                 obj.memory = obj.time = 0;
                 obj.in_date = new Date().toISOString();
-                obj.judger = "鹤望兰号";
+                obj.judger = "RATH";
                 obj.result = 0;
                 this.problem_list.pop();
                 this.problem_list.unshift(obj);

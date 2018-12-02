@@ -80,9 +80,11 @@
                     <th @click="orderBy(0)" style="text-align: center;"  width="18%" ><a style="cursor:pointer">
                         <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 0"></i>
                         <?php echo $MSG_PROBLEM_ID?></th></a>
-                    <th @click="orderBy(1)" width='54%'><a style="cursor:pointer">
+                    <th @click="orderBy(1)" width='44%'><a style="cursor:pointer">
                         <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 1"></i>
                         <?php echo $MSG_TITLE?></a></th>
+                        <th width="10%"  v-if="now.isAfter(end_time)">
+                        </th>
                     <th style="text-align: center;" width='16%' >
                         <a style="cursor:pointer"><span @click="orderBy(2)">
                             <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 2"></i>
@@ -96,7 +98,12 @@
                 <tbody>
                     <tr v-for="row in problem_table" :class="row.ac === 1?'positive':row.ac === -1?'negative':''">
                         <td class="center aligned">{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.pnum + 1001}}</td>
-                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum">{{row.title}}</a></td>
+                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a v-if="dayjs().isBefore(end_time)" :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum">{{row.title}}</a>
+                            <a v-else :href="'newsubmitpage.php?id=' + row.pid">{{row.title}}</a>
+                        </td>
+                        <td v-if="now.isAfter(end_time)">
+                            <a :href="'tutorial.php?from=' + (row.oj_name?row.oj_name:'local') + '&id=' + row.pid" target="_blank">题解</a>
+                        </td>
                         <td style="text-align:center">{{row.accepted}}/{{row.submit}}</td>
                         <td style="text-align: center;">{{(row.accepted * 100 / Math.max(row.submit,1)).toString().substring(0,4)}} %</td>
                     </tr>
@@ -185,6 +192,7 @@ Vue.component("contest-detail",{
                 end_time:dayjs(),
                 description:"",
                 title:"",
+                now:dayjs(),
                 contest_mode:0,
                 current_mode:0,
                 order:1,
