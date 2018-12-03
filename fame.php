@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title>Hall of Fame -- <?=$OJ_NAME ?></title>
+    <title>Hall of Fame -- CUP Online Judge</title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
 </head>
@@ -21,11 +21,15 @@
             Hall of Fame
             <div class="sub header">姓名不分先后</div>
         </h2>
-            <!--<div class="left ui rail" id="contents">
-            <div class="ui segment">
+            <div class="left ui rail" id="contents">
                 
+            <div class="ui sticky left">
+                <h3 class="ui header">目录</h3>
+                <div class="ui link list" style="overflow-y:auto">
+                    
+                </div>
             </div>
-            </div>-->
+            </div>
             <div class="ui segment" id="icpc2015changchun">
             <h3 class="ui header contents">2015 长春(东北师范大学)</h3>
             <div class="right ui rail">
@@ -84,7 +88,7 @@
             <p>成员:陈哲 季来虎 王智健</p>
           </div>
         </div>
-        <h3 class="ui header contents">ICPC2017 青岛(中国石油大学(华东))</h3>
+        <h3 class="ui header contents">2017 青岛(中国石油大学(华东))</h3>
         <img class="ui image" src="/glory_image/QINGDAO.jpg">
       </div>
       <div class="ui segment" id="icpc2017beijing">
@@ -178,7 +182,7 @@
             <img src="/glory_image/ICPC2018NANJING2.jpg" class="ui image">
         </div>
         <div class="ui segment" id="icpc2018qingdao">
-            <h3 class="ui header contents">2018 青岛(中国石油大学(华东))</h3>
+            <h3 class="ui header contents"><a name="2018qingdao"></a>2018 青岛(中国石油大学(华东))</h3>
             <div class="ui right rail">
                 <div class="ui sticky ICPC2018QINGDAO">
             <h3 class="ui header">ICPC2018 青岛</h3>
@@ -196,6 +200,18 @@
             <img src="/glory_image/ICPC2018QINGDAO1.jpg" class="ui image">
             <img src="/glory_image/ICPC2018QINGDAO2.jpg" class="ui image">
             <img src="/glory_image/ICPC2018QINGDAO3.jpg" class="ui image">
+        </div>
+        <div class="ui segment" id="ccpc2018shenzhen">
+            <h3 class="ui header contents">2018 深圳(哈尔滨工业大学(深圳)) Final</h3>
+            <div class="ui right rail">
+                <div class="ui sticky ICPC2018SHENZHEN">
+            <h3 class="ui header">CCPC2018Final 深圳</h3>
+            <h4>纪念奖</h4>
+            <p>队名:我为祖国献石油</p>
+            <p>成员:冯云豪 李昊元 吕博枫</p>
+            </div>
+            </div>
+            <img src="/glory_image/CCPC2018SHENZHEN.jpg" class="ui image">
         </div>
         </div>
         
@@ -262,6 +278,11 @@
             context:"#icpc2018qingdao",
             offset: 50
         });
+        $(".ui.sticky.CCPC2018SHENZHEN")
+        .sticky({
+            context:"#ccpc2018shenzhen",
+            offset: 50
+        });
         $('.ui.sticky.two')
         .sticky({
           context: '#example2',
@@ -283,14 +304,24 @@
         //{
             //$("#contents .segment").append("<a href='#" + headerArr.eq(i).parent().attr("id")+"'>"+headerArr.eq(i).text()+"</a><br>");
         //}
-        /*$("#contents")
+        var $headers = $(".ui.header.contents");
+        var len = $headers.length;
+        var list = $(".ui.link.list");
+        for(var i = 0;i< len;++i) {
+            var id = $headers.eq(i).parent().attr("id");
+            var name = $headers.eq(i).text();
+            var ahtml = "<a name='" +id+"' ></a>";
+            $headers.eq(i).append(ahtml);
+            ahtml = "<a class='item' href='#" +id+"' >" + name +"</a>";
+            list.append(ahtml);
+        }
+        //$(".ui.header.contents").eq(1).parent().attr("id")
+        console.log($(".ui.header.contents"));
+        $(".ui.sticky.left")
         .sticky({
             context:"#mainContent",
-            offset:50,
-            observeChanges: false,
-            refreshOnLoad: true,
-            refreshOnResize: true,
-        })*/
+            offset:100,
+        })
     </script>
 <?php include("template/semantic-ui/bottom.php") ?>
 </body>

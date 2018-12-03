@@ -700,7 +700,7 @@
                             });
                             }
                             this.submitDisabled = true;
-                            this.resume_time = 60;
+                            this.resume_time = 20;
                             window.handler_interval = setTimeout(that.resume, 1000);
                         }
                     },

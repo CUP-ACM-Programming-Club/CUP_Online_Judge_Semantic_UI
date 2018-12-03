@@ -76,6 +76,7 @@
         });
         window.connected = false;
         socket.on('connect',function(data){
+            $.get("../api/login/auth");
             vonline_num.message="<i class='feed icon'></i>";
             socket.emit("auth",auth_msg);
             setTimeout(function(){
