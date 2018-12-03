@@ -70,9 +70,7 @@
                 check();
             }
         }
-        $(document).ready(function(){
-            $.get("/api/system/stat/loadAvg");
-        })
+
     </script>
 </head>
 <body>
@@ -128,6 +126,7 @@
 </body>
 <script>
     $(document).ready(function () {
+        $.get("/api/login");
         setTimeout(function () {
             var getRandomInt = function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
