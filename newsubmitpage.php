@@ -1077,16 +1077,17 @@ SHOULD BE:
                             Sample Input</a></div>
                     <pre v-text='sampleinput'></pre>
                 </div>
-                <h2 class='ui header hidden'><?= $MSG_Sample_Output ?></h2>
-                <div class="ui bottom attached segment hidden">
+                <h2 class='ui header'><?= $MSG_Sample_Output ?></h2>
+                <div class="ui bottom attached segment">
                     <div class="ui top attached label"><a data-clipboard-target=".sample_output" class="copy context">Copy
                             Sample Output</a></div>
                     <pre class='sample_output' v-text='sampleoutput'></pre>
                 </div>
-                <h2 class='ui header hidden'><?= $MSG_HINT ?></h2>
-                <div class='ui hidden' v-html="hint"></div>
-                <h2 class='ui header hidden'><?= $MSG_Source ?></h2>
-                <div class='ui hidden'><p v-text="source"></p>
+                <h2 class='ui header'><?= $MSG_HINT ?></h2>
+                <div class='ui' v-html="hint"></div>
+                <h2 class='ui header'><?= $MSG_Source ?></h2>
+                <div class='ui'><p><a :href='"problemset.php?tag="+encodeURI(source)' id='problem_source'
+                                                   v-text='source'></a></p>
                 <p>上传者:<a target="_blank" v-if="uploader!=='Administrator'" :href="'userinfo.php?user='+uploader">{{uploader}}</a><a v-else>Administrator</a></p>
                 </div>
             </div>
@@ -1168,7 +1169,7 @@ SHOULD BE:
                     </div>
                     
                         <div class='title'><?= $MSG_Source ?><i class="dropdown icon"></i></div>
-                        <div class='content'><p><a :href='"problemset.php?tag="+escape(source)' id='problem_source'
+                        <div class='content'><p><a :href='"problemset.php?tag="+encodeURI(source)' id='problem_source'
                                                    v-text='source'></a></p>
                                                    <p>上传者:<a target="_blank" v-if="uploader!=='Administrator'" :href="'userinfo.php?user='+uploader">{{uploader}}</a><a v-else>Administrator</a></p></div>
                         
