@@ -144,6 +144,9 @@ Vue.component("login-form",{
             if(data.status=="OK") {
                 that.$root.mode = 0;
             }
+            else {
+                alert(data.statement);
+            }
             });
             return false; // return false to cancel form action
         });
