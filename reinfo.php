@@ -10,6 +10,8 @@
 
     <title><?php echo $OJ_NAME?></title>  
     <?php include("template/$OJ_TEMPLATE/css.php");?>
+    <link type="text/css" rel="stylesheet" href="mergely/codemirror.css" />
+	<link type="text/css" rel="stylesheet" href="mergely/mergely.css?ver=1.0.1" />
       <?php include("template/$OJ_TEMPLATE/js.php");?>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -17,16 +19,29 @@
       <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script type="text/javascript" src="mergely/codemirror.js"></script>
+	
+	<!-- Requires Mergely -->
+	<script type="text/javascript" src="mergely/mergely.js"></script>
   </head>
 
   <body>
 <?php include("template/$OJ_TEMPLATE/nav.php");?>	    
-    <div class="ui container pusher">
-    
+
+    <div class="ui container padding">
+        <h2 class="ui dividing header">
+            Runtime Error Information
+        </h2>
+        <div id="compare"></div>
+    <div class="ui main raised segment">
       <!-- Main component for a primary marketing message or call to action -->
 	
 <pre id='errtxt' class="alert alert-error"><?php echo $view_reinfo?></pre>
+
 <div id='errexp'>Explain:</div>
+
+	
+	
 <script>
 var pats=new Array();
 var exps=new Array();
@@ -58,10 +73,41 @@ document.getElementById("errexp").innerHTML=expmsg;
 //alert(expmsg);
 }
 explain();
+var segmentSize = parseInt($(".ui.main.segment").css("height"))
+if(segmentSize < window.innerHeight - 300) {
+$(".ui.main.segment").css({
+    height:window.innerHeight - 300
+})
+}
 </script>
 
+</div>
     </div> <!-- /container -->
-
+<script type="text/javascript">
+        $(document).ready(function () {
+			
+			var text = $("#errtxt").html();
+			
+			var left = text.substring(text.indexOf("------测试输出前100行-----"),text.indexOf("------用户输出前100行-----"));
+			var right = text.substring(text.indexOf("------用户输出前100行-----"),text.indexOf("------测试输出(左)与用户输出(右)前200行的区别-----"));
+			
+			console.log(left);
+			console.log(right);
+			if (text && text.length && left && left.length) {
+			    $('#compare').mergely({
+				cmsettings: { readOnly: false, lineWrapping: true },
+				ignorews: true,
+				ignorecase: true
+			});
+			$('#compare').mergely('lhs', left);
+			$("#compare").mergely('resize');
+			$('#compare').mergely('rhs', right);
+			$("#compare").mergely('resize');
+			$("#errtxt").hide();
+			$(".ui.raised.main.segment").hide();
+			}
+		});
+	</script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
