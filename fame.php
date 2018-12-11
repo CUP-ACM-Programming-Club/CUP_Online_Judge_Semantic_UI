@@ -312,7 +312,7 @@
             var name = $headers.eq(i).text();
             var ahtml = "<a name='" +id+"' ></a>";
             $headers.eq(i).append(ahtml);
-            ahtml = "<a class='item' href='#" +id+"' >" + name +"</a>";
+            ahtml = "<a class='quick item' href='#" +id+"' >" + name +"</a>";
             list.append(ahtml);
         }
         //$(".ui.header.contents").eq(1).parent().attr("id")
@@ -321,7 +321,14 @@
         .sticky({
             context:"#mainContent",
             offset:100,
-        })
+        });
+        $(".quick.item").on('click',function(d){
+            $([document.documentElement, document.body]).animate({
+        scrollTop: $(this.getAttribute("href")).offset().top - 50
+    }, 600);
+    return false;
+        });
+        
     </script>
 <?php include("template/semantic-ui/bottom.php") ?>
 </body>

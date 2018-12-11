@@ -98,8 +98,8 @@
                 <tbody>
                     <tr v-for="row in problem_table" :class="row.ac === 1?'positive':row.ac === -1?'negative':''">
                         <td class="center aligned">{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.pnum + 1001}}</td>
-                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a v-if="dayjs().isBefore(end_time)" :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum">{{row.title}}</a>
-                            <a v-else :href="'newsubmitpage.php?id=' + row.pid">{{row.title}}</a>
+                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a v-if="dayjs().isBefore(end_time) && dayjs().isAfter(start_time)" :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum"  v-html="markdownIt.renderRaw(row.title)"></a>
+                            <a v-else :href="'newsubmitpage.php?id=' + row.pid" v-html="markdownIt.renderRaw(row.title)"></a>
                         </td>
                         <td v-if="now.isAfter(end_time)">
                             <a :href="'tutorial.php?from=' + (row.oj_name?row.oj_name:'local') + '&id=' + row.pid" target="_blank">题解</a>

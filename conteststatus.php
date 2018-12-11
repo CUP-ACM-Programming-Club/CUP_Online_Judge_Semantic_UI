@@ -60,7 +60,7 @@
                 <span class="boldstatus" v-else>{{language_name[(!row.oj_name?'local':row.oj_name.toLowerCase())][row.language]}}</span>
                 <span v-if="(self === row.user_id || isadmin) && row.problem_id"> / </span>
                 <a class="boldstatus" v-if="(self === row.user_id || isadmin) && row.problem_id" target="_blank"
-                   :href="(row.oj_name === 'local'?'new':(!row.oj_name?'local':row.oj_name.toLowerCase()))+'submitpage.php?cid='+row.contest_id+'&pid='+row.num+'&sid='+row.solution_id">编辑</a>
+                   :href="(row.oj_name === 'local'?'new':(!row.oj_name?'local':row.oj_name.toLowerCase()))+'submitpage.php?cid='+Math.abs(row.contest_id)+'&pid='+row.num+'&sid='+row.solution_id">编辑</a>
                 <br>
                 <span class="boldstatus" v-if="self === row.user_id || isadmin">{{language_name[(!row.oj_name?'local':row.oj_name.toLowerCase())][row.language]}}  / </span>
                 <span class="boldstatus">{{row.length}}B</span>

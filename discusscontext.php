@@ -231,7 +231,7 @@
             readTime:function(content){
                 var doc = document.createElement("div");
                 doc.innerHTML = content;
-                return parseInt(Math.ceil(doc.innerText.length / 300));
+                return parseInt(Math.ceil(doc.innerText.length / 300) ** 1.41428579532);
             }
         }
     })
