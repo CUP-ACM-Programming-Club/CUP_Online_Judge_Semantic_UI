@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -13,10 +13,15 @@
 
  <?php include("template/semantic-ui/js.php");?>
  <script src="/js/dayjs.min.js"></script>
+
 <script src="/js/FileSaver.min.js"></script>
+ <!--
  <script src="/js/xlsx.core.min.js"></script>
 <script src="/js/tableexport.min.js"></script>
 <script src="/js/localforage.js"></script>
+-->
+
+<script src="template/semantic-ui/js/iconv-lite.bundle.js"></script>
 <script>
 /*
     localforage.setDriver([
@@ -123,7 +128,7 @@ td{
              <div style="width:100%;height:100%;overflow:auto" class="ranking">
 <table id='rank' class="ui small celled table">
     <thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=5%>User</th><th style="min-width:90px">Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
-<th style="min-width: 85.71px;" v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</th>
+<th style="min-width: 85.71px;" v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</th></tr>
 </thead>
 <tbody>
     <tr v-for="row in submitter">
@@ -145,21 +150,18 @@ td{
     </tr>
 </tbody>
 </table>
-<table id="save" class="ui small celled table" style="display:none">
-    <thead><tr class=toprow align=center><th width=5%>Rank<th width=5%>User</th><th style="min-width:90px">Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
-<th style="min-width: 85.71px;" v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</th>
-</thead>
+<table id="save" style="display:none">
 <tbody>
+    <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5%>Solved</td><td width=5%>Penalty</td>
+<td v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</td></tr>
     <tr v-for="row in submitter">
-        <td style="text-align:center;font-weight:bold">{{row.rank}}</td>
-        <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
-        <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{convertHTML(row.nick)}}</a></td>
-        <td style="text-align:center"><a :href="'status.php?user_id=' + row.user_id + '&cid=' + cid">{{row.ac}}</a></td>
-        <td style="text-align:center">Total {{format_date(row.penalty_time)}}</td>
-        <td v-for="p in row.problem" style="text-align:center" 
-        :class="p.accept.length > 0?p.first_blood ? 'first accept':'accept':''">
-            <b :class="'text '+ (p.accept.length > 0 ? p.first_blood?'first accept':'accept':'red')">
-                {{ (p.submit.length > 0)?'(-':''}}{{p.try_time > 0 ? p.try_time + ")" : p.submit.length > 0?p.submit.length + ")" : ""}}{{p.accept.length > 0 ? format_date(p.accept[0].diff(p.start_time,'second')):""}}</b>
+        <td>{{row.rank}}</td>
+        <td>{{row.user_id}}</td>
+        <td>{{convertHTML(row.nick)}}</td>
+        <td>{{row.ac}}</td>
+        <td>{{format_date(row.penalty_time)}}</td>
+        <td v-for="p in row.problem">
+                {{ (p.submit.length > 0)?'(-':''}}{{p.try_time > 0 ? p.try_time + ")" : p.submit.length > 0?p.submit.length + ")" : ""}}{{p.accept.length > 0 ? format_date(p.accept[0].diff(p.start_time,'second')):""}}
         </td>
     </tr>
 </tbody>
@@ -485,11 +487,16 @@ var contestrank = window.contestrank = new Vue({
                return d.innerText;
            },
            exportXLS:function(){
-               var table = TableExport(document.getElementById("save"));
-               var d = table.getExportData().save.xlsx;
-               var filename = "Contest " + this.cid;
-               filename = filename.substring(0,31);
-               table.export2file(d.data,d.mimeType,filename,d.fileExtension,d.merges)
+               var doc = document.getElementById("save");
+               var plain_text = "<center><h3>Contest "+ this.cid + " " + this.title +"</h3></center>";
+               plain_text += "<table border=1>" + doc.innerHTML.replace("<tbody>","").replace("</tbody>","") + "</table>";
+               var blob = new Blob([iconv.encode(plain_text,'gbk')], {type: 'application/excel'});
+               saveAs(blob, "Contest " + this.cid + " " + this.title + ".xls" );
+               //var table = TableExport(document.getElementById("save"));
+               //var d = table.getExportData().save.xlsx;
+               //var filename = "Contest " + this.cid;
+               //filename = filename.substring(0,31);
+               //table.export2file(d.data,d.mimeType,filename,d.fileExtension,d.merges)
            },
            handleNewSubmit:function(data){
                if(parseInt(data.contest_id) === parseInt(this.cid)) {

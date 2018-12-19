@@ -6,7 +6,7 @@ $pass_st=["negative","","positive"];
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -98,7 +98,8 @@ $pass_st=["negative","","positive"];
                 <div class="row padding">
                 <div class="ui buttons mini">
                 <?php if(isset($_SESSION['administrator'])){ ?>
-                <a class="ui button orange" href='copystatus.php?cid=<?php echo $view_cid?>'>判重</a>
+                <a class="ui button orange" href='copystatus.php?cid=<?php echo $view_cid?>'>判重表</a>
+                <a class="ui button yellow" href="copymap.php?cid=<?=$view_cid ?>">判重图(测试)</a>
                 <?php } ?>
                 </div>
                 </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -23,8 +23,8 @@
     <!-- Main component for a primary marketing message or call to action -->
     <div class="padding container">
                 <h2 class="ui header center aligned">ACM Rating Board</h2>
-                <h4 class="ui header center aligned">10分钟更新一次榜单</h4>
-                <h4 class="ui header center aligned">注:华东OJ(HUSTOJ_UPC)无法爬取普通提交，故HUSTOJ_UPC所有提交均为正确</h4>
+                <h4 class="ui header center aligned">为降低数据库压力，节省算力,10分钟更新一次榜单</h4>
+                <h4 class="ui header center aligned">DOM渲染开销较大，请耐心等待</h4>
         <div class="ui two column grid center aligned">
             <div class="six wide column center aligned source_table">
                 

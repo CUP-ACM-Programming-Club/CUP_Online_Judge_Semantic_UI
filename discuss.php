@@ -3,17 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title><?php echo $OJ_NAME ?></title>
-    <?php include("template/$OJ_TEMPLATE/css.php"); ?>
-    <?php include("template/$OJ_TEMPLATE/extra_css.php") ?>
-    <?php include("template/$OJ_TEMPLATE/js.php"); ?>
-    <?php include("template/$OJ_TEMPLATE/extra_js.php") ?>
+    <title>Discuss -- <?php echo $OJ_NAME ?></title>
+    <?php include("template/semantic-ui/css.php"); ?>
+    <?php include("template/semantic-ui/extra_css.php") ?>
+    <?php include("template/semantic-ui/js.php"); ?>
+    <?php include("template/semantic-ui/extra_js.php") ?>
     <script src="/js/dist/g2.min.js"></script>
     <script src="/js/dist/data-set.min.js"></script>
+    <script src="/js/dayjs.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
@@ -29,7 +30,13 @@
         <div class="ui grid">
             <div class="row">
                 <div class="thirteen wide column">
-                    
+                    <div class="ui search">
+  <div class="ui icon input">
+    <input class="prompt" type="text" placeholder="搜索标题" v-model="search">
+    <i class="search icon"></i>
+  </div>
+  <div class="results"></div>
+</div>
                 </div>
                 <div class="three wide right aligned column">
                     <a href="/newdiscusspost.php" target="_blank" class="ui labeled icon blue mini button">
@@ -58,9 +65,9 @@
                 <td>{{row.article_id}}</td>
                 <td><a :href="'discusscontext.php?id='+row.article_id" target='_blank'>{{row.title}}</a></td>
                 <td><a :href="'userinfo.php?user='+row.user_id" target='_blank'>{{row.user_id}}</a></td>
-                <td>{{new Date(row.create_time).toLocaleString()}}</td>
-                <td>{{new Date(row.edit_time).toLocaleString()}}</td>
-                <td>{{new Date(row.last_post).toLocaleString()}}</td>
+                <td>{{dayjs(row.create_time).format("YYYY-MM-DD HH:mm:ss")}}</td>
+                <td>{{dayjs(row.edit_time).format("YYYY-MM-DD HH:mm:ss")}}</td>
+                <td>{{dayjs(row.last_post).format("YYYY-MM-DD HH:mm:ss")}}</td>
             </tr>
         </tbody>
     </table>
@@ -73,7 +80,29 @@
             return {
                 page:parseInt(query_string.page)||0,
                 table_val:[],
-                total:0
+                total:0,
+                search:""
+            }
+        },
+        watch:{
+            search:function(newVal,oldVal) {
+                var that = this;
+                var page = this.page * 20;
+                var url = "/api/discuss/";
+                if(newVal && newVal.length > 0) {
+                    url += "search/" + newVal;
+                }
+                url += "?page=" + page;
+                $.get(url,function(data){
+                    if(data.discuss) {
+                        that.table = data;
+                    }
+                    else {
+                    that.table = {
+                        discuss:data.data
+                    }
+                    }
+                })
             }
         },
         created:function(){

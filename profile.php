@@ -39,16 +39,16 @@ $profile.="</div>";
 $profile.="<div class='column'><div class='ui link list'> ";
 if (isset($_SESSION['user_id'])){
     $sid=$_SESSION['user_id'];
-    $profile.= "<a class='item' href=".$path_fix."modifypage.php><i class='edit icon'></i>$MSG_USERINFO</a><br>
-    <a class='item' href='".$path_fix."userinfo.php?user=$sid'><i class='archive icon'></i>个人信息</a>";
+    $profile.= "<a class='item' href='/modifypage.php'><i class='edit icon'></i>$MSG_USERINFO</a><br>
+    <a class='item' href='/userinfo.php?user=$sid'><i class='archive icon'></i>个人信息</a>";
     $mail=checkmail();
     if (($OJ_EMAIL_MODE||isset($_SESSION['administrator']))&&$mail)
     {
         $profile.= "<br><a class='item' href=".$path_fix."mail.php><i class='mail icon'></i>".$mail[0]."</a>";
         $hasmail=$mail[1];
     }
-    $profile.="<br><a class='item' href='".$path_fix."status.php?user_id=$sid'><i class='send icon'></i>$MSG_MY_SUBMISSIONS</a>";
-    $profile.="<br><a class='item' href='".$path_fix."contest.php?my'><i class='book icon'></i>$MSG_MY_CONTESTS</a>";
+    $profile.="<br><a class='item' href='/status.php?user_id=$sid'><i class='send icon'></i>$MSG_MY_SUBMISSIONS</a>";
+    $profile.="<br><a class='item' href='/contest.php?my'><i class='book icon'></i>$MSG_MY_CONTESTS</a>";
 
     $profile.= "<br><a class='logout item'><i class='remove user icon'></i>$MSG_LOGOUT</a>&nbsp;";
 }else{

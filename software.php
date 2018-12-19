@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -42,10 +42,17 @@
               <i class="icon windows"></i>
               Windows 7(64位)或以上
             </a>
-            
+            <a href="/software/CUP_Online_Judge_Problem_Creator-win32-ia32.zip" class="ui large button download basic">
+              <i class="icon windows"></i>
+              Windows 7(32位)或以上
+            </a>
             <a href="/software/CUP_Online_Judge_Problem_Creator-linux-x64.zip" class="ui large button download basic">
               <i class="icon linux"></i>
-              Linux(x64)
+              Linux(x86-64)
+            </a>
+            <a href="/software/CUP_Online_Judge_Problem_Creator-linux-ia32.zip" class="ui large button download basic">
+              <i class="icon linux"></i>
+              Linux(i686)
             </a>
         </div>
     </div>
@@ -158,17 +165,17 @@
             <h3 class="ui header">Windows X64</h3>
             <p>Install MinGW:<a href="https://nuwen.net/mingw.html" target="_blank">https://nuwen.net/mingw.html</a></p>
             <h3 class="ui header">macOS(HomeBrew)</h3>
-            <pre>brew install gcc</pre>
+            <code>brew install gcc</code>
             <p><b>Important:</b>In macOS,gcc/g++ is the alias of clang/clang++</p>
             <p>Real gcc which installed from HomeBrew is 
-            <pre>gcc-${version}</pre> 
-            <pre>g++-${version}</pre>
+            <code>gcc-${version}</code> 
+            <code>g++-${version}</code>
             (gcc-8 in sample picture below)</p>
             <img src="/img/mac_install_gcc.svg" class="ui image">
             <h3 class="ui header">Ubuntu</h3>
-            <pre>sudo apt install gcc</pre>
+            <code>sudo apt install gcc</code>
             <h3 class="ui header">CentOS/Fedora/RHEL</h3>
-            <pre>sudo yum install gcc</pre>
+            <code>sudo yum install gcc</code>
         </div>
     </div>
 </div>

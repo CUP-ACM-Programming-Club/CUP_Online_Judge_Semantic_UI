@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -33,20 +33,25 @@ include("csrf.php");
                 </h2>
                 </div>
                 <div class="row">
-                <mavon-editor v-model="description"></mavon-editor>
+                <mavon-editor ref=md v-model="description" @imgAdd="imgAdd1"></mavon-editor>
                 </div>
                 
             </div>
     </div>
 </div> <!-- /container -->
 <script>
-    new Vue({
+    window.mVue = new Vue({
                 el:".ui.container.padding",
                 data:function(){
                     return {
                         description:""
                     }
                 },
+                methods:{
+                    imgAdd1:function(pos, $file){
+                        console.log($file);
+                     }
+                }
     });
 </script>
 

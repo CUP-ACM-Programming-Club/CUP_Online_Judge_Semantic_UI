@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -1176,7 +1176,7 @@ SHOULD BE:
                 </div>
             </div>
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
-                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.8"></script>
+                <script src="template/semantic-ui/js/editor_config.js?ver=1.0.8.1"></script>
                 <textarea style="display:none" cols=40 rows=5 name="input_text"
                           id="ipt" class="sample_input"><?php echo $view_sample_input ?></textarea>
                 <div id="modeBar" style="margin: 0;
