@@ -87,10 +87,51 @@ $(".ui.main.segment").css({
         $(document).ready(function () {
 			
 			var text = $("#errtxt").html();
-			
-			var left = text.substring(text.indexOf("------测试输出前100行-----"),text.indexOf("------用户输出前100行-----"));
-			var right = text.substring(text.indexOf("------用户输出前100行-----"),text.indexOf("------测试输出(左)与用户输出(右)前200行的区别-----"));
-			
+			var left_idx = 0,right_idx = 0;
+			var left = [];
+			var right = [];
+			var cnt = 10;
+			while(left_idx != -1 && right_idx != -1) {
+			    left_idx = text.indexOf("------测试输出前100行-----",left_idx + 1);
+			    right_idx = text.indexOf("------用户输出前100行-----",right_idx + 1);
+			    if(!(left_idx != -1 && right_idx != -1)) {
+			        break;
+			    }
+			    left.push(text.substring(left_idx, right_idx) + "\n");
+			    --cnt;
+			    if(cnt <=0) {
+			        console.info("hererer");
+			        break;
+			    }
+			}
+			left_idx = 0,rigit_idx = 0;
+			cnt = 10;
+			while(1) {
+			    left_idx = text.indexOf("------用户输出前100行-----",left_idx + 1);
+			    right_idx = text.indexOf("------测试输出(左)与用户输出(右)前200行的区别-----",right_idx + 1);
+			    if(!(left_idx != -1 && right_idx != -1)) {
+			        break;
+			    }
+			    right.push(text.substring(left_idx, right_idx) + "\n");
+                console.log("left_idx",left_idx);
+			    console.log("right_idx",right_idx)
+			    --cnt;
+			    if(cnt <= 0) {
+			        console.info("erew");
+			     break;
+			    }
+			}
+			var files = text.match(/[0-9A-Za-z]{1,}\.out/g);
+			var left_array = left,right_array = right;
+			left = "",right = "";
+			var idx = 0;
+			_.forEach(left_array,function(data){
+			    left += files[idx++] + "\n" + data;
+			});
+			idx = 0;
+			_.forEach(right_array,function(data){
+			    right += files[idx++] + "\n" + data;
+			})
 			console.log(left);
 			console.log(right);
 			if (text && text.length && left && left.length) {
