@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -403,7 +403,15 @@
                 }
                 else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
                     || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
-                    tmp.place = "机房";
+                    if (tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)) {
+                        tmp.place = "405机房";
+                    }
+                    else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
+                        tmp.place = "502机房";
+                    }
+                    else {
+                        tmp.place = "机房";
+                    }
                 }
                 else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "润杰公寓Wi-Fi";
@@ -680,7 +688,7 @@
             },
             submit: function (data) {
                 var obj = {};
-                if((!this.user_id || this.user_id === data.user_id)&&(!~this.problem_result||data.val.result === this.problem_result) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt) {
+                if((!this.user_id || this.user_id === data.user_id)&&(!~this.problem_result||data.val.result === this.problem_result) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt && (!this.problem_id || parseInt(this.problem_id) === Math.abs(data.val.pid))) {
                 obj.problem_id = Math.abs(data.val.id);
                 obj.solution_id = data.submission_id;
                 obj.nick = data.nick;

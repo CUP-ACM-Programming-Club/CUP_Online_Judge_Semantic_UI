@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -102,6 +102,18 @@
                 </div>
             </div>
             <img class="ui image" src="/glory_image/2017BEIJING.jpg">
+        </div>
+        <div class="ui segment" id="icpc2017ecfinal">
+            <h3 class="ui header contents">2017 上海(上海大学)EC-Final</h3>
+            <div class="right ui rail">
+                <div class="ui sticky ICPC2017ECFINAL">
+                    <h3 class="ui header">ICPC2017EC-Final 上海</h3>
+                    <h4>纪念奖</h4>
+                    <p>队名:罚吹留下了悔恨的泪水</p>
+                    <p>成员:冯云豪 吕博枫 李昊元</p>
+                </div>
+            </div>
+            <img class="ui image" src="/glory_image/ICPC2017ECFINAL.jpg">
         </div>
         <div class="ui segment" id="tianti2018">
             <h3 class="ui header contents">2018 北京(北京工业大学)</h3>
@@ -213,6 +225,18 @@
             </div>
             <img src="/glory_image/CCPC2018SHENZHEN.jpg" class="ui image">
         </div>
+        <div class="ui segment" id="icpc2018ecfinal">
+            <h3 class="ui header contents">2018 西安(西北工业大学)EC-Final</h3>
+            <div class="ui right rail">
+                <div class="ui sticky ICPC2018ECFINAL">
+            <h3 class="ui header">ICPC2018EC-Final 西安</h3>
+            <h4>铜奖</h4>
+            <p>队名:我为祖国献石油</p>
+            <p>成员:冯云豪 李昊元 吕博枫</p>
+            </div>
+            </div>
+            <img src="/glory_image/ICPC2018ECFINAL.jpg" class="ui image">
+        </div>
         </div>
         
     </div>
@@ -241,6 +265,11 @@
         $(".ui.sticky.2018ningxia")
         .sticky({
             context:"#icpc2018ningxia",
+            offset: 50
+        });
+        $(".ui.sticky.ICPC2017ECFINAL")
+        .sticky({
+            context:"#icpc2017ecfinal",
             offset: 50
         });
         $(".ui.sticky.changchun")
@@ -281,6 +310,11 @@
         $(".ui.sticky.CCPC2018SHENZHEN")
         .sticky({
             context:"#ccpc2018shenzhen",
+            offset: 50
+        });
+        $(".ui.sticky.ICPC2018ECFINAL")
+        .sticky({
+            context:"#icpc2018ecfinal",
             offset: 50
         });
         $('.ui.sticky.two')

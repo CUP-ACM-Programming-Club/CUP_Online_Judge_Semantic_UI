@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -22,9 +22,12 @@
 
   <body>
 <?php include("template/$OJ_TEMPLATE/nav.php");?>	    
-    <div class="container">
+    <div class="ui container">
+        <h2 class="ui dividing header">
+            Compile Error Information
+        </h2>
       <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
+      <div class="ui raised segment">
  <div class="brush:c" id='source' name="source"></div>
 <pre class="brush:c;" id='errtxt' ><?php echo $view_reinfo?></pre>
 <div id='errexp'>Explain:</div>

@@ -10,7 +10,7 @@ $homepage="";
     <!-- Standard Meta -->
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=1200">
     <?php include("template/semantic-ui/css.php"); ?>
     <script>
         var homepage = true;
@@ -30,6 +30,11 @@ $homepage="";
         .unvisible{
             display: none;
         }
+        .masthead h3.ui.header {
+        margin-top: 50%;
+        margin-bottom: 0em;
+        font-weight: normal;
+    }
         .ml14 {
   font-weight: 200;
   font-size: 3.2em;
@@ -53,6 +58,7 @@ $homepage="";
   transform-origin: 100% 100%;
   bottom: 0;
 }
+
 #myVideo {
     position: fixed;
     right: 0;
@@ -98,13 +104,13 @@ $homepage="";
         <video autoplay muted id="myVideo" style="display:none">
   <source src="/video/icpc.mp4" type="video/mp4">
 </video>
-<div class="unvisible">
+<div class="unvisible" id="main_container">
         <div class="ui container">
             <div class="ui large secondary inverted pointing menu">
             </div>
         </div>
-        
-        <div class="ui text container transition main title">
+        <div class="ui grid" id="main_masthead" style="transform: translateX(25%)">
+        <div id="left" class="ui text container transition main title eight wide column">
             <h1 class="ui inverted header ml14">
   <span class="text-wrapper">
     <span class="letters" data-content="CUP Online Judge"></span>
@@ -112,6 +118,7 @@ $homepage="";
   
 </h1>
 <div class="column buttonset">
+    
 <a href="icpc.php" target="_blank" class="ui inverted large button download basic">
               <i class="newspaper outline icon"></i>
               关于ICPC
@@ -129,9 +136,17 @@ $homepage="";
             <iframe class="github_button" src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="30px"></iframe>
 
             </div>
+            <br><a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
 <!--<h4></h4>-->
              <!--<a class="ui huge inverted download button" href="cprogrammingcontest.php">查看复赛情况</a>-->
         </div>
+        <div id="right" class="ui text container transition main title eight wide column" style="opacity: 0">
+            <h3 class="ui inverted header">本页开发中</h3>
+        </div>
+        </div>
+        <div class="ui vertical divider inverted" id="divider" style="opacity: 0">
+    
+  </div>
         <br>
         <!--
         <div class="ui text shape">
@@ -140,7 +155,7 @@ $homepage="";
             </div>
         </div>
         <br><br>-->
-        <a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
+        
         </div>
         <!--<div class="ui huge primary button" onclick="location.href='<?php if (isset($_SESSION['user_id'])) echo "problemset.php"; else echo "newloginpage.php"; ?>'"><?php if (!isset($_SESSION['user_id'])) echo "Login"; else echo "Get Started"; ?><i class="right arrow icon"></i></div>-->
     </div>
@@ -358,9 +373,11 @@ $homepage="";
         },15000);
     $(".ui.borderless.network.secondary.menu").addClass("inverted");
     document.getElementById('myVideo').style.opacity = "0.4";
-    setTimeout(function(){
-        $(".unvisible").removeClass("unvisible");
-        anime.timeline({loop: false})
+    $.get("../api/login/",function(data){
+        var logined = data.logined;
+        setTimeout(function(){
+        $("#main_container").removeClass("unvisible");
+        var main_timeline = anime.timeline({loop: false})
   .add({
     targets: '.ml14 .line',
     scaleX: [0,1],
@@ -373,6 +390,7 @@ $homepage="";
     translateX: [40,0],
     translateZ: 0,
     scaleX: [0.3, 1],
+    textShadow:"3px 3px 3px #555555",
     easing: "easeOutExpo",
     duration: 800,
     offset: '-=600',
@@ -406,9 +424,37 @@ $homepage="";
       paddingLeft:20,
       scale:1.25,
       duration: 500,
-      offset: '-=600'
-  })
+      offset: '-=600',
+  });
+  if(logined) {
+  main_timeline.
+  add({
+      targets: '#main_masthead',
+      translateX:["25%", 0],
+      easing: 'easeInOutQuart',
+      duration: 1000,
+      offset: '-=300',
+      complete: function(){
+      }
+  }).
+  add({
+      targets: "#right",
+      opacity:[0,1],
+      easing: 'easeInOutQuart',
+      duration: 1000,
+      offset: '-=300'
+  }).
+  add({
+      targets: "#divider",
+      opacity:[0,1],
+      easing: 'easeInOutQuart',
+      duration:500,
+      offset: '-=300'
+  });
+  }
     },0);
+    })
+    
    })();
   /*.
   add({

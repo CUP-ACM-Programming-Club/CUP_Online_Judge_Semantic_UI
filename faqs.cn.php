@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -33,7 +33,7 @@
 <div class="ui warning message">
 <div class="header">提示</div>
 若您对平台使用方法、OJ模式相关问题不够了解，建议使用Google、百度等搜索引擎搜索后，再阅读本<b>FAQ</b>中的内容(如<a href="https://zh.wikipedia.org/wiki/%E5%9C%A8%E7%BA%BF%E5%88%A4%E9%A2%98%E7%B3%BB%E7%BB%9F" target="_blank">Wikipedia-在线评测系统</a>)。
-<br>平台开发相关信息，请访问<a href="about.php" target="_blank">关于</a><br>关于本平台使用的开源项目，请访问<a href="opensource.php" target="_blank">开放源代码声明</a><br>想要了解关于<b>ACM/ICPC竞赛</b>的资讯，请善用搜索引擎，并阅读<a href="icpc.php" target="_blank">什么是ACM/ICPC</a>
+<br>平台开发相关信息，请访问<a href="about.php" target="_blank">关于</a><br>关于本平台使用的开源项目，请访问<a href="opensource.php" target="_blank">开放源代码声明</a><br>想要了解关于<b>ICPC竞赛</b>的资讯，请善用搜索引擎，并阅读<a href="icpc.php" target="_blank">什么是ICPC</a>
 </div>
  
 作者:[Ryan Lee(李昊元)](/userinfo.php?user=2016011253)
@@ -56,9 +56,9 @@
 - RAM:16G
 - OS:CentOS 7
 - GCC:8.2.0
-- Clang:3.4.2
+- Clang:LLVM 6.0.0
 - Java:6/7/8/10(OpenJDK)
-- JavaScript:NodeJS 10.10.0
+- JavaScript:NodeJS 10.14.0
 - Python:CPython/PyPy
 ## 我的编译环境是什么？
 
@@ -202,7 +202,7 @@ print(sum(map(int,input().split()))
 
 
 </script>
-            <h1 class="ui dividing header">FAQ(Version:2018/09/24)</h1>
+            <h1 class="ui dividing header">FAQ(Version:2018/12/05)</h1>
             <div class="markdown target"></div>
             <!--
             <div class="ui info message">

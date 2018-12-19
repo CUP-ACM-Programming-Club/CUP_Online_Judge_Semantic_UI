@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -99,20 +99,20 @@
                 </div>
             </div>
             <div class="four fields">
-                <div class="field">
-                    <label>HDU账号</label>
+                <div class="field vjudge">
+                    <label>HDU账号(仅提供查看)</label>
                     <input name="hdu" size="15" type="text" value="<?=$hdu?>">
                 </div>
-                <div class="field">
-                    <label>POJ账号</label>
+                <div class="field vjudge">
+                    <label>POJ账号(仅提供查看)</label>
                     <input name="poj" size="15" type="text" value="<?=$poj?>">
                 </div>
-                <div class="field">
-                    <label>UVa账号</label>
+                <div class="field vjudge">
+                    <label>UVa账号(仅提供查看)</label>
                     <input name="uva" size="15" type="text" value="<?=$uva?>">
                 </div>
-                <div class="field">
-                    <label>Vjudge账号</label>
+                <div class="field vjudge">
+                    <label>Vjudge账号(仅提供查看)</label>
                     <input name="vjudge" size="15" type="text" value="<?=$vj?>">
                 </div>
             </div>
@@ -164,6 +164,10 @@
 $(document).ready(function(){
     $("#head").css({height:$("#head")[0].width*$("#head")[0].naturalHeight/$("#head")[0].naturalWidth})
 })
+$(".vjudge").popup({
+    title    : '只读内容',
+    content  : '本条目为Virtual Judge爬取做题记录之用，若需要添加请联系管理员: Ryan Lee(李昊元)'
+  })
 function readImage(obj){
 		    var fd = new FormData();
 

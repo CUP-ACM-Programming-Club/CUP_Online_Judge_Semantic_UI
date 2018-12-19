@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -98,6 +98,12 @@ include("csrf.php");
                 </div>
                 <div class="row">
                 <mavon-editor v-model="sampleoutput"></mavon-editor>
+                </div>
+                <div class="row">
+                    <h2 class="ui header">Files</h2>
+                </div>
+                <div class="row">
+                    <a class="ui label" v-for="file_name in files">{{file_name}}</a>
                 </div>
                 <div class="row">
                     <h2 class="ui header">
@@ -200,7 +206,8 @@ include("csrf.php");
                         hint:d.hint,
                         source:from,
                         label:d.label?d.label.split(" "):[],
-                        all_label:[]
+                        all_label:[],
+                        files:[]
                     }
                 },
                 methods:{
@@ -249,6 +256,9 @@ include("csrf.php");
                         }
                         
                     })
+                    $.get("/api/file/" + id,function(data){
+                        that.files = data.data;
+                    });
                 }
             });
             console.log(d);

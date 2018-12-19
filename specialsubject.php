@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -29,7 +29,8 @@
 <div class="pusher">
     <!-- Main component for a primary marketing message or call to action -->
     <div id="main-content" class="padding ui container">
-        <h2 class="ui block top attached header">ACM专题练习</h2>
+        <h2 class="ui block top attached header">ACM专题练习
+        <div class="sub header">这里有点AC状态的小坑，有机会再修</div></h2>
         <div class="ui bottom attached segment">
             <div class="ui four cards">
                 <?php

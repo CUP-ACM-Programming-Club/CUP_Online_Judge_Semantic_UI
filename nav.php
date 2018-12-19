@@ -13,27 +13,14 @@ $suffix="?my";
 <div class="following bar topmenu" style="z-index:900">
 <div class="ui borderless network secondary menu" id="navbar-large">
     <div class="ui container">
-        <div class="msg header item">
-            <?php if(!isset($homepage)){ ?>
-            <a href="/" style="color:black"><?php 
-            if($vjudge)
-            {
-                echo "CUP Virtual Judge";
-            }
-            else
-            {
-                echo $OJ_NAME;
-            }
-            ?></a>
-            <?php } ?>
-        </div>
+        
         <?php if (isset($_GET['cid']) || isset($_GET['tid']) || $vjudge || $acmmanager){ ?>
         <div class="ui dropdown item" tabindex="0">
             <div class="text">通用</div>
             <i class="dropdown icon"></i>
             <div class="menu">
                 <?php } ?>
-                
+                <a href="/" class="item"><i class="home icon"></i>首页</a>
                 <a class="item"
                    href="problemset.php"><i class="browser icon"></i><?= $MSG_PROBLEM ?></a>
                 <a class="item"
@@ -410,8 +397,7 @@ $suffix="?my";
     $(".ui.test.modal").modal('show')
 })
  }, 500);
-      
-$("a[href='"+location.pathname.substring(1)+"']").addClass("active");
+$("a[href='"+location.pathname.substring(Math.min(location.pathname.length - 1, 1))+"']").addClass("active");
 //if(typeof homepage !== "undefined") {
 //    $(".ui.borderless.network.secondary.menu").addClass("inverted");
 //}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1200">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -479,7 +479,15 @@
                     tmp.place = "网络中心出口";
                 }
                 else if (tmp.intranet_ip.match(/10\.200\.2[5-8]{1}\.[0-9]{1,3}/)) {
-                    tmp.place = "机房";
+                    if (tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)) {
+                        tmp.place = "405机房";
+                    }
+                    else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
+                        tmp.place = "502机房";
+                    }
+                    else {
+                        tmp.place = "机房";
+                    }
                 }
                 else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "润杰公寓Wi-Fi";
@@ -629,7 +637,7 @@
                 
             },
             submit: function (data) {
-                if((!this.user_id || this.user_id === data.user_id) && (this.problem_result === -1) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt) {
+                if((!this.user_id || this.user_id === data.user_id) && (this.problem_result === -1) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt && (!this.problem_id || parseInt(this.problem_id) === Math.abs(data.val.id))) {
                 var obj = {};
                 obj.problem_id = Math.abs(data.val.id);
                 obj.solution_id = data.submission_id;
@@ -639,8 +647,10 @@
                 obj.language = data.val.language;
                 obj.memory = obj.time = 0;
                 obj.in_date = new Date().toISOString();
-                obj.judger = "鹤望兰号";
-                obj.result = 0
+                obj.judger = "RATH";
+                obj.result = 0;
+                obj.ip = data.val.ip;
+                obj.fingerprint = data.val.fingerprint;
                 obj.sim = false;
                 obj.contest_id = data.val.cid ? Math.abs(data.val.cid):null;
                 obj.sim_id = null;
@@ -655,6 +665,8 @@
                 var memory = data.memory;
                 var pass_rate = data.pass_rate;
                 var sim = data.sim;
+                var ip = data.ip;
+                var fingerprint = data.fingerprint;
                 var that = this;
                 _.forEach(this.problem_list,function(val,key){
                     var i = that.problem_list[key];
@@ -666,6 +678,8 @@
                         i.sim_id = data.sim_s_id;
                         i.pass_rate = pass_rate;
                         i.contest_id = data.contest_id ? Math.abs(data.contest_id):null;
+                        i.ip = ip;
+                        i.fingerprint = fingerprint;
                         return;
                     }
                 })
