@@ -49,8 +49,10 @@
             </td>
             <td><a :href="(row.result == 11?'ce':'re')+'info.php?sid='+row.solution_id"
                    v-cloak :class="answer_class[row.result]" title='点击看详细'><i v-cloak :class="answer_icon[row.result]+' icon'"></i>{{result[row.result]}}</a>
-                   <br v-if="row.sim||row.pass_rate>0.05">
+                   <br v-if="row.sim||row.pass_rate>0.05 || row.result == 3">
+                   <a v-if="row.result == 3" :class="answer_class[row.result]" v-cloak>({{row.pass_point}}/{{row.total_point}})</a>
                    <a v-if="row.sim" :href="'comparesource.php?left='+row.solution_id+'&right='+row.sim_id" v-cloak :class="answer_class[row.result]">
+                   <br v-if="row.result == 3">
                    {{(Boolean(row.sim) === false?'':row.sim_id+' ('+row.sim+'%)')}}
                    </a>
                    <a :class="answer_class[row.result]" v-if="row.result !== 4 && row.pass_rate > 0.05"><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>Passed:{{(row.pass_rate*100).toFixed(1)}}%</a>
@@ -478,12 +480,34 @@
                 else if(tmp.intranet_ip == "202.204.193.82") {
                     tmp.place = "网络中心出口";
                 }
-                else if (tmp.intranet_ip.match(/10\.200\.2[5-8]{1}\.[0-9]{1,3}/)) {
+                else if(tmp.intranet_ip === "10.200.25.101" && tmp.intranet_ip.match(/10\.200\.25\.1[0-9]{2}/) || tmp.intranet_ip === "10.200.25.200") {
+                    tmp.place = "403机房";
+                }
+                else if(tmp.intranet_ip.match(/10\.200\.26\./)) {
+                    var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                    if(parseInt(ip) <= 100) {
+                    tmp.place ="404机房";
+                    }
+                    else {
+                        tmp.place = "405机房";
+                    }
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
+                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
                     if (tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)) {
                         tmp.place = "405机房";
                     }
                     else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
-                        tmp.place = "502机房";
+                        var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                        if(parseInt(ip) <= 80) {
+                            tmp.place = "502机房";
+                        }
+                        else if(parseInt(ip) < 172 && parseInt(ip) >= 101) {
+                            tmp.place = "503机房";
+                        }
+                        else {
+                            tmp.place = "机房";
+                        }
                     }
                     else {
                         tmp.place = "机房";
@@ -650,6 +674,7 @@
                 obj.judger = "RATH";
                 obj.result = 0;
                 obj.ip = data.val.ip;
+                obj.total_point = 0;
                 obj.fingerprint = data.val.fingerprint;
                 obj.sim = false;
                 obj.contest_id = data.val.cid ? Math.abs(data.val.cid):null;
@@ -666,7 +691,9 @@
                 var pass_rate = data.pass_rate;
                 var sim = data.sim;
                 var ip = data.ip;
+                var total_point = parseInt(data.total_point) || 0;
                 var fingerprint = data.fingerprint;
+                var pass_point = data.pass_point;
                 var that = this;
                 _.forEach(this.problem_list,function(val,key){
                     var i = that.problem_list[key];
@@ -677,6 +704,8 @@
                         i.sim = data.sim;
                         i.sim_id = data.sim_s_id;
                         i.pass_rate = pass_rate;
+                        i.total_point = total_point;
+                        i.pass_point = pass_point;
                         i.contest_id = data.contest_id ? Math.abs(data.contest_id):null;
                         i.ip = ip;
                         i.fingerprint = fingerprint;

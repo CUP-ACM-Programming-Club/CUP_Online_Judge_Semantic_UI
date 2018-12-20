@@ -215,7 +215,7 @@
 
         <div class="ui grid">
             <div :class="(show_label_cloud?'twelve':'sixteen')+' wide column'">
-                <div class="column">
+                <div class="row">
 
                     <demo-grid
                             :data="table"
@@ -243,7 +243,14 @@
                 </div>
             </div>
             <div class="row">
-
+                <div class="ui grid">
+                        <div class="sixteen wide column half_padding">
+                            <pagination
+                                    :total="total"
+                                    :page_cnt="page_cnt"
+                                    :current_page="current_page"></pagination>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
