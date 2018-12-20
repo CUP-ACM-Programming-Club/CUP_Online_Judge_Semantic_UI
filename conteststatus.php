@@ -19,6 +19,62 @@
 </head>
 
 <body>
+    <script type="text/x-template" id="statistic_template">
+        <div>
+            <h3 class="ui dividing header">
+                Result Statistics
+            </h3>
+    <div class="table-scroll">
+            <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
+        <thead v-cloak>
+            <th>Problem</th>
+            <th v-for="i in statistics.total_result"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{statistics.status[i]}}</a></th>
+            <th>Total</th>
+        </thead>
+        <tbody>
+            <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
+                <td><a :href="'status.php?cid='+cid+'&problem_id='+(i)" target="_blank">{{(1001 + i)}}</a></td>
+                <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active positive':''"><a :href="'status.php?cid='+cid+'&problem_id='+(i)+'&jresult='+key">{{row}}</a></td>
+                 <td>{{statistics.totalSumResult[i]}}</td>
+            </tr>
+            <tr>
+                <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
+                <td v-for="(row,key) in statistics.stat_sum" :class="row > 0?'active positive':''">
+                    <a :href="'status.php?cid='+cid+'&jresult='+key" target="_blank">{{row}}</a>
+                </td>
+                <td>{{statistics.total_submit}}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    <h3 class="ui dividing header">
+                Submit Language Statistics
+            </h3>
+    <div class="table-scroll">
+    <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
+        <thead v-cloak>
+            <th>Problem</th>
+            <th v-for="i in statistics.used_lang"><a target="_blank" :href="'status.php?cid='+cid+'&language='+i">{{language_name.local[i]}}</a></th>
+            <th>Total</th>
+        </thead>
+        <tbody>
+            <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
+                <td><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)" target="_blank">{{(1001 + i)}}</a></td>
+                <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active positive':''"><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)+'&language='+key">{{row}}</a></td>
+                <td>{{statistics.totalSumProblem[i]}}</td>
+            </tr>
+            <tr>
+                <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
+                <td v-for="(row,key) in statistics.lang_sum" :class="row > 0?'active positive':''">
+                    <a :href="'status.php?cid='+cid+'&language='+key" target="_blank">{{row}}</a>
+                </td>
+                <td>{{statistics.total_submit}}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+            </div>
+    </script>
 <script type="text/x-template" id="status_table">
     <table class="ui padded selectable unstackable table" align="center" width="90%" v-if="finish">
         <thead v-cloak>
@@ -185,58 +241,7 @@
             </div>
         </div>
         <div class="ui attached bottom segment" v-show="current_tag == 'statistics'">
-            <h3 class="ui dividing header">
-                Result Statistics
-            </h3>
-    <div class="table-scroll">
-            <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
-        <thead v-cloak>
-            <th>Problem</th>
-            <th v-for="i in statistics.total_result"><a target="_blank" :href="'status.php?cid='+cid+'&jresult='+i">{{statistics.status[i]}}</a></th>
-            <th>Total</th>
-        </thead>
-        <tbody>
-            <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
-                <td><a :href="'status.php?cid='+cid+'&problem_id='+(i)" target="_blank">{{(1001 + i)}}</a></td>
-                <td v-for="(row,key) in statistics.stat_data[i]" :class="row>0?'active positive':''"><a :href="'status.php?cid='+cid+'&problem_id='+(i)+'&jresult='+key">{{row}}</a></td>
-                 <td>{{statistics.totalSumResult[i]}}</td>
-            </tr>
-            <tr>
-                <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
-                <td v-for="(row,key) in statistics.stat_sum" :class="row > 0?'active positive':''">
-                    <a :href="'status.php?cid='+cid+'&jresult='+key" target="_blank">{{row}}</a>
-                </td>
-                <td>{{statistics.total_submit}}</td>
-            </tr>
-        </tbody>
-    </table>
-    </div>
-    <h3 class="ui dividing header">
-                Submit Language Statistics
-            </h3>
-    <div class="table-scroll">
-    <table class="ui padded selectable unstackable table" style="text-align:center" width="90%" v-if="finish">
-        <thead v-cloak>
-            <th>Problem</th>
-            <th v-for="i in statistics.used_lang"><a target="_blank" :href="'status.php?cid='+cid+'&language='+i">{{language_name.local[i]}}</a></th>
-            <th>Total</th>
-        </thead>
-        <tbody>
-            <tr v-for="i in Array.from(Array(statistics.total_problem + 1).keys())">
-                <td><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)" target="_blank">{{(1001 + i)}}</a></td>
-                <td v-for="(row,key) in statistics.lang_data[i]" :class="row>0?'active positive':''"><a :href="'status.php?cid='+cid+'&problem_id='+(1001 + i)+'&language='+key">{{row}}</a></td>
-                <td>{{statistics.totalSumProblem[i]}}</td>
-            </tr>
-            <tr>
-                <td><a :href="'status.php?cid='+cid" target="_blank">Total</a></td>
-                <td v-for="(row,key) in statistics.lang_sum" :class="row > 0?'active positive':''">
-                    <a :href="'status.php?cid='+cid+'&language='+key" target="_blank">{{row}}</a>
-                </td>
-                <td>{{statistics.total_submit}}</td>
-            </tr>
-        </tbody>
-    </table>
-    </div>
+            <statistic-table :statistics="statistics" :cid="cid" :finish="finish" :language_name="language_name"></statistic-table>
         </div>
     </div>
 </div>
@@ -341,6 +346,16 @@
 
 </script>
 <script>
+Vue.component("statistic-table", {
+    template: "#statistic_template",
+    props: {
+        statistics: Object,
+        cid: String,
+        finish: Boolean,
+        language_name: Object
+    },
+    data:function(){return{};}
+})
     Vue.component("status-table", {
         template: "#status_table",
         props: {
@@ -758,7 +773,7 @@
             }
         },
         updated: function() {
-            $(".need_popup").popup({
+            $("tr").popup({
                     on: 'hover',
                     positon: "top center"
                 });

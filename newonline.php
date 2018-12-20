@@ -102,12 +102,34 @@ include("csrf.php");
                 if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
                     tmp.place = "润杰有线";
                 }
-                else if (tmp.intranet_ip.match(/10\.200\.2[5-8]{1}\.[0-9]{1,3}/)) {
+                else if(tmp.intranet_ip === "10.200.25.101" && tmp.intranet_ip.match(/10\.200\.25\.1[0-9]{2}/) || tmp.intranet_ip === "10.200.25.200") {
+                    tmp.place = "403机房";
+                }
+                else if(tmp.intranet_ip.match(/10\.200\.26\./)) {
+                    var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                    if(parseInt(ip) <= 100) {
+                    tmp.place ="404机房";
+                    }
+                    else {
+                        tmp.place = "405机房";
+                    }
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
+                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
                     if (tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)) {
                         tmp.place = "405机房";
                     }
                     else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
-                        tmp.place = "502机房";
+                        var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                        if(parseInt(ip) <= 80) {
+                            tmp.place = "502机房";
+                        }
+                        else if(parseInt(ip) < 172 && parseInt(ip) >= 101) {
+                            tmp.place = "503机房";
+                        }
+                        else {
+                            tmp.place = "机房";
+                        }
                     }
                     else {
                         tmp.place = "机房";
