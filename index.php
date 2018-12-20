@@ -205,7 +205,7 @@ $homepage="";
     <div class="ui text container">
         <h3 class="ui header">ICPC</h3>
         <p>
-国际大学生程序设计竞赛（英语：International Collegiate Programming Contest, ICPC）是一项旨在展示大学生创新能力、团队精神和在压力下编写程序、分析和解决问题能力的年度竞赛。经过30多年的发展，国际大学生程序设计竞赛已经发展成为最具影响力的大学生计算机竞赛。赛事之前仅由IBM公司赞助，2017年新增JetBrains公司赞助, 2018年起，美国计算机协会（ACM）不再赞助ICPC。（Wikipedia）</p>
+国际大学生程序设计竞赛（英语：International Collegiate Programming Contest, ICPC）是一项旨在展示大学生创新能力、团队精神和在压力下编写程序、分析和解决问题能力的年度竞赛。经过40多年的发展，国际大学生程序设计竞赛已经发展成为最具影响力的大学生计算机竞赛。赛事之前仅由IBM公司赞助，2017年新增JetBrains公司赞助, 2018年起，美国计算机协会（ACM）不再赞助ICPC。（Wikipedia）</p>
         <a class="ui large button" href="icpc.php" target="_blank">More Information</a>
         <h4 class="ui horizontal header divider">
             <a href="#">Developer</a>

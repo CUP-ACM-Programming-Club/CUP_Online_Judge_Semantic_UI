@@ -34,7 +34,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="row in problem_lists" :class="row.sim?'warning':''">
+        <tr v-for="row in problem_lists" :class="row.sim?'warning need_popup':'need_popup'" :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p><p>用户指纹:<br>'+row.fingerprint+'</p>'">
             <td>{{row.solution_id}}</td>
             <td><a :href="'userinfo.php?user='+row.user_id">{{row.user_id}}<br>{{row.nick}}</a>
             </td>
@@ -65,8 +65,8 @@
                 <span class="boldstatus" v-if="self === row.user_id || isadmin">{{language_name[(!row.oj_name?'local':row.oj_name.toLowerCase())][row.language]}}  / </span>
                 <span class="boldstatus">{{row.length}}B</span>
             </td>
-            <td>{{new Date(row.in_date).toLocaleString()}}</td>
-            <td class="need_popup" :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p>'">{{row.judger}}</td>
+            <td>{{new Date(row.in_date).toLocaleString()}}<br><p>类型:{{detect_place(row.ip)}}</p></td>
+            <td>{{row.judger}}</td>
         </tr>
         </tbody>
     </table>
@@ -401,13 +401,34 @@
                 else if(tmp.intranet_ip == "202.204.193.82") {
                     tmp.place = "网络中心出口";
                 }
+                else if(tmp.intranet_ip === "10.200.25.101" && tmp.intranet_ip.match(/10\.200\.25\.1[0-9]{2}/) || tmp.intranet_ip === "10.200.25.200") {
+                    tmp.place = "403机房";
+                }
+                else if(tmp.intranet_ip.match(/10\.200\.26\./)) {
+                    var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                    if(parseInt(ip) <= 100) {
+                    tmp.place ="404机房";
+                    }
+                    else {
+                        tmp.place = "405机房";
+                    }
+                }
                 else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
                     || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
                     if (tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)) {
                         tmp.place = "405机房";
                     }
                     else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
-                        tmp.place = "502机房";
+                        var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                        if(parseInt(ip) <= 80) {
+                            tmp.place = "502机房";
+                        }
+                        else if(parseInt(ip) < 172 && parseInt(ip) >= 101) {
+                            tmp.place = "503机房";
+                        }
+                        else {
+                            tmp.place = "机房";
+                        }
                     }
                     else {
                         tmp.place = "机房";
@@ -435,7 +456,7 @@
                     tmp.place = "外网";
                 }
                 else if (tmp.intranet_ip.match(/2001:[\s\S]+/)) {
-                    tmp.place = "IPv6";
+                    tmp.place = "校园网IPv6";
                 }
                 else if (tmp.intranet_ip.match(/10\.3\.[\s\S]+/)) {
                     tmp.place = "地质楼";
@@ -700,6 +721,8 @@
                 obj.language = data.val.language;
                 obj.memory = obj.time = 0;
                 obj.in_date = new Date().toISOString();
+                obj.ip = data.val.ip;
+                obj.fingerprint = data.val.fingerprint;
                 obj.judger = "RATH";
                 obj.result = 0;
                 this.problem_list.pop();

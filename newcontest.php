@@ -243,7 +243,12 @@ Vue.component("contest-detail",{
                 _.forEach(_d.data,function(val){
                     if(!val.accepted)val.accepted = 0;
                     if(!val.submit)val.submit = 0;
-                })
+                });
+                var addr = _d.limit;
+                if(addr && location.href.indexOf(addr) == -1) {
+                    alert("根据管理员设置的策略，本次contest请使用" + addr + "访问");
+                    return;
+                }
                 that.problem_table = _d.data;
                 
                 var info = _d.info;

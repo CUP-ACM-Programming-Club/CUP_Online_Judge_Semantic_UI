@@ -459,7 +459,13 @@
                                         for (i in json) {
                                             str += "<a class='item' href='" + json[i]['url'] + "'><div class='ui small teal label'>通过:&nbsp;" + json[i]['accept'] + "</div><div class='ui small label'>提交:&nbsp;" + json[i]['submit'] + "</div>" + json[i]['num'] + " . " + json[i]['title'] + "</a>";
                                         }
-                                        $(".ui.massive.vertical.menu").html(str).fadeIn();
+                                        var plain_html = '<div id="next_problem"><div class="ui massive vertical menu" style="position:relative;float:left;margin-left:20px">'+ str +'</div></div>';
+                                        if($(".ui.massive.vertical.menu").length == 0) {
+                                            $("#total_control").append(plain_html);
+                                        }
+                                        else {
+                                            $(".ui.massive.vertical.menu").html(str).fadeIn();
+                                        }
                                     });
                                 }
                             }
@@ -1308,9 +1314,7 @@ SHOULD BE:
                 </script>
                 <div id="clipcp" style="display:none"></div>
             </div>
-            <div id="next_problem">
-                <div class="ui massive vertical menu" style="position:relative;float:left; display:none"></div>
-            </div>
+            
         </div>
     </div>
 </div>
