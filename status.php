@@ -50,7 +50,7 @@
             <td><a :href="(row.result == 11?'ce':'re')+'info.php?sid='+row.solution_id"
                    v-cloak :class="answer_class[row.result]" title='点击看详细'><i v-cloak :class="answer_icon[row.result]+' icon'"></i>{{result[row.result]}}</a>
                    <br v-if="row.sim||row.pass_rate>0.05 || row.result == 3">
-                   <a v-if="row.result == 3" :class="answer_class[row.result]" v-cloak>({{row.pass_point}}/{{row.total_point}})</a>
+                   <a v-if="row.result == 3" :class="answer_class[row.result]" v-cloak><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>({{row.pass_point}}/{{row.total_point}})</a>
                    <a v-if="row.sim" :href="'comparesource.php?left='+row.solution_id+'&right='+row.sim_id" v-cloak :class="answer_class[row.result]">
                    <br v-if="row.result == 3">
                    {{(Boolean(row.sim) === false?'':row.sim_id+' ('+row.sim+'%)')}}

@@ -53,12 +53,12 @@
 
 <body>
 <?php include("template/semantic-ui/nav.php"); ?>
-<div class="ui text main container" style="padding-top:1em" id="preload">
+<div class="ui text main container" style="padding-top:1em" id="preload" v-cloak>
     <h2 class="ui dividing header">
             加载中,请稍后
     </h2>
 </div>
-<div class="ui container pusher" v-cloak>
+<div class="ui container pusher">
     <div class="padding">
         <div class="ui grid">
             <div class="row">
@@ -66,13 +66,25 @@
                     <div class="ui card" style="width: 100%; " id="user_card">
                         <div class="blurring dimmable image" id="avatar_container">
                             <img style=" "
-                                 :src="avatar">
+                                 :src="avatar" v-cloak>
+                                 <div class="ui placeholder" v-cloak>
+                                    <div class="square image"></div>
+                                  </div>
                         </div>
                         <div class="content">
+                            <div class="ui placeholder" v-cloak>
+        <div class="header">
+          <div class="line"></div>
+          <div class="line"></div>
+        </div>
+        <div class="paragraph">
+          <div class="line"></div>
+        </div>
+      </div>
                             <div
-                                class="header">{{nick}}&nbsp;&nbsp;<a
-                                    :href="'mail.php?to_user='+user_id"><i class="mail icon"></i></a></div>
-                            <div class="meta">
+                                class="header" v-cloak>{{nick}}&nbsp;&nbsp;<a
+                                    :href="'mail.php?to_user='+user_id" v-cloak><i class="mail icon"></i></a></div>
+                            <div class="meta" v-cloak>
                                 <i class="user circle outline icon"></i>
                                 <a class="group">{{privilege}}</a>
                                         <i  v-if="user_id === '2016011253'" class="user circle outline icon"></i><a v-if="user_id === '2016011253'" class="group">
@@ -87,7 +99,7 @@
                                         {{row.year + "年" + row.award}}</a>
                             </div>
                         </div>
-                        <div class="extra content">
+                        <div class="extra content" v-cloak>
                             <a><i class="check icon"></i>通过 {{local_accepted + other_accepted + "&nbsp;题&nbsp;(" + local_accepted + "+" + other_accepted + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"}}<i class="line chart icon"></i>Rank:&nbsp;{{rank}}</a>
                         </div>
                     </div>
@@ -97,11 +109,16 @@
                                 状态
                             </div>
                         </div>
+                        
                         <div class="content">
-                            <div v-if="online" class="ui header">
+                            <div class="ui placeholder" v-cloak>
+  <div class="line"></div>
+  <div class="line"></div>
+</div>
+                            <div v-if="online" class="ui header" v-cloak>
                                 当前在线
                             </div>
-                            <div v-if="!online" class="ui header">
+                            <div v-if="!online" class="ui header" v-cloak>
                                 离线
                                 <div  class="sub header">
                                 上次登录:{{last_login?new Date(last_login).toLocaleString():""}}
@@ -116,7 +133,11 @@
                             </div>
                         </div>
                         <div class="content">
-                            <table class="ui very basic table">
+                            <div class="ui placeholder" v-cloak>
+  <div class="line"></div>
+  <div class="line"></div>
+</div>
+                            <table class="ui very basic table" v-cloak>
                                 <thead>
                                     <th>ID</th>
                                     <th>标题</th>
@@ -136,7 +157,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="ui card" style="width:100%" v-if="admin">
+                    <div class="ui card" style="width:100%" v-if="admin" v-cloak>
                         <div class="content">
                             <div class="header">
                                 使用的操作系统
@@ -165,7 +186,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="ui card" style="width:100%" v-if="admin">
+                    <div class="ui card" style="width:100%" v-if="admin" v-cloak>
                         <div class="content">
                             <div class="header">
                                 使用的浏览器
@@ -207,29 +228,62 @@
                                                 <div class="column">
                                                     <h4 class="ui top attached block header"><i
                                                             class="id card icon"></i>用户名</h4>
-                                                    <div class="ui attached segment">{{user_id}}</div>
+                                                    <div class="ui attached segment">
+                                                        <div v-cloak>
+                                                        {{user_id}}
+                                                        </div>
+                                                        <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
+                                                    </div>
                                                     <h4 class="ui attached block header">
                                                         <i class="id badge icon"></i>个人介绍
                                                     </h4>
-                                                    <div class="ui attached segment" v-html="markdownIt.renderRaw(biography||'')"></div>
+                                                    <div class="ui attached segment" v-html="markdownIt.renderRaw(biography||'')">
+                                                        <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
+                                                    </div>
                                                     <h4 class="ui attached block header"><i class="university icon"></i>学校
                                                     </h4>
-                                                    <div class="ui attached segment">{{school}}</div>
+                                                    <div class="ui attached segment">
+                                                        <div v-cloak>{{school}}</div>
+                                                        <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
+                                                        </div>
                                                     <h4 class="ui attached block header"><i
                                                             class="mail square icon"></i>邮件</h4>
-                                                    <div class="ui attached segment"><a
+                                                    <div class="ui attached segment"><div v-cloak><a
                                                             :href="'mailto:'+email">{{email}}</a></div>
+                                                            <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div></div>
                                                     <h4 class="ui attached block header">
                                                         <i class="newspaper icon"></i>Blog
                                                     </h4>
                                                     <div class="ui attached segment">
-                                                        <a target="_blank" :href="blog">{{blog}}</a>
+                                                        <div v-cloak>
+                                                            <a target="_blank" :href="blog">{{blog}}</a>
+                                                        </div>
+                                                        <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                                     </div>
                                                     <h4 class="ui attached block header">
                                                         <i class="github icon"></i>GitHub
                                                     </h4>
                                                     <div class="ui bottom attached segment">
-                                                        <iframe v-if="github" :src="'https://ghbtns.com/github-btn.html?user='+github+'&type=follow&count=true'" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+                                                        <iframe v-cloak v-if="github" :src="'https://ghbtns.com/github-btn.html?user='+github+'&type=follow&count=true'" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+                                                        <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -239,7 +293,6 @@
                                         <h4 class="ui top attached block header"><i class="pie chart icon"></i>提交统计</h4>
                                         <div class="ui bottom attached segment">
                                             <div id="pie_chart_legend">
-
                                             </div>
                                             <div>
                                                 <iframe class="chartjs-hidden-iframe" tabindex="-1"
@@ -264,7 +317,10 @@
                                         <div class="sixteen wide column">
                                         <h4 class="ui top attached block header">提交热力图</h4>
                                         <div class="ui bottom attached segment heatmap">
-                                        
+                                        <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                         </div>
                                         </div>
                                     </div>
@@ -275,30 +331,49 @@
                                                     <h4 class="ui top attached block header">CUP Online Judge</h4>
                                                     <div class="ui attached segment">
                                                         <a v-for="row in accept.local"
-                                                        :href="'newsubmitpage.php?id='+row.problem_id">
+                                                        :href="'newsubmitpage.php?id='+row.problem_id" v-cloak>
                                                             {{row.problem_id}}</a>
+                                                            <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                                     </div>
                                                     <h4 class="ui attached block header">HDU</h4>
                                                     <div class="ui attached segment">
                                                         <a v-for="row in accept.hdu"
-                                                        :href="'hdusubmitpage.php?id='+row.problem_id"> {{row.problem_id}}</a>
+                                                        :href="'hdusubmitpage.php?id='+row.problem_id" v-cloak> {{row.problem_id}}</a>
+                                                        <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                                     </div>
                                                     <h4 class="ui attached block header">POJ</h4>
                                                     <div class="ui attached segment">
-                                                        <a v-for="row in accept.poj" :href="'pojsubmitpage.php?id='+row.problem_id">
+                                                        <a v-for="row in accept.poj" :href="'pojsubmitpage.php?id='+row.problem_id" v-cloak>
                                                             {{row.problem_id}}</a>
+                                                            <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                                             </a>
                                                     </div>
                                                     <h4 class="ui attached block header">UVA</h4>
                                                     <div class="ui attached segment">
-                                                       <a v-for="row in accept.uva" :href="'uvasubmitpage.php?id='+row.problem_id">
+                                                       <a v-for="row in accept.uva" :href="'uvasubmitpage.php?id='+row.problem_id" v-cloak>
                                                             {{row.problem_id}}</a>
-                                                            </a>
+                                                            <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                                         </div>
                                                     <h4 class="ui attached block header">其他</h4>
                                                     <div class="ui bottom attached segment">
-                                                        <a v-for="row in accept.other" href="javascript:void(0)">
+                                                        <a v-for="row in accept.other" href="javascript:void(0)" v-cloak>
                                                             {{row.oj_name + " " + row.problem_id}}</a>
+                                                            <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -313,7 +388,20 @@
                                             <h4 class="ui top attached block header"><i class="pie chart icon"></i>编程语言</h4>
                                         <div class="ui bottom attached segment">
                                             <div id="pie_chart_language_legend">
-
+                                                <div class="ui placeholder" v-cloak>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                          <div class="line"></div>
+                                                        </div>
                                             </div>
                                             <div>
                                                 <iframe class="chartjs-hidden-iframe" tabindex="-1"
@@ -576,6 +664,7 @@
             var that = this;
             $("#preload").hide();
             $title = $("title").html();
+            $(".placeholder").remove()
             this.$nextTick(function(){
                 checkOnline();
                 var now = dayjs().endOf('day').toDate();

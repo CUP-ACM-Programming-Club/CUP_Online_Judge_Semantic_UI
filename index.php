@@ -30,7 +30,7 @@ $homepage="";
         .unvisible{
             display: none;
         }
-        .masthead h3.ui.header {
+        .masthead>h3.ui.header {
         margin-top: 50%;
         margin-bottom: 0em;
         font-weight: normal;
@@ -141,7 +141,29 @@ $homepage="";
              <!--<a class="ui huge inverted download button" href="cprogrammingcontest.php">查看复赛情况</a>-->
         </div>
         <div id="right" class="ui text container transition main title eight wide column" style="opacity: 0">
-            <h3 class="ui inverted header">本页开发中</h3>
+            <div class="ui grid">
+                <div class="two wide column"></div>
+                <div class="twelve wide column">
+<!--                    <div class="ui positive message" style="margin-top:15em">
+                        <i class="close icon"></i>
+  <ul class="list">
+    <li>考试/测验请访问http://acm.cup.edu.cn</li>
+    <li>普通用户/IPv6用户请访问https://www.cupacm.com</li>
+    <li>外网用户请访问https://oj.cupacm.com</li>
+  </ul>
+</div>
+                    <div class="row">
+                        <h3 class="ui dividing header">Test</h3>
+                        <div class="ui basic segment">
+                            Test segment
+                        </div>
+                    </div>-->
+                </div>
+                <div class="two wide column">
+                    
+                </div>
+            </div>
+            
         </div>
         </div>
         <div class="ui vertical divider inverted" id="divider" style="opacity: 0">
@@ -329,6 +351,11 @@ $homepage="";
 (function(){
     finished = true;
     window.picid = 5;
+    $(".ui.borderless.network.secondary.menu").addClass("inverted");
+    document.getElementById('myVideo').style.opacity = "0.4";
+    $.get("../api/login/",function(data){
+        var logined = data.logined;
+        if(!logined) {
         window.backpic = setInterval(function(){
             var index = getRandomIntInclusive(1,5);
            // while(index === window.picid) {
@@ -371,10 +398,7 @@ $homepage="";
                 window.picid = index;
             }
         },15000);
-    $(".ui.borderless.network.secondary.menu").addClass("inverted");
-    document.getElementById('myVideo').style.opacity = "0.4";
-    $.get("../api/login/",function(data){
-        var logined = data.logined;
+        }
         setTimeout(function(){
         $("#main_container").removeClass("unvisible");
         var main_timeline = anime.timeline({loop: false})
@@ -449,7 +473,13 @@ $homepage="";
       opacity:[0,1],
       easing: 'easeInOutQuart',
       duration:500,
-      offset: '-=300'
+      offset: '-=300',
+      complete: function() {
+          var $style = $("style");
+          var $html = $style.eq($style.length - 1).html();
+          $html += "\n.gr5::after{\nopacity:0.5;\n}\n";
+          $style.eq($style.length - 1).html($html);
+      }
   });
   }
     },0);
