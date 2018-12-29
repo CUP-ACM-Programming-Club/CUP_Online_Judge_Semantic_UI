@@ -155,6 +155,8 @@
     </tbody>
 </table>
 </div>
+<div class="ui bottom attached segment" v-show="mode === 3" @click="mode = 3">
+</div>
 </div>
 </script>
 <div class="ui container padding">

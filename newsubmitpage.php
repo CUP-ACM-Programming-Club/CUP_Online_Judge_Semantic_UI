@@ -11,7 +11,7 @@
     </title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
-    <script src="/js/fingerprint2.min.js"></script>
+    <script src="/js/fingerprint2.min.js?ver=2.0"></script>
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
     <!--<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>-->
     <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -122,6 +122,7 @@
                             sampleinput: d.sample_input,
                             sampleoutput: d.sample_output,
                             hint: d.hint,
+                            fingerprint:"",
                             submit: "提交:" + d.submit,
                             accepted: "正确:" + d.accepted,
                             source: d.source,
@@ -521,6 +522,7 @@
                                 case 3:
                                 case 23:
                                 case 24:
+                                case 27:
                                     var code = window.editor.getValue();
                                     if (code.indexOf("Main") === -1 || code.indexOf("main") === -1 || code.indexOf("package") !== -1) {
                                         alert("Java语言提交时必须使用Main作为主类\n使用static main作为入口函数\n并且不能存在包名(如package helloworld)");
@@ -532,6 +534,7 @@
                             return true;
                         },
                         presubmit: function () {
+                            var that = this;
                             var qstring = getParameterByName;
                             var isadmin = this.isadmin;
                             var submit_language = parseInt($("#language").val());
@@ -562,7 +565,7 @@
                                 source: window.editor.getValue(),
                                 share: this.share,
                                 type: type,
-                                fingerprint: window.fingerprint,
+                                fingerprint: that.fingerprint,
                                 csrf: "<?=$token?>"
                             };
                             window.postdata = postdata;
@@ -679,7 +682,7 @@
                                     source: window.editor.getValue(),
                                     type: type,
                                     csrf: "<?=$token?>",
-                                    fingerprint: window.fingerprint
+                                    fingerprint: that.fingerprint
                                 };
                                 window.postdata = postdata;
                             }
@@ -741,6 +744,14 @@
                     },
                     mounted: function () {
                         var that = this;
+                        Fingerprint2.get(function (components) {
+                            var values = components.map(function (component) { return component.value })
+                            $.get("../api/status/ip",function(data){
+                                var ip = data.ip;
+                                values.push(ip);
+                                that.fingerprint = Fingerprint2.x64hash128(values.join(''), 31);
+                            })
+                        })
                         this.description = markdownIt.render(this.description || '');
                         this.input = markdownIt.render(this.input || '');
                         this.output = markdownIt.render(this.output || '');
@@ -867,7 +878,7 @@
                 });
                 var copy_content = new Clipboard(".copy.context", {
                     text: function (trigger) {
-                        return $(trigger).parent().next().text();
+                        return $(trigger).parent().next().text().trim();
                     }
                 });
                 copy_content.on("success", function (e) {
@@ -1326,8 +1337,6 @@ SHOULD BE:
 
 </body>
 <script>
-    new Fingerprint2().get(function (result, components) {
-        window.fingerprint = result;
-    })
+
 </script>
 </html>

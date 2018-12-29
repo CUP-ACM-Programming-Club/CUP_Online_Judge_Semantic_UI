@@ -200,9 +200,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="center aligned">
+                    <div class="four fields center aligned">
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+  <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
+  <label>自动刷新</label>
+</div>
+                        </div>
+                        <div class="field" style="margin:auto">
+                        <div class="ui toggle checkbox">
+  <input type="checkbox" @click="sim_checkbox=!sim_checkbox">
+  <label>仅显示判重提交</label>
+</div>
+</div>
+                        <div class="field">
                         <button class="ui labeled icon mini button" @click.prevent="search($event)"><i
                                 class="search icon"></i><?= $MSG_SEARCH ?></button>
+                                </div>
+                        <div class="field"></div>
                     </div>
                 </form>
             </div>
@@ -504,6 +519,7 @@ Vue.component("statistic-table", {
             language_name: [],
             language_icon:[],
             judge_icon:[],
+            auto_refresh:true,
             result: [],
             self: "",
             isadmin: false,
@@ -511,6 +527,7 @@ Vue.component("statistic-table", {
             user_id: null,
             language: -1,
             problem_result: -1,
+            sim_checkbox:false,
             page_cnt: 0,
             current_tag : "status",
             dim:false,
@@ -521,6 +538,11 @@ Vue.component("statistic-table", {
             cid:getParameterByName("cid"),
             res:["WT","WR","CPL","RN","AC","PE","WA","TLE","MLE","OLE","RE","CE","CF","TR",
             "SP","SR","SE"]
+            }
+        },
+        watch: {
+            sim_checkbox: function(newVal, oldVal) {
+                this.search();
             }
         },
         computed: {
@@ -701,8 +723,9 @@ Vue.component("statistic-table", {
                 var result = this.problem_result == -1 ? "null" : this.problem_result;
                 var page_cnt = this.page_cnt * 20;
                 var cid = this.cid||"";
+                var sim = Number(this.sim_checkbox);
                 var that = this;
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid, function (data) {
+                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid+ "/" + sim, function (data) {
                     that.dim = false;
                     that.search_func(data);
                 })
@@ -716,13 +739,17 @@ Vue.component("statistic-table", {
                 var result = this.problem_result == -1 ? "null" : this.problem_result;
                 var page_cnt = this.page_cnt * 20;
                 var cid = this.cid||"";
+                var sim_checkbox = Number(this.sim_checkbox);
                 var that = this;
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid, function (data) {
+                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid + "/" + sim_checkbox, function (data) {
                     that.dim = false;
                     that.search_func(data);
                 })
             },
             submit: function (data) {
+                if(!this.auto_refresh) {
+                    return;
+                }
                 var obj = {};
                 if((!this.user_id || this.user_id === data.user_id)&&(!~this.problem_result||data.val.result === this.problem_result) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt && (!this.problem_id || parseInt(this.problem_id) === Math.abs(data.val.pid))) {
                 obj.problem_id = Math.abs(data.val.id);
@@ -745,6 +772,9 @@ Vue.component("statistic-table", {
                 }
             },
             update: function (data) {
+                if(!this.auto_refresh) {
+                    return;
+                }
                 var solution_id = data.solution_id;
                 var status = data.state;
                 var time = data.time;

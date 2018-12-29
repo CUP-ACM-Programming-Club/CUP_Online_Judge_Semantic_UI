@@ -50,7 +50,7 @@
             <td><a :href="(row.result == 11?'ce':'re')+'info.php?sid='+row.solution_id"
                    v-cloak :class="answer_class[row.result]" title='点击看详细'><i v-cloak :class="answer_icon[row.result]+' icon'"></i>{{result[row.result]}}</a>
                    <br v-if="row.sim||row.pass_rate>0.05 || row.result == 3">
-                   <a v-if="row.result == 3" :class="answer_class[row.result]" v-cloak>({{row.pass_point}}/{{row.total_point}})</a>
+                   <a v-if="row.result == 3 && !!row.pass_point && !!row.total_point" :class="answer_class[row.result]" v-cloak><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>({{row.pass_point || 0}}/{{row.total_point || 0}})</a>
                    <a v-if="row.sim" :href="'comparesource.php?left='+row.solution_id+'&right='+row.sim_id" v-cloak :class="answer_class[row.result]">
                    <br v-if="row.result == 3">
                    {{(Boolean(row.sim) === false?'':row.sim_id+' ('+row.sim+'%)')}}
@@ -144,9 +144,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="center aligned">
+                    <div class="four fields center aligned">
+                        <div class="field" style="margin:auto">
+                            <div class="ui toggle checkbox">
+  <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
+  <label>自动刷新</label>
+</div>
+                        </div>
+                        <div class="field" style="margin:auto">
+                        <div class="ui toggle checkbox">
+  <input type="checkbox" @click="sim_checkbox=!sim_checkbox">
+  <label>仅显示判重提交</label>
+</div>
+</div>
+                        <div class="field">
                         <button class="ui labeled icon mini button" @click.prevent="search($event)"><i
                                 class="search icon"></i><?= $MSG_SEARCH ?></button>
+                                </div>
+                        <div class="field"></div>
                     </div>
                 </form>
             </div>
@@ -580,10 +595,24 @@
             problem_id: null,
             user_id: null,
             language: -1,
+            sim_checkbox:0,
             problem_result: -1,
+            auto_refresh: true,
             page_cnt: 0,
             current_tag : "status",
             dim:false
+        },
+        watch: {
+            sim_checkbox: function(newVal, oldVal) {
+                var that = this;
+                this.search().then(function(){that.search()});
+            },
+            auto_refresh: function(newVal, oldVal) {
+                var that = this;
+                if(newVal) {
+                    this.search().then(function(){that.search()});
+                }
+            }
         },
         computed: {},
         methods: {
@@ -628,6 +657,7 @@
                 that.isadmin = data.isadmin || data.browse_code
             },
             search: function ($event) {
+                var that = this;
                 this.dim = true;
                 this.page_cnt = 0;
                 var problem_id = this.problem_id || "null";
@@ -635,11 +665,14 @@
                 var language = this.language == -1 ? "null" : this.language;
                 var result = this.problem_result == -1 ? "null" : this.problem_result;
                 var page_cnt = this.page_cnt * 20;
-                var that = this;
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt, function (data) {
-                    that.dim = false;
-                    that.search_func(data);
-                })
+                var sim = Number(this.sim_checkbox);
+                return new Promise(function(resolve,reject){
+                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim, function (data) {
+                        that.dim = false;
+                        that.search_func(data);
+                        resolve();
+                    })
+                });
             },
             page: function (num, $event) {
                 this.dim = true;
@@ -649,11 +682,12 @@
                 var language = this.language == -1 ? "null" : this.language;
                 var result = this.problem_result == -1 ? "null" : this.problem_result;
                 var page_cnt = this.page_cnt * 20;
+                var sim_checkbox = Number(this.sim_checkbox);
                 var that = this;
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt, function (data) {
+                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim_checkbox, function (data) {
                     that.dim = false;
                     that.search_func(data);
-                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt, function (data) {
+                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim_checkbox, function (data) {
                         that.dim = false;
                         that.search_func(data);
                     })
@@ -661,6 +695,9 @@
                 
             },
             submit: function (data) {
+                if(!this.auto_refresh) {
+                    return;
+                }
                 if((!this.user_id || this.user_id === data.user_id) && (this.problem_result === -1) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt && (!this.problem_id || parseInt(this.problem_id) === Math.abs(data.val.id))) {
                 var obj = {};
                 obj.problem_id = Math.abs(data.val.id);
@@ -677,6 +714,7 @@
                 obj.total_point = 0;
                 obj.fingerprint = data.val.fingerprint;
                 obj.sim = false;
+                obj.avatar = !!data.val.avatar;
                 obj.contest_id = data.val.cid ? Math.abs(data.val.cid):null;
                 obj.sim_id = null;
                 this.problem_list.pop();
@@ -684,6 +722,9 @@
                 }
             },
             update: function (data) {
+                if(!this.auto_refresh) {
+                    return;
+                }
                 var solution_id = data.solution_id;
                 var status = data.state;
                 var time = data.time;
