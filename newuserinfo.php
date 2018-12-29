@@ -418,6 +418,45 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <h4 class="ui top attached block header">
+                                            判重信息
+                                        </h4>
+                                        <div class="ui bottom attached segment">
+                                            <div class="ui small statistics" style="text-align:center;display:block;">
+  <div class="statistic" style="margin: 0px 0.5em 1em;">
+    <div class="value" v-cloak>
+      {{same_problem_time}}
+    </div>
+    <div class="label">
+      题目数
+    </div>
+  </div>
+  <div class="statistic" style="margin: 0px 0.5em 1em;">
+    <div class="value" v-cloak>
+      {{same_aver_length}}
+    </div>
+    <div class="label">
+      平均长度
+    </div>
+  </div>
+  <div class="statistic" style="margin: 0px 0.5em 1em;">
+    <div class="value" v-cloak>
+      {{same_percentage_aver}}%
+    </div>
+    <div class="label">
+      平均判重度
+    </div>
+  </div>
+  <div class="statistic" style="margin: 0px 0.5em 1em;">
+    <div class="value" v-cloak>
+      {{total_same}}
+    </div>
+    <div class="label">
+      总次数
+    </div>
+  </div>
+</div>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -657,7 +696,11 @@
                 online:false,
                 last_login:d.data.login_time? d.data.login_time[0] ? d.data.login_time[0].time:"":"",
                 local_accepted:local_accept.length,
-                other_accepted:hdu_accept.length + poj_accept.length + uva_accept.length + other_accept.length
+                other_accepted:hdu_accept.length + poj_accept.length + uva_accept.length + other_accept.length,
+                same_percentage_aver:parseInt(d.data.sim_average_percentage),
+                same_problem_time:parseInt(d.data.sim_count),
+                same_aver_length:parseInt(d.data.sim_average_length),
+                total_same:d.data.total_sim_time
             };
         },
         mounted:function(){

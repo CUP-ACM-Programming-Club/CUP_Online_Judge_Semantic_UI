@@ -144,20 +144,21 @@ $homepage="";
             <div class="ui grid">
                 <div class="two wide column"></div>
                 <div class="twelve wide column">
-<!--                    <div class="ui positive message" style="margin-top:15em">
-                        <i class="close icon"></i>
-  <ul class="list">
+                    <div class="ui warning message" style="margin-top:15em">
+                        <!--<i class="close icon"></i>-->
+                        <div class="header">维护提示</div>
+                        <p style="font-size:1em">为保证考试过程中系统的稳定，<br>本平台于2019年1月1日至1月4日将停止一般用户的访问。</p>
+                        <!--
+                        <ul class="list">
     <li>考试/测验请访问http://acm.cup.edu.cn</li>
     <li>普通用户/IPv6用户请访问https://www.cupacm.com</li>
     <li>外网用户请访问https://oj.cupacm.com</li>
   </ul>
-</div>
-                    <div class="row">
-                        <h3 class="ui dividing header">Test</h3>
-                        <div class="ui basic segment">
-                            Test segment
+                        -->
                         </div>
-                    </div>-->
+                    <div class="row">
+                        
+                    </div>
                 </div>
                 <div class="two wide column">
                     
