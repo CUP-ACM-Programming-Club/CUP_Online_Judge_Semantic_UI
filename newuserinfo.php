@@ -100,7 +100,19 @@
                             </div>
                         </div>
                         <div class="extra content" v-cloak>
-                            <a><i class="check icon"></i>通过 {{local_accepted + other_accepted + "&nbsp;题&nbsp;(" + local_accepted + "+" + other_accepted + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"}}<i class="line chart icon"></i>Rank:&nbsp;{{rank}}</a>
+                            <a><i class="check icon"></i>本地&nbsp;通过 {{local_accepted + other_accepted}} 题
+                            </a>
+                            <a style="float:right;"><i class="line chart icon"></i>Rank:&nbsp;{{rank}}</a></a>
+                            <br>
+                            <a>
+                                <i class="check icon"></i>VJudge&nbsp;通过 {{vjudge_solved}}&nbsp;题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </a>
+                            <a style="float:right"><i class="line chart icon"></i>Rank:&nbsp;{{vjudge_rank}}</a>
+                            <br>
+                            <a>
+                                <i class="check icon"></i>其他平台&nbsp;通过 {{other_accepted - vjudge_solved}}&nbsp;题
+                                
+                            </a>
                         </div>
                     </div>
                     <div class="ui card" style="width:100%;">
@@ -571,8 +583,8 @@
             var analsubmission = [];
             var now = dayjs();
             _.forEach(submission,function(val){
-                val.time = dayjs(val.time);
-                    if(val.time.add(3,"month").isAfter(now)) {
+
+                    if((val.time = dayjs(val.time)).add(3,"month").isAfter(now)) {
                         analsubmission.push(val);
                     }
                 if(val.oj_name === "LOCAL") {
@@ -590,6 +602,7 @@
                 else {
                     other.push(val);
                 }
+                
             });
             analsubmission.sort(function(a,b){
                 if(a.time.isBefore(b.time)) {
@@ -601,7 +614,6 @@
             });
             var timeobj = {};
             var acobj = {};
-            
             _.forEach(analsubmission,function(val){
                 var daystr = val.time.format("YYYY-MM-DD");
                 if(!timeobj[daystr]) {
@@ -667,6 +679,7 @@
                 school:d.data.information.school,
                 github:github_info,
                 email:d.data.information.email,
+                vjudge_solved:d.data.information.vjudge_accept,
                 os:d.data.os,
                 browser:d.data.browser,
                 blog:d.data.information.blog,
@@ -693,6 +706,7 @@
                     other:other_accept
                 },
                 rank:d.data.rank,
+                vjudge_rank:d.data.vjudge_rank,
                 online:false,
                 last_login:d.data.login_time? d.data.login_time[0] ? d.data.login_time[0].time:"":"",
                 local_accepted:local_accept.length,

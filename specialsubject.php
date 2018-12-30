@@ -25,7 +25,7 @@
 </head>
 
 <body>
-<?php include("template/$OJ_TEMPLATE/nav.php"); ?>
+<?php include("template/semantic-ui/nav.php"); ?>
 <div class="pusher">
     <!-- Main component for a primary marketing message or call to action -->
     <div id="main-content" class="padding ui container">
