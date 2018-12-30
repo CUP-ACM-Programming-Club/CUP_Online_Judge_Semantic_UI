@@ -21,7 +21,7 @@
         <tr class='toprow'>
             <th width="8%">{{target.solution_id}}</th>
             <th><div class="ui grid">
-            <div class="three wide column"></div><div class="twelve wide column">{{target.user}}</div></div></th>
+            <div class="four wide column"></div><div class="twelve wide column">{{target.user}}</div></div></th>
             <th>{{target.problem_id}}</th>
             <th width="14%">{{target.result}}</th>
             <th v-if="isadmin">{{target.contest_id}}</th>
@@ -32,11 +32,12 @@
         </thead>
         <tbody>
         <tr v-for="row in problem_lists" :class="row.sim?'warning':''"
-        :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p><p>用户指纹:<br>'+row.fingerprint+'</p>'">
+        :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p><p>用户指纹:<br>'+row.fingerprint+'<br>硬件指纹:<br>'+row.fingerprintRaw+'</p>'">
             <td>{{row.solution_id}}</td>
             <td><div class="ui grid">
-            <div class="three wide column">
+            <div class="three wide column" style="margin:auto">
             <img class="ui avatar image" :src="'../avatar/'+row.user_id+'.jpg'" v-if="row.avatar||user[row.user_id].avatar" style="object-fit: cover;">
+            <img class="ui avatar image" src="../image/default-user.png" v-else style="object-fit: cover;">
             </div>
             <div class="twelve wide column">
             <a :href="'userinfo.php?user='+row.user_id">{{row.user_id}}<br>{{row.nick}}</a>

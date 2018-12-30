@@ -152,7 +152,7 @@ td{
 </table>
 <table id="save" style="display:none">
 <tbody>
-    <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5%>Solved</td><td width=5%>Penalty</td>
+    <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5%>Solved</td><td width=5%>Penalty</td><td>环境指纹数</td><td>硬件指纹数</td>
 <td v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</td></tr>
     <tr v-for="row in submitter">
         <td>{{row.rank}}</td>
@@ -160,6 +160,8 @@ td{
         <td>{{convertHTML(row.nick)}}</td>
         <td>{{row.ac}}</td>
         <td>{{format_date(row.penalty_time)}}</td>
+        <td>{{row.fingerprintSet.size}}</td>
+        <td>{{row.handwareFingerprintSet.size}}</td>
         <td v-for="p in row.problem">
                 {{ (p.submit.length > 0)?'(-':''}}{{p.try_time > 0 ? p.try_time + ")" : p.submit.length > 0?p.submit.length + ")" : ""}}{{p.accept.length > 0 ? format_date(p.accept[0].diff(p.start_time,'second')):""}}
         </td>
@@ -308,20 +310,20 @@ var contestrank = window.contestrank = new Vue({
                        temp_data.push(val);
                    }
                    val = temp_data;
-                    console.log(val);
                    var first_blood = [];
                    for(var i = 0;i<that.total;++i) {
                        first_blood.push(-1);
                    }
                    var submitter = this.submitter = {};
                    _.forEach(this.users,function(val){
-                       console.log(val);
                        if(!submitter[val.user_id]) {
                            submitter[val.user_id] = {
                                ac:0,
                                nick:val.nick ? val.nick.trim():"未注册",
                                problem:{},
-                               penalty_time:0
+                               penalty_time:0,
+                               fingerprintSet:new Set(),
+                               handwareFingerprintSet:new Set()
                            }
                            for(var j = 0;j<total;++j) {
                                submitter[val.user_id].problem[j] = {
@@ -345,7 +347,9 @@ var contestrank = window.contestrank = new Vue({
                                ac:0,
                                nick:val[i].nick,
                                problem:{},
-                               penalty_time:0
+                               penalty_time:0,
+                               fingerprintSet:new Set(),
+                               handwareFingerprintSet:new Set()
                            }
                            for(var j = 0;j<total;++j) {
                                submitter[val[i].user_id].problem[j] = {
@@ -353,6 +357,12 @@ var contestrank = window.contestrank = new Vue({
                                    accept:[]
                                 }
                            }
+                       }
+                       if(!!val[i].fingerprint) {
+                            submitter[val[i].user_id].fingerprintSet.add(val[i].fingerprint);
+                       }
+                       if(!!val[i].fingerprintRaw) {
+                            submitter[val[i].user_id].handwareFingerprintSet.add(val[i].fingerprintRaw);
                        }
                        if(submitter[val[i].user_id].problem[val[i].num] === undefined) {
                             continue;
@@ -489,8 +499,15 @@ var contestrank = window.contestrank = new Vue({
            exportXLS:function(){
                var doc = document.getElementById("save");
                var plain_text = "<center><h3>Contest "+ this.cid + " " + this.title +"</h3></center>";
-               plain_text += "<table border=1>" + doc.innerHTML.replace("<tbody>","").replace("</tbody>","") + "</table>";
-               var blob = new Blob([iconv.encode(plain_text,'gbk')], {type: 'application/excel'});
+               plain_text += "<table border=1>" + doc.innerHTML.replace("<tbody>","").replace("</tbody>","");
+               plain_text += "<tr><td colspan='8'>环境指纹指根据用户的硬件环境及IP地址不同而产生的不同的指纹</td></tr>";
+               plain_text += "<tr><td colspan='8'>硬件指纹指的是不受IP影响的指纹</td></tr>";
+               plain_text += "<tr><td colspan='8'>若环境指纹与硬件指纹均唯一，代表用户使用相同设备在相同地点完成提交</td></tr>";
+               plain_text += "<tr><td colspan='8'>若硬件指纹唯一而环境指纹不唯一，代表同型号机器在不同IP地址提交</td></tr>";
+               plain_text += "<tr><td colspan='8'>若硬件指纹不唯一，代表使用了多台设备进行提交</td></tr>";
+               plain_text += "</table>";
+               console.log(plain_text);
+               var blob = new Blob([plain_text], {type: 'application/excel'});
                saveAs(blob, "Contest " + this.cid + " " + this.title + ".xls" );
                //var table = TableExport(document.getElementById("save"));
                //var d = table.getExportData().save.xlsx;
