@@ -95,6 +95,9 @@ include("csrf.php");
 </body>
 <script>
     function detect_ip(tmp) {
+        if(tmp.ip && !tmp.intranet_ip) {
+            tmp.intranet_ip = tmp.ip;
+        }
         if (tmp.intranet_ip) {
             if (tmp.intranet_ip.trim() === "202.204.193.82") {
                 var temp = tmp.intranet_ip;
@@ -277,13 +280,13 @@ include("csrf.php");
                     user: {
                         get: function () {
                             var newlist = [];
+                            var doc = document.createElement("div");
                             if (!this.userlist) return [];
                             for (var i = 0; i < this.userlist.length; ++i) {
                                 var tat = this.userlist[i];
                                 for (var j = 0; j < this.userlist[i].url.length; ++j) {
                                     var tmp = JSON.parse(JSON.stringify(tat));
                                     tmp.url = tmp.url[j];
-                                    var doc = document.createElement("div");
                                     doc.innerHTML = tmp.nick;
                                     tmp.nick = doc.innerText;
                                     detect_ip(tmp);

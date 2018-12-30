@@ -79,20 +79,29 @@
     <table class="ui padded selectable unstackable table" align="center" width="90%" v-if="finish">
         <thead v-cloak>
         <tr class='toprow'>
-            <th>{{target.solution_id}}</th>
-            <th width="15%">{{target.user}}</th>
-            <th>{{target.problem_id}}</th>
-            <th width="13%">{{target.result}}</th>
-            <th width="15%">{{target.memory+"/"+target.time}}</th>
-            <th>{{target.language+"/"+target.length}}</th>
-            <th>{{target.submit_time}}</th>
-            <th>{{target.judger}}</th>
+            <th width="7%">{{target.solution_id}}</th>
+            <th width="15%"><div class="ui grid">
+            <div class="four wide column"></div><div class="twelve wide column">{{target.user}}</div></div></th>
+            <th width="7%">{{target.problem_id}}</th>
+            <th width="18%">{{target.result}}</th>
+            <th width="10%">{{target.memory+"/"+target.time}}</th>
+            <th width="13%">{{target.language+"/"+target.length}}</th>
+            <th width="18%">{{target.submit_time}}</th>
+            <th width="10%">{{target.judger}}</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="row in problem_lists" :class="row.sim?'warning need_popup':'need_popup'" :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p><p>用户指纹:<br>'+row.fingerprint+'</p>'">
+        <tr v-for="row in problem_lists" :class="row.sim?'warning need_popup':'need_popup'" :data-html="'<b>IP:'+row.ip+'</b><br><p>类型:'+detect_place(row.ip)+'</p><p>用户指纹:<br>'+row.fingerprint+'<br>硬件指纹:<br>'+row.fingerprintRaw+'</p>'">
             <td>{{row.solution_id}}</td>
-            <td><a :href="'userinfo.php?user='+row.user_id">{{row.user_id}}<br>{{row.nick}}</a>
+            <td><div class="ui grid">
+            <div class="three wide column" style="margin:auto">
+            <img class="ui avatar image" :src="'../avatar/'+row.user_id+'.jpg'" v-if="row.avatar||user[row.user_id].avatar" style="object-fit: cover;">
+            <img class="ui avatar image" src="../image/default-user.png" v-else style="object-fit: cover;">
+            </div>
+            <div class="twelve wide column">
+            <a :href="'userinfo.php?user='+row.user_id">{{row.user_id}}<br>{{row.nick}}</a>
+            </div>
+            </div>
             </td>
             <td>
                 <div class=center><a :href="(row.oj_name === 'local'?'new':(!row.oj_name?'new':row.oj_name.toLowerCase()))+'submitpage.php?cid='+row.contest_id+'&pid='+row.num">{{end?((row.oj_name === "local"?"":row.oj_name.toUpperCase())+row.problem_id):(row.num + 1001)}}</a>
@@ -103,6 +112,7 @@
                    <a v-if="row.sim" :href="'comparesource.php?left='+row.solution_id+'&right='+row.sim_id" v-cloak :class="answer_class[row.result]"><br>
                    {{(Boolean(row.sim) === false?'':row.sim_id+' ('+row.sim+'%)')}}
                    </a>
+                   <br>
                    <a :class="answer_class[row.result]" v-if="row.result !== 4 && row.pass_rate > 0.05"><i :class="answer_icon[row.result]+' icon'" style="opacity:0"></i>Passed:{{(row.pass_rate*100).toString().substring(0,4)}}%</a>
 
             </td>
@@ -387,7 +397,8 @@ Vue.component("statistic-table", {
         },
         data: function () {
             return {
-                problem_alpha:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                problem_alpha:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+                user:{}
             };
         },
         methods: {
@@ -499,6 +510,10 @@ Vue.component("statistic-table", {
         },
         computed: {
             problem_lists: function () {
+                var that = this;
+                _.forEach(this.problem_list,function(i){
+                    that.user[i.user_id] = that.user[i.user_id] || i;
+                })
                 var doc = document.createElement("div");
                 for(let i in this.problem_list) {
                     doc.innerHTML = this.problem_list[i].nick;
@@ -766,6 +781,7 @@ Vue.component("statistic-table", {
                 obj.ip = data.val.ip;
                 obj.fingerprint = data.val.fingerprint;
                 obj.judger = "RATH";
+                obj.avatar = !!data.val.avatar;
                 obj.result = 0;
                 this.problem_list.pop();
                 this.problem_list.unshift(obj);

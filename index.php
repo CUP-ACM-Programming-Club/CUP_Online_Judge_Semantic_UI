@@ -134,7 +134,7 @@ $homepage="";
             <div class="column">
             <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a><!-- Place this tag where you want the button to render. -->
             <iframe class="github_button" src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="30px"></iframe>
-
+            <a class="github_button" href="https://travis-ci.com/ryanlee2014/CUP-Online-Judge-Express" target="_blank"><img src="https://travis-ci.com/ryanlee2014/CUP-Online-Judge-Express.svg?branch=master" style="vertical-align: middle;"></a>
             </div>
             <br><a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
 <!--<h4></h4>-->
