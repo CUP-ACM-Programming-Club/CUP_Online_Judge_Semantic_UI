@@ -123,6 +123,7 @@
                             sampleoutput: d.sample_output,
                             hint: d.hint,
                             fingerprint:"",
+                            fingerprintRaw: "",
                             submit: "提交:" + d.submit,
                             accepted: "正确:" + d.accepted,
                             source: d.source,
@@ -565,8 +566,8 @@
                                 source: window.editor.getValue(),
                                 share: this.share,
                                 type: type,
-                                fingerprint: that.fingerprint,
-                                csrf: "<?=$token?>"
+                                fingerprintRaw: that.fingerprintRaw,
+                                fingerprint: that.fingerprint
                             };
                             window.postdata = postdata;
                             var that = this;
@@ -578,8 +579,7 @@
                             }
                             else {
                             $.post("submit.php", {
-                                json: JSON.stringify(postdata),
-                                csrf: "<?=$token?>"
+                                json: JSON.stringify(postdata)
                             }, function (data) {
                                 var running_id = parseInt(data);
                                 if (isNaN(running_id)) {
@@ -681,8 +681,8 @@
                                     language: $("#language").val(),
                                     source: window.editor.getValue(),
                                     type: type,
-                                    csrf: "<?=$token?>",
-                                    fingerprint: that.fingerprint
+                                    fingerprint: that.fingerprint,
+                                    fingerprintRaw: that.fingerprintRaw
                                 };
                                 window.postdata = postdata;
                             }
@@ -696,8 +696,7 @@
                             }
                             else {
                                 $.post("submit.php?ajax", {
-                                json: JSON.stringify(window.postdata),
-                                csrf: "<?=$token?>"
+                                json: JSON.stringify(window.postdata)
                             }, function (data) {
                                 if (!isNaN(parseInt(data)) && typeof window.socket == "object" && window.socket.connected) {
                                     window.socket.emit("submit", {submission_id: parseInt(data), val: window.postdata});
@@ -746,6 +745,7 @@
                         var that = this;
                         Fingerprint2.get(function (components) {
                             var values = components.map(function (component) { return component.value })
+                            that.fingerprintRaw = Fingerprint2.x64hash128(values.join(''), 31);
                             $.get("../api/status/ip",function(data){
                                 var ip = data.ip;
                                 values.push(ip);
