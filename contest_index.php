@@ -98,13 +98,13 @@ $homepage="";
         <video autoplay muted id="myVideo" style="display:none">
   <source src="/video/icpc.mp4" type="video/mp4">
 </video>
-<div class="unvisible">
+<div class="unvisible" id="main_container">
         <div class="ui container">
             <div class="ui large secondary inverted pointing menu">
             </div>
         </div>
-        
-        <div class="ui text container transition main title">
+        <div class="ui grid" id="main_masthead" style="transform: translateX(25%)">
+        <div id="left" class="ui text container transition main title eight wide column">
             <h1 class="ui inverted header ml14">
   <span class="text-wrapper">
     <span class="letters" data-content="CUP Online Judge"></span>
@@ -112,6 +112,7 @@ $homepage="";
   
 </h1>
 <div class="column buttonset">
+    
 <a href="icpc.php" target="_blank" class="ui inverted large button download basic">
               <i class="newspaper outline icon"></i>
               关于ICPC
@@ -127,12 +128,42 @@ $homepage="";
             <div class="column">
             <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a><!-- Place this tag where you want the button to render. -->
             <iframe class="github_button" src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="30px"></iframe>
-
+            <a class="github_button" href="https://travis-ci.com/ryanlee2014/CUP-Online-Judge-Express" target="_blank"><img src="https://travis-ci.com/ryanlee2014/CUP-Online-Judge-Express.svg?branch=master" style="vertical-align: middle;"></a>
             </div>
-            <div><div class="ui huge primary button" onclick="location.href='contest.php?my'">前往竞赛/考试<i class="right arrow icon"></i></div></div>
+            <br><a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
 <!--<h4></h4>-->
              <!--<a class="ui huge inverted download button" href="cprogrammingcontest.php">查看复赛情况</a>-->
         </div>
+        <div id="right" class="ui text container transition main title eight wide column" style="opacity: 0">
+            <div class="ui grid">
+                <div class="two wide column"></div>
+                <div class="twelve wide column">
+                    <div class="ui warning message" style="margin-top:15em">
+                        <!--<i class="close icon"></i>-->
+                        <div class="header">维护提示</div>
+                        <p style="font-size:1em">为保证考试过程中系统的稳定，<br>本平台于2019年1月1日至1月4日将停止一般用户的访问。</p>
+                        <!--
+                        <ul class="list">
+    <li>考试/测验请访问http://acm.cup.edu.cn</li>
+    <li>普通用户/IPv6用户请访问https://www.cupacm.com</li>
+    <li>外网用户请访问https://oj.cupacm.com</li>
+  </ul>
+                        -->
+                        </div>
+                    <div class="row">
+                        
+                    </div>
+                </div>
+                <div class="two wide column">
+                    
+                </div>
+            </div>
+            
+        </div>
+        </div>
+        <div class="ui vertical divider inverted" id="divider" style="opacity: 0">
+    
+  </div>
         <br>
         <!--
         <div class="ui text shape">
@@ -141,7 +172,7 @@ $homepage="";
             </div>
         </div>
         <br><br>-->
-        <a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
+        
         </div>
         <!--<div class="ui huge primary button" onclick="location.href='<?php if (isset($_SESSION['user_id'])) echo "problemset.php"; else echo "newloginpage.php"; ?>'"><?php if (!isset($_SESSION['user_id'])) echo "Login"; else echo "Get Started"; ?><i class="right arrow icon"></i></div>-->
     </div>
@@ -252,10 +283,10 @@ $homepage="";
         window.backpic = setInterval(function () {
                 $("#background").addClass('zoomed');
 
-                setTimeout(function () {
+            setTimeout(function () {
                     $("#background")
                         .removeClass(window.picid)
-                        .addClass((window.picid = 'bg' + getRandomIntInclusive(0, 12)))
+                        .addClass((window.picid = 'bg' + getRandomIntInclusive(14, 18)))
                         .removeClass('zoomed')
                     ;
                 }, 1900);
@@ -315,6 +346,11 @@ $homepage="";
 (function(){
     finished = true;
     window.picid = 5;
+    $(".ui.borderless.network.secondary.menu").addClass("inverted");
+    document.getElementById('myVideo').style.opacity = "0.4";
+    $.get("../api/login/",function(data){
+        var logined = data.logined;
+        if(!logined) {
         window.backpic = setInterval(function(){
             var index = getRandomIntInclusive(1,5);
            // while(index === window.picid) {
@@ -357,11 +393,10 @@ $homepage="";
                 window.picid = index;
             }
         },15000);
-    $(".ui.borderless.network.secondary.menu").addClass("inverted");
-    document.getElementById('myVideo').style.opacity = "0.4";
-    setTimeout(function(){
-        $(".unvisible").removeClass("unvisible");
-        anime.timeline({loop: false})
+        }
+        setTimeout(function(){
+        $("#main_container").removeClass("unvisible");
+        var main_timeline = anime.timeline({loop: false})
   .add({
     targets: '.ml14 .line',
     scaleX: [0,1],
@@ -374,6 +409,7 @@ $homepage="";
     translateX: [40,0],
     translateZ: 0,
     scaleX: [0.3, 1],
+    textShadow:"3px 3px 3px #555555",
     easing: "easeOutExpo",
     duration: 800,
     offset: '-=600',
@@ -407,9 +443,43 @@ $homepage="";
       paddingLeft:20,
       scale:1.25,
       duration: 500,
-      offset: '-=600'
-  })
+      offset: '-=600',
+  });
+  if(logined) {
+  main_timeline.
+  add({
+      targets: '#main_masthead',
+      translateX:["25%", 0],
+      easing: 'easeInOutQuart',
+      duration: 1000,
+      offset: '-=300',
+      complete: function(){
+      }
+  }).
+  add({
+      targets: "#right",
+      opacity:[0,1],
+      easing: 'easeInOutQuart',
+      duration: 1000,
+      offset: '-=300'
+  }).
+  add({
+      targets: "#divider",
+      opacity:[0,1],
+      easing: 'easeInOutQuart',
+      duration:500,
+      offset: '-=300',
+      complete: function() {
+          var $style = $("style");
+          var $html = $style.eq($style.length - 1).html();
+          $html += "\n.gr5::after{\nopacity:0.5;\n}\n";
+          $style.eq($style.length - 1).html($html);
+      }
+  });
+  }
     },0);
+    })
+    
    })();
   /*.
   add({

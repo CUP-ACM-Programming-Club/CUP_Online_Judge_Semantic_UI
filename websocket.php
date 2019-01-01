@@ -175,8 +175,10 @@
         })
         socket.on('msg',function(data){
             console.log(data);
-            $(".msg.header.item").attr("data-html","<div class='header'>From:"+data['user_id']+"<br>"+data['nick']+"</div><div class='content'>"+data['content']+"</div>")
+            setTimeout(function(){
+                $(".item.online_num").attr("data-html","<div class='header'>From:"+data['user_id']+"<br>"+data['nick']+"</div><div class='content'>"+data['content']+"</div>")
             .popup("show").popup("set position","bottom center");
+            },500);
         });
         $("body").on('click',function(){
             $(".msg.header.item").popup("hide").removeAttr("data-html");

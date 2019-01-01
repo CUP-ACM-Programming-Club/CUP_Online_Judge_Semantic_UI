@@ -22,6 +22,7 @@
     <title><?php echo $OJ_NAME?></title>  
     <?php include("template/$OJ_TEMPLATE/css.php");?>	    
 <?php include("template/$OJ_TEMPLATE/js.php");?>	   
+<script src="/template/semantic-ui/js/utils.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -60,7 +61,8 @@ SyntaxHighlighter.all();
 </script>
 -->
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
-<div class="ui existing segment" v-cloak>
+    <contest-mode v-if="contest_mode"></contest-mode>
+<div class="ui existing segment" v-if="!contest_mode" v-cloak>
     <div class="ui raised segment" v-cloak >
     <div class="ui tiny statistics" v-if="code">
         <div class="statistic">
@@ -180,6 +182,7 @@ SyntaxHighlighter.all();
                         icon:data.data.icon,
                         from:data.data.from||"",
                         statement:false,
+                        contest_mode:false,
                         privilege:data.privilege && rejudge_mode
                     }
                 },
@@ -201,6 +204,20 @@ SyntaxHighlighter.all();
             })
             }
             else {
+                if(data.contest_mode) {
+                    window.showsource = new Vue({
+                    el:".ui.container.padding",
+                    data:function(){
+                        return {
+                            code:false,
+                            error:true,
+                            statement:"",
+                            contest_mode: true
+                        }
+                    }
+                });
+                }
+                else {
                 window.showsource = new Vue({
                     el:".ui.container.padding",
                     data:function(){
@@ -211,6 +228,7 @@ SyntaxHighlighter.all();
                         }
                     }
                 });
+                }
             }
         })
     </script>

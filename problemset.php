@@ -145,7 +145,8 @@
     </table>
 </script>
 <div class="ui left aligned container">
-    <div class="padding">
+    <contest-mode v-if="contest_mode"></contest-mode>
+    <div v-else class="padding">
         <h2 class="ui dividing header">
             Problem Set
             <div class="sub header" v-cloak>
@@ -450,6 +451,7 @@
                 show_label_cloud: localStorage.getItem("show_label_cloud") === 'true',
                 chart: undefined,
                 has_draw:false,
+                contest_mode:false
             },
             computed: {
                 tables: {
@@ -686,7 +688,12 @@
 
                 this.current_page = page;
                 $.get("../api/problemset/" + page + "/" + (this.search_tag || "none") + "/" + this.order_target + "/" + this.order + "/?label=" + this.label, function (data) {
-                    that.tables = data;
+                    if(data.total) {
+                        that.tables = data;
+                    }
+                    else {
+                        that.contest_mode = data.contest_mode;
+                    }
                 });
 
             },

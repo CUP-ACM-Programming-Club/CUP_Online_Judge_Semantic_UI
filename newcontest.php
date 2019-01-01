@@ -64,9 +64,12 @@
 </p></div>
 </div>
 </script>
+
 <div class="ui container"  id="contest_table" v-cloak>
     <not-start v-if="mode === 2"></not-start>
     <login-form v-if="mode === 1"></login-form>
+    <contest-mode v-if="mode === 3"></contest-mode>
+    <limit-hostname v-if="mode === 4" :content="limit_content"></limit-hostname>
      <div class="padding ui container" v-if="mode === 0">
         <h2 class="ui dividing header">
             Contest Problem Set
@@ -152,10 +155,19 @@ Vue.component("login-form",{
         });
     }
 });
+
 Vue.component("not-start",{
     template:"#not_start",
     props:{},
     data:function(){return{};},
+    mounted:function(){}
+});
+Vue.component("limit-hostname",{
+    template:'<div class="ui negative message"><div class="header"><i class="ban icon"></i>访问限制</div> <p>{{content}}</p></div>',
+    props:{
+        content:String
+    },
+    data:function(){},
     mounted:function(){}
 });
 Vue.component("contest-detail",{
@@ -200,6 +212,7 @@ Vue.component("contest-detail",{
                 current_mode:0,
                 order:1,
                 type:0,
+                limit_content:"",
                 admin:false,
                 private:0
             }
@@ -239,14 +252,22 @@ Vue.component("contest-detail",{
                         that.mode = 2;
                         return;
                     }
+                    else if(_d.contest_mode) {
+                        that.mode = 3;
+                        return;
+                    }
                 }
                 _.forEach(_d.data,function(val){
                     if(!val.accepted)val.accepted = 0;
                     if(!val.submit)val.submit = 0;
                 });
                 var addr = _d.limit;
+                if (_d.admin) {
+                    addr = null;
+                }
                 if(addr && location.href.indexOf(addr) == -1) {
-                    alert("根据管理员设置的策略，本次contest请使用" + addr + "访问");
+                    that.mode = 4;
+                    that.limit_content = "根据管理员设置的策略，本次contest请使用" + addr + "访问";
                     return;
                 }
                 that.problem_table = _d.data;
