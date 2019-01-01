@@ -26,8 +26,9 @@
 <?php include("template/$OJ_TEMPLATE/nav.php") ?>
     <!-- Main component for a primary marketing message or call to action -->
     <div class="ui container padding" style="min-height:400px">
-        <h2 class="ui dividing header">Discuss</h2>
-        <div class="ui grid">
+        <contest-mode v-if="contest_mode"></contest-mode>
+        <h2 class="ui dividing header" v-if="!contest_mode">Discuss</h2>
+        <div class="ui grid" v-if="!contest_mode">
             <div class="row">
                 <div class="thirteen wide column">
                     <div class="ui search">
@@ -51,7 +52,7 @@
                 </div>
             </div>
     </div>
-    <table class="ui very basic center aligned table" v-cloak>
+    <table class="ui very basic center aligned table" v-if="!contest_mode" v-cloak>
         <thead>
             <th width="5%">ID</th>
             <th width="40%">Title</th>
@@ -81,7 +82,8 @@
                 page:parseInt(query_string.page)||0,
                 table_val:[],
                 total:0,
-                search:""
+                search:"",
+                contest_mode:false
             }
         },
         watch:{
@@ -94,6 +96,10 @@
                 }
                 url += "?page=" + page;
                 $.get(url,function(data){
+                    if(data.contest_mode) {
+                        that.contest_mode = true;
+                        return;
+                    }
                     if(data.discuss) {
                         that.table = data;
                     }
@@ -112,9 +118,17 @@
             var page = this.page * 20;
             var that = this;
             $.get("/api/discuss?page="+page,function(data){
+                if(data.contest_mode) {
+                    that.contest_mode = true;
+                    return;
+                }
                 that.table = data;
             });
             $.get("/api/discuss?page="+page,function(data){
+                if(data.contest_mode) {
+                    that.contest_mode = true;
+                    return;
+                }
                 that.table = data;
             });
         },

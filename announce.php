@@ -78,7 +78,7 @@
         nick:"<?=$_SESSION['nick']?>",
         content:send_text
     }
-      $(".msg.header.item").attr("data-html","<div class='header'>From:"+data['user_id']+"<br>"+data['nick']+"</div><div class='content'>"+data['content']+"</div>")
+      $(".item.online_num").attr("data-html","<div class='header'>From:"+data['user_id']+"<br>"+data['nick']+"</div><div class='content'>"+data['content']+"</div>")
             .popup("show").popup("set position","bottom center");
       //var sidebar=document.getElementById("sidebar_text");
      // sidebar.innerHTML=send_text;

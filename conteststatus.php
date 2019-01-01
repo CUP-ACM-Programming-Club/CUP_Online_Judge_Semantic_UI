@@ -80,14 +80,14 @@
         <thead v-cloak>
         <tr class='toprow'>
             <th width="7%">{{target.solution_id}}</th>
-            <th width="15%"><div class="ui grid">
+            <th width="18%"><div class="ui grid">
             <div class="four wide column"></div><div class="twelve wide column">{{target.user}}</div></div></th>
-            <th width="7%">{{target.problem_id}}</th>
-            <th width="18%">{{target.result}}</th>
+            <th width="10%">{{target.problem_id}}</th>
+            <th width="15%">{{target.result}}</th>
             <th width="10%">{{target.memory+"/"+target.time}}</th>
             <th width="13%">{{target.language+"/"+target.length}}</th>
             <th width="18%">{{target.submit_time}}</th>
-            <th width="10%">{{target.judger}}</th>
+            <th width="9%">{{target.judger}}</th>
         </tr>
         </thead>
         <tbody>
@@ -126,7 +126,7 @@
                 <span class="boldstatus" v-else>{{language_name[(!row.oj_name?'local':row.oj_name.toLowerCase())][row.language]}}</span>
                 <span v-if="(self === row.user_id || isadmin) && row.problem_id"> / </span>
                 <a class="boldstatus" v-if="(self === row.user_id || isadmin) && row.problem_id" target="_blank"
-                   :href="(row.oj_name === 'local'?'new':(!row.oj_name?'local':row.oj_name.toLowerCase()))+'submitpage.php?cid='+Math.abs(row.contest_id)+'&pid='+row.num+'&sid='+row.solution_id">编辑</a>
+                   :href="(row.oj_name === 'local'?'new':(!row.oj_name?'new':row.oj_name.toLowerCase()))+'submitpage.php?cid='+Math.abs(row.contest_id)+'&pid='+row.num+'&sid='+row.solution_id">编辑</a>
                 <br>
                 <span class="boldstatus" v-if="self === row.user_id || isadmin">{{language_name[(!row.oj_name?'local':row.oj_name.toLowerCase())][row.language]}}  / </span>
                 <span class="boldstatus">{{row.length}}B</span>
@@ -780,6 +780,7 @@ Vue.component("statistic-table", {
                 obj.in_date = new Date().toISOString();
                 obj.ip = data.val.ip;
                 obj.fingerprint = data.val.fingerprint;
+                obj.fingerprintRaw = data.val.fingerprintRaw;
                 obj.judger = "RATH";
                 obj.avatar = !!data.val.avatar;
                 obj.result = 0;

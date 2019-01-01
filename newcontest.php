@@ -64,9 +64,12 @@
 </p></div>
 </div>
 </script>
+
 <div class="ui container"  id="contest_table" v-cloak>
     <not-start v-if="mode === 2"></not-start>
     <login-form v-if="mode === 1"></login-form>
+    <contest-mode v-if="mode === 3"></contest-mode>
+    <limit-hostname v-if="mode === 4" :content="limit_content"></limit-hostname>
      <div class="padding ui container" v-if="mode === 0">
         <h2 class="ui dividing header">
             Contest Problem Set
@@ -98,8 +101,12 @@
                 <tbody>
                     <tr v-for="row in problem_table" :class="row.ac === 1?'positive':row.ac === -1?'negative':''">
                         <td class="center aligned">{{row.oj_name?row.oj_name:row.pid?"LOCAL ":""}}{{row.pid}}<br v-if="row.pid">Problem {{row.pnum + 1001}}</td>
-                        <td><i class='checkmark icon' v-if="row.ac === 1"></i><i class="remove icon" v-else-if="row.ac === -1"></i><a v-if="dayjs().isBefore(end_time) && dayjs().isAfter(start_time)" :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum"  v-html="markdownIt.renderRaw(row.title)"></a>
-                            <a v-else :href="'newsubmitpage.php?id=' + row.pid" v-html="markdownIt.renderRaw(row.title)"></a>
+                        <td><i class='checkmark icon' v-if="row.ac === 1"></i>
+                        <i class="remove icon" v-else-if="row.ac === -1"></i>
+                        <i class="checkmark icon" v-else style="opacity: 0"></i>
+                        
+                        <a v-if="dayjs().isBefore(end_time) && dayjs().isAfter(start_time)" :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum"  v-html="contest(markdownIt.renderRaw(row.title),row.pnum)"></a>
+                            <a v-else :href="'newsubmitpage.php?id=' + row.pid" v-html="contest(markdownIt.renderRaw(row.title),row.pnum)"></a>
                         </td>
                         <td v-if="now.isAfter(end_time)">
                             <a :href="'tutorial.php?from=' + (row.oj_name?row.oj_name:'local') + '&id=' + row.pid" target="_blank">题解</a>
@@ -152,10 +159,19 @@ Vue.component("login-form",{
         });
     }
 });
+
 Vue.component("not-start",{
     template:"#not_start",
     props:{},
     data:function(){return{};},
+    mounted:function(){}
+});
+Vue.component("limit-hostname",{
+    template:'<div class="ui negative message"><div class="header"><i class="ban icon"></i>访问限制</div> <p>{{content}}</p></div>',
+    props:{
+        content:String
+    },
+    data:function(){},
     mounted:function(){}
 });
 Vue.component("contest-detail",{
@@ -196,10 +212,11 @@ Vue.component("contest-detail",{
                 description:"",
                 title:"",
                 now:dayjs(),
-                contest_mode:0,
                 current_mode:0,
                 order:1,
                 type:0,
+                contest_mode: false,
+                limit_content:"",
                 admin:false,
                 private:0
             }
@@ -239,14 +256,24 @@ Vue.component("contest-detail",{
                         that.mode = 2;
                         return;
                     }
+                    else if(_d.contest_mode) {
+                        that.mode = 3;
+                        return;
+                    }
                 }
                 _.forEach(_d.data,function(val){
                     if(!val.accepted)val.accepted = 0;
                     if(!val.submit)val.submit = 0;
                 });
                 var addr = _d.limit;
+                var contest_mode = _d.contest_mode;
+                if (_d.admin) {
+                    addr = null;
+                    contest_mode = false;
+                }
                 if(addr && location.href.indexOf(addr) == -1) {
-                    alert("根据管理员设置的策略，本次contest请使用" + addr + "访问");
+                    that.mode = 4;
+                    that.limit_content = "根据管理员设置的策略，本次contest请使用" + addr + "访问";
                     return;
                 }
                 that.problem_table = _d.data;
@@ -255,14 +282,24 @@ Vue.component("contest-detail",{
                 that.start_time = dayjs(info.start_time);
                 that.end_time = dayjs(info.end_time);
                 that.title = info.title;
+                that.contest_mode = contest_mode;
                 that.description = info.description;
                 that.admin = _d.admin;
-                that.contest_mode = info.contest_mode;
+                //that.contest_mode = info.contest_mode;
                 that.private = Boolean(info.private);
                 if(typeof resolve === "function") {
                     resolve();
                 }
             });
+            },
+            contest: function(html,num) {
+                console.log(this.contest_mode);
+                if(this.contest_mode) {
+                    return "Problem " + String.fromCharCode("A".charCodeAt(0) + parseInt(num));
+                }
+                else {
+                    return html;
+                }
             },
             orderBy: function(type) {
                 var that = this;

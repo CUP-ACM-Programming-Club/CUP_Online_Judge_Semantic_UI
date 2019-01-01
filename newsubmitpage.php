@@ -72,8 +72,12 @@
 </head>
 <body>
 <?php include("template/semantic-ui/nav.php"); ?>
-
+<div id="cmod" class="ui container">
+    <contest-mode v-if="contest_mode"></contest-mode>
+    <limit-hostname v-if="limit"></limit-hostname>
+    </div>
 <div class="main screen" v-cloak>
+    
     <script>
         function qsa(sel) {
             return Array.apply(null, document.querySelectorAll(sel));
@@ -88,7 +92,28 @@
         var loadVue = new Promise(function (resolve, reject) {
             $.get("/api/problem/local" + window.location.search, function (data) {
                 if (data['status'] == "error") {
-                    alert(data['statement']);
+                    if(data['statement']) {
+                        alert(data['statement']);
+                    }
+                    new Vue({
+                        el:"#cmod",
+                        data:function(){return {contest_mode:data.contest_mode,limit:false};},
+                        mounted:function(){}
+                    });
+                    return;
+                }
+                var addr = data.limit_hostname;
+                if (data.isadmin) {
+                    addr = null;
+                }
+                if(addr && location.href.indexOf(addr) == -1) {
+                    Vue.component("limit-hostname",VueMaker("访问限制","根据管理员设置的策略，本次contest请使用" + addr + "访问"));
+                    new Vue({
+                        el:"#cmod",
+                        data:{contest_mode:false,limit:true},
+                        mounted:function(){}
+                    });
+                    //alert("根据管理员设置的策略，本次contest请使用" + addr + "访问");
                     return;
                 }
                 var cid = null, pid = null, id = null, tid = null;
@@ -603,6 +628,7 @@
                         error_callback: function(data) {
                             alert(data.statement);
                             this.resume();
+                            $(".ui.teal.progress").hide();
                         },
                         resume: function () {
                             if (--this.resume_time <= 0) {
