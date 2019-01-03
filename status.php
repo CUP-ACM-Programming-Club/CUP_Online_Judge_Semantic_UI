@@ -145,7 +145,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="four fields center aligned">
+                    <div class="five fields center aligned">
                         <div class="field" style="margin:auto">
                             <div class="ui toggle checkbox">
                                 <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
