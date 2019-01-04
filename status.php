@@ -161,7 +161,7 @@
                         <div v-if="isadmin" class="field" style="margin:auto">
                             <div class="ui toggle checkbox">
                                 <input type="checkbox" @click="privilege=!privilege">
-                                <label>显示测试运行</label>
+                                <label>不显示测试运行</label>
                             </div>
                         </div>
                         <div class="field">
@@ -712,7 +712,7 @@
                 if(!this.auto_refresh) {
                     return;
                 }
-                if(!this.privilege && (data.val.id <= 0 || (data.val.cid && data.val.cid <= 0))) {
+                if(this.privilege && (data.val.id <= 0 || (data.val.cid && data.val.cid <= 0))) {
                     return;
                 }
                 if((!this.user_id || this.user_id === data.user_id) && (this.problem_result === -1) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt && (!this.problem_id || parseInt(this.problem_id) === Math.abs(data.val.id))) {
