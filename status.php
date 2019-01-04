@@ -10,7 +10,7 @@
     <title>Status -- <?=$OJ_NAME ?></title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
-    <script src="/template/semantic-ui/js/Chart.bundle.min.js"></scripet>
+    <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
     <script src="/js/dayjs.min.js"></script>
 </head>
 
@@ -145,23 +145,29 @@
                             </div>
                         </div>
                     </div>
-                    <div class="four fields center aligned">
+                    <div :class="(isadmin ? 'five':'four') +' fields center aligned'">
                         <div class="field" style="margin:auto">
                             <div class="ui toggle checkbox">
-  <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
-  <label>自动刷新</label>
-</div>
+                                <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
+                                <label>自动刷新</label>
+                            </div>
                         </div>
                         <div class="field" style="margin:auto">
-                        <div class="ui toggle checkbox">
-  <input type="checkbox" @click="sim_checkbox=!sim_checkbox">
-  <label>仅显示判重提交</label>
-</div>
-</div>
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" @click="sim_checkbox=!sim_checkbox">
+                                <label>仅显示判重提交</label>
+                            </div>
+                        </div>
+                        <div v-if="isadmin" class="field" style="margin:auto">
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" @click="privilege=!privilege">
+                                <label>不显示测试运行</label>
+                            </div>
+                        </div>
                         <div class="field">
-                        <button class="ui labeled icon mini button" @click.prevent="search($event)"><i
-                                class="search icon"></i><?= $MSG_SEARCH ?></button>
-                                </div>
+                            <button class="ui labeled icon mini button" @click.prevent="search($event)">
+                                <i class="search icon"></i><?= $MSG_SEARCH ?></button>
+                        </div>
                         <div class="field"></div>
                     </div>
                 </form>
@@ -597,6 +603,7 @@
             user_id: null,
             language: -1,
             sim_checkbox:0,
+            privilege:0,
             problem_result: -1,
             auto_refresh: true,
             page_cnt: 0,
@@ -605,6 +612,10 @@
         },
         watch: {
             sim_checkbox: function(newVal, oldVal) {
+                var that = this;
+                this.search().then(function(){that.search()});
+            },
+            privilege: function(newVal, oldVal) {
                 var that = this;
                 this.search().then(function(){that.search()});
             },
@@ -667,8 +678,9 @@
                 var result = this.problem_result == -1 ? "null" : this.problem_result;
                 var page_cnt = this.page_cnt * 20;
                 var sim = Number(this.sim_checkbox);
+                var pri = Number(this.privilege);
                 return new Promise(function(resolve,reject){
-                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim, function (data) {
+                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim + "/" + pri, function (data) {
                         that.dim = false;
                         that.search_func(data);
                         resolve();
@@ -684,11 +696,12 @@
                 var result = this.problem_result == -1 ? "null" : this.problem_result;
                 var page_cnt = this.page_cnt * 20;
                 var sim_checkbox = Number(this.sim_checkbox);
+                var pri = Number(this.privilege);
                 var that = this;
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim_checkbox, function (data) {
+                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim_checkbox + "/" + pri, function (data) {
                     that.dim = false;
                     that.search_func(data);
-                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim_checkbox, function (data) {
+                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt + "/" + sim_checkbox + "/" + pri, function (data) {
                         that.dim = false;
                         that.search_func(data);
                     })
@@ -697,6 +710,9 @@
             },
             submit: function (data) {
                 if(!this.auto_refresh) {
+                    return;
+                }
+                if(!this.privilege && (data.val.id <= 0 || (data.val.cid && data.val.cid <= 0))) {
                     return;
                 }
                 if((!this.user_id || this.user_id === data.user_id) && (this.problem_result === -1) && (this.language === -1 || this.language === data.val.language) && !this.page_cnt && (!this.problem_id || parseInt(this.problem_id) === Math.abs(data.val.id))) {
