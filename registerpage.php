@@ -64,7 +64,7 @@
     ?>
     <!-- Main component for a primary marketing message or call to action -->
     <div class="ui container">
-        <?php if (true||preg_match('/10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/', $user_IP)) { ?>
+        <?php if (preg_match('/10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/', $user_IP)) { ?>
             <div class="html ui top attached segment">
             <form action="register.php" method="post" class="ui large form">
             <h4>根据要求，请实名注册账号，非法账号将定期删除，严重者封禁IP</h4>
@@ -150,7 +150,7 @@
                         },
                         {
                             type :'regExp[/^201[0-9]{7}$/]',
-                            prompt:'Please enter your legal user_id like 2016000000!'
+                            prompt:'Please enter your legal user_id!'
                         }
                     ]
                 },
@@ -194,6 +194,6 @@
         })
     ;
 </script>
-<?php include("template/$OJ_TEMPLATE/bottom.php");?>
+<?php include("template/semantic-ui/bottom.php");?>
 </body>
 </html>

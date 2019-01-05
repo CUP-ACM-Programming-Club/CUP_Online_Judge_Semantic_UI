@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title><?php echo $OJ_NAME ?></title>
+    <title>Online List <?php echo $OJ_NAME ?></title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -124,6 +124,7 @@ include("csrf.php");
                     }
                     else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
                         var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                        console.log(ip);
                         if(parseInt(ip) <= 80) {
                             tmp.place = "502机房";
                         }
@@ -174,12 +175,23 @@ include("csrf.php");
                 if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
                     tmp.place = "润杰有线";
                 }
-                else if (tmp.intranet_ip.match(/10\.200\.2[5-8]{1}\.[0-9]{1,3}/)) {
+                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
+                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
                     if (tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)) {
                         tmp.place = "405机房";
                     }
                     else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
-                        tmp.place = "502机房";
+                        var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                        console.log(ip);
+                        if(parseInt(ip) <= 80) {
+                            tmp.place = "502机房";
+                        }
+                        else if(parseInt(ip) < 172 && parseInt(ip) >= 101) {
+                            tmp.place = "503机房";
+                        }
+                        else {
+                            tmp.place = "机房";
+                        }
                     }
                     else {
                         tmp.place = "机房";
@@ -223,22 +235,23 @@ include("csrf.php");
         else
             tmp.place = "未知";
     }
-
-    var hostname = "<?=$_SERVER['HTTP_HOST']?>";
+    var doc = document.createElement("div");
+    var hostname = location.hostname;
     var user_list = new Vue({
         el: "#user_list_table",
         data: {
             userlist: window.online_list,
-            tmp_userlist:[]
+            tmp_userlist:[],
+            need_popup: false
         },
         computed:
             {
                 user: {
                     get: function () {
                         if (!this.userlist) return [];
+                        var oldUser = [], newUser = [];
                         for (var i = 0; i < this.userlist.length; ++i) {
                             var tmp = this.userlist[i];
-                            var doc = document.createElement("div");
                             doc.innerHTML = this.userlist[i].nick;
                             this.userlist[i].nick = doc.innerText;
                             detect_ip(tmp);
@@ -255,17 +268,39 @@ include("csrf.php");
                     set: function (newval) {
                         if(!this.userlist) {
                             this.userlist = newval;
+                            this.need_popup = true;
                         }
                         else {
                             this.tmp_userlist = newval;
+                            var oldUser = [],newUser = [];
+                            _.forEach(this.userlist, function(v){oldUser.push(v.user_id)});
+                            _.forEach(this.tmp_userlist, function(v){newUser.push(v.user_id)});
+                            oldUser.sort(),newUser.sort();
+                            if(JSON.stringify(oldUser) !== JSON.stringify(newUser)) {
+                                this.need_popup = true;
+                            }
                         }
                     }
+                }
+            },
+            updated:function() {
+                if(this.need_popup) {
+                    $("#user_list_table td").popup({
+                    on: 'hover',
+                    positon: "top center",
+                    hoverable  : true
+                });
+                this.need_popup = false;
                 }
             },
             mounted:function() {
                 var that = this;
                 setInterval(function(){
-                    that.userlist = JSON.parse(JSON.stringify(that.tmp_userlist));
+                    var stringified = JSON.stringify(that.tmp_userlist);
+                    var originalstr = JSON.stringify(that.userlist);
+                    if(stringified !== originalstr) {
+                        that.userlist = JSON.parse(stringified);
+                    }
                 },1000);
             }
     });
@@ -319,16 +354,16 @@ include("csrf.php");
                     }
                 },
             updated: function () {
-                $("td").popup({
-                    on: 'hover',
-                    positon: "top center",
-                    hoverable  : true
-                })
+                
             },
             mounted:function() {
                 var that = this;
                 setInterval(function(){
-                    that.userlist = JSON.parse(JSON.stringify(that.tmp_userlist));
+                    var stringified = JSON.stringify(that.tmp_userlist);
+                    var originalstr = JSON.stringify(that.userlist);
+                    if(stringified !== originalstr) {
+                        that.userlist = JSON.parse(stringified);
+                    }
                 },1000);
             }
         }

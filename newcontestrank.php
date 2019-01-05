@@ -78,8 +78,8 @@ td{
     <h3 class="ui header">
         当前时间:{{current_time}}
     <div class="sub header" v-if="start_time">
-        起始时间:{{dayjs(start_time).format("YYYY-MM-DD HH:mm:ss")}},已经过
-        {{format_date(dayjs().diff(start_time,"second"))}}
+        起始时间:{{dayjs(start_time).format("YYYY-MM-DD HH:mm:ss")}},
+        {{format_time(dayjs().diff(start_time,"second"))}}
     </div>
     </h3>
 </script>
@@ -150,20 +150,22 @@ td{
     </tr>
 </tbody>
 </table>
-<table id="save" style="display:none">
+<table id="save" style="display:none;vnd.ms-excel.numberformat:@">
 <tbody>
-    <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5%>Solved</td><td width=5%>Penalty</td><td>环境指纹数</td><td>硬件指纹数</td>
+    <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5%>Solved</td><td width=5%>Penalty</td><td>环境指纹数</td><td>硬件指纹数</td><td>IP总数</td><td>地点</td>
 <td v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</td></tr>
     <tr v-for="row in submitter">
-        <td>{{row.rank}}</td>
-        <td>{{row.user_id}}</td>
-        <td>{{convertHTML(row.nick)}}</td>
-        <td>{{row.ac}}</td>
+        <td align="center">{{row.rank}}</td>
+        <td align="center">{{row.user_id}}</td>
+        <td align="center">{{convertHTML(row.nick)}}</td>
+        <td align="center">{{row.ac}}</td>
         <td>{{format_date(row.penalty_time)}}</td>
         <td>{{row.fingerprintSet.size}}</td>
         <td>{{row.handwareFingerprintSet.size}}</td>
-        <td v-for="p in row.problem">
-                {{ (p.submit.length > 0)?'(-':''}}{{p.try_time > 0 ? p.try_time + ")" : p.submit.length > 0?p.submit.length + ")" : ""}}{{p.accept.length > 0 ? format_date(p.accept[0].diff(p.start_time,'second')):""}}
+        <td>{{row.ipSet.size}}</td>
+        <td>{{row.ipSet.size === 1 ? detect_place(Array.from(row.ipSet)[0]) : row.ipSet.size === 0?"无":"略"}}</td>
+        <td :bgcolor="'#FF' + (format_color(Math.max(Math.floor((1 << 8) - (256 * Math.max(p.sim - 69,0) / 31.0)) - 1, 0))).toString(16)" v-for="p in row.problem" align="left">
+                {{ (p.submit.length > 0)?'(-':''}}{{p.try_time > 0 ? p.try_time + ")" : p.submit.length > 0?p.submit.length + ")" : ""}}{{p.accept.length > 0 ? format_date(p.accept[0].diff(p.start_time,'second')):""}}{{p.sim > 0?"("+p.sim + "%) ":''}}
         </td>
     </tr>
 </tbody>
@@ -232,6 +234,7 @@ cell.className="ui grey";
         },100);
         
     });
+    var convert_flag = false;
 Vue.component('error-handle',{
     template:"#error_handle",
     props:{
@@ -255,6 +258,11 @@ Vue.component('time_pattern',{
         },1000);
     },
     methods:{
+        format_time: function(second) {
+            var arr = ["还有", "已经过"];
+            var passed = Number(second > 0);
+            return arr[passed] + this.format_date(second);
+        },
         format_date:function(second,mode = 0) {
                var fill_zero = function(str) {
                    if(str.length < 2) {
@@ -264,6 +272,7 @@ Vue.component('time_pattern',{
                        return str;
                    }
                }
+               second = Math.abs(second);
                var hour = String(parseInt(second / 3600));
                hour = fill_zero(hour);
                
@@ -323,12 +332,14 @@ var contestrank = window.contestrank = new Vue({
                                problem:{},
                                penalty_time:0,
                                fingerprintSet:new Set(),
-                               handwareFingerprintSet:new Set()
+                               handwareFingerprintSet:new Set(),
+                               ipSet: new Set()
                            }
                            for(var j = 0;j<total;++j) {
                                submitter[val.user_id].problem[j] = {
                                    submit:[],
-                                   accept:[]
+                                   accept:[],
+                                   sim: 0
                                 }
                            }
                        }
@@ -349,12 +360,14 @@ var contestrank = window.contestrank = new Vue({
                                problem:{},
                                penalty_time:0,
                                fingerprintSet:new Set(),
-                               handwareFingerprintSet:new Set()
+                               handwareFingerprintSet:new Set(),
+                               ipSet: new Set()
                            }
                            for(var j = 0;j<total;++j) {
                                submitter[val[i].user_id].problem[j] = {
                                    submit:[],
-                                   accept:[]
+                                   accept:[],
+                                   sim: 0
                                 }
                            }
                        }
@@ -363,6 +376,12 @@ var contestrank = window.contestrank = new Vue({
                        }
                        if(!!val[i].fingerprintRaw) {
                             submitter[val[i].user_id].handwareFingerprintSet.add(val[i].fingerprintRaw);
+                       }
+                       if(!!val[i].ip) {
+                           submitter[val[i].user_id].ipSet.add(val[i].ip);
+                       }
+                       if(val[i].sim !== null) {
+                           submitter[val[i].user_id].problem[val[i].num].sim = parseInt(val[i].sim);
                        }
                        if(submitter[val[i].user_id].problem[val[i].num] === undefined) {
                             continue;
@@ -491,6 +510,93 @@ var contestrank = window.contestrank = new Vue({
                else
                     return hour + ":" + minute + ":" + sec;
            },
+           format_color:function(num){
+               if(num < 10) {
+                   return "0" + num + "0" + num;
+               }
+               else {
+                   return "" + num + "" + num;
+               }
+           },
+        detect_place: function(ip) {
+                if(!ip) {
+                    return "未知";
+                }
+                var tmp = {
+                    intranet_ip:ip,
+                    place:""
+                };
+                if (tmp.intranet_ip.match(/10\.10\.[0-9]{2}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰有线";
+                }
+                else if(tmp.intranet_ip == "202.204.193.82") {
+                    tmp.place = "网络中心出口";
+                }
+                else if(tmp.intranet_ip === "10.200.25.101" && tmp.intranet_ip.match(/10\.200\.25\.1[0-9]{2}/) || tmp.intranet_ip === "10.200.25.200") {
+                    tmp.place = "403机房";
+                }
+                else if(tmp.intranet_ip.match(/10\.200\.26\./)) {
+                    var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                    if(parseInt(ip) <= 100) {
+                    tmp.place ="404机房";
+                    }
+                    else {
+                        tmp.place = "405机房";
+                    }
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/) || tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)
+                    || tmp.intranet_ip.match(/10\.200\.25\.[0-9]{1,3}/)) {
+                    if (tmp.intranet_ip.match(/10\.200\.26\.[0-9]{1,3}/)) {
+                        tmp.place = "405机房";
+                    }
+                    else if (tmp.intranet_ip.match(/10\.200\.28\.[0-9]{1,3}/)) {
+                        var ip = tmp.intranet_ip.substring(tmp.intranet_ip.lastIndexOf(".") + 1);
+                        if(parseInt(ip) <= 80) {
+                            tmp.place = "502机房";
+                        }
+                        else if(parseInt(ip) < 172 && parseInt(ip) >= 101) {
+                            tmp.place = "503机房";
+                        }
+                        else {
+                            tmp.place = "机房";
+                        }
+                    }
+                    else {
+                        tmp.place = "机房";
+                    }
+                }
+                else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰公寓Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.102\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "第三教学楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.103\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "地质楼Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.1[0-9]{2}\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "其他Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.200\.33\.[0-9]{1,3}/)) {
+                    tmp.place = "润杰机房六楼";
+                }
+                else if (tmp.intranet_ip.match(/172\.16\.[\s\S]+/)) {
+                    tmp.place = "VPN";
+                }
+                else if (tmp.intranet_ip && tmp.ip && tmp.intranet_ip != tmp.ip) {
+                    tmp.place = "外网";
+                }
+                else if (tmp.intranet_ip.match(/2001:[\s\S]+/)) {
+                    tmp.place = "校园网IPv6";
+                }
+                else if (tmp.intranet_ip.match(/10\.3\.[\s\S]+/)) {
+                    tmp.place = "地质楼";
+                }
+                else {
+                    tmp.place = "未知";
+                }
+                return tmp.place;
+            },
            convertHTML:function(str){
                var d = document.createElement("div");
                d.innerHTML = str;
@@ -498,16 +604,22 @@ var contestrank = window.contestrank = new Vue({
            },
            exportXLS:function(){
                var doc = document.getElementById("save");
-               var plain_text = "<center><h3>Contest "+ this.cid + " " + this.title +"</h3></center>";
+               var plain_text = "<html><head><meta http-equiv='Content-Type' content='application/vnd.ms-excel; charset=utf-8' /></head>";
+               plain_text += "<center><h3>Contest "+ this.cid + " " + this.title +"</h3></center>";
                plain_text += "<table border=1>" + doc.innerHTML.replace("<tbody>","").replace("</tbody>","");
                plain_text += "<tr><td colspan='8'>环境指纹指根据用户的硬件环境及IP地址不同而产生的不同的指纹</td></tr>";
                plain_text += "<tr><td colspan='8'>硬件指纹指的是不受IP影响的指纹</td></tr>";
                plain_text += "<tr><td colspan='8'>若环境指纹与硬件指纹均唯一，代表用户使用相同设备在相同地点完成提交</td></tr>";
                plain_text += "<tr><td colspan='8'>若硬件指纹唯一而环境指纹不唯一，代表同型号机器在不同IP地址提交</td></tr>";
                plain_text += "<tr><td colspan='8'>若硬件指纹不唯一，代表使用了多台设备进行提交</td></tr>";
-               plain_text += "</table>";
+               plain_text += "</table></html>";
                console.log(plain_text);
-               var blob = new Blob([plain_text], {type: 'application/excel'});
+               var blob;
+               blob = new Blob([plain_text], {type: 'application/excel'});
+               if(convert_flag) {
+                   saveAs(blob, "Contest " + this.cid + " 多个contest.xls" );
+               }
+               else
                saveAs(blob, "Contest " + this.cid + " " + this.title + ".xls" );
                //var table = TableExport(document.getElementById("save"));
                //var d = table.getExportData().save.xlsx;
@@ -534,6 +646,7 @@ var contestrank = window.contestrank = new Vue({
        },
        updated:function(){
             metal();
+            $("title").html("ContestRank: " + this.title);
        },
        mounted:function(){
            var that = this;
@@ -555,28 +668,42 @@ var contestrank = window.contestrank = new Vue({
     }
     var cnt = 0;
     var data = [];
+    var users = new Set();
     var finished = false;
     var cstring = cidArr.join(",");
     function work(){
         cid = cidArr.shift();
         $.get("/api/scoreboard/"+cid);
         $.get("/api/scoreboard/"+cid,function(d){
+            if(d.status != "OK" && !d.statement) {
+                var that = window.contestrank;
+                that.state = false;
+                that.submitter = {};
+                var str ="根据设置，内容非公开";
+                str = str.replace(/\n/g,"<br>");
+                that.errormsg = str;
+                return;
+            }
             _.forEach(d.data,function(val,idx){
                 val.num += cnt;
                 val.start_time = dayjs(d.start_time);
             });
             _.forEach(d.data,function(val){
                 data.push(val);
-            })
+            });
+            _.forEach(d.users, function(val){
+                users.add(val);
+            });
             cnt += d.total;
 
             if(cidArr.length > 0) {
+                convert_flag = true;
             work();
             }
             else {
                 finished = true;
                 window.contestrank.total = cnt;
-                window.contestrank.users = d.users
+                window.contestrank.users = Array.from(users);
                 window.contestrank.scoreboard = data;
             }
         });
@@ -594,6 +721,15 @@ var contestrank = window.contestrank = new Vue({
         cid = cidArr.shift();
         $.get("/api/scoreboard/"+cid);
         $.get("/api/scoreboard/"+cid,function(d){
+            if(d.status != "OK" && !d.statement) {
+                var that = window.contestrank;
+                that.state = false;
+                that.submitter = {};
+                var str ="根据设置，内容非公开";
+                str = str.replace(/\n/g,"<br>");
+                that.errormsg = str;
+                return;
+            }
             finished = true;
             window.contestrank.total = d.total;
             window.contestrank.users = d.users;
