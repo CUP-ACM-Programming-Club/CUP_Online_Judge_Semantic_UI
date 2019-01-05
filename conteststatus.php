@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <title><?php echo $OJ_NAME ?> -- Status</title>
+    <title>Status -- <?php echo $OJ_NAME ?></title>
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
@@ -210,7 +210,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="four fields center aligned">
+                    <div :class="(isadmin ? 'five':'four') +' fields center aligned'">
                         <div class="field">
                             <div class="ui toggle checkbox">
   <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
@@ -223,6 +223,12 @@
   <label>仅显示判重提交</label>
 </div>
 </div>
+                    <div v-if="isadmin" class="field" style="margin:auto">
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" @click="privilege=!privilege">
+                                <label>不显示测试运行</label>
+                            </div>
+                        </div>
                         <div class="field">
                         <button class="ui labeled icon mini button" @click.prevent="search($event)"><i
                                 class="search icon"></i><?= $MSG_SEARCH ?></button>
@@ -543,6 +549,7 @@ Vue.component("statistic-table", {
             language: -1,
             problem_result: -1,
             sim_checkbox:false,
+            privilege:0,
             page_cnt: 0,
             current_tag : "status",
             dim:false,
@@ -558,6 +565,16 @@ Vue.component("statistic-table", {
         watch: {
             sim_checkbox: function(newVal, oldVal) {
                 this.search();
+            },
+            privilege: function(newVal, oldVal) {
+                var that = this;
+                this.search().then(function(){that.search()});
+            },
+            auto_refresh: function(newVal, oldVal) {
+                var that = this;
+                if(newVal) {
+                    this.search().then(function(){that.search()});
+                }
             }
         },
         computed: {
@@ -739,8 +756,9 @@ Vue.component("statistic-table", {
                 var page_cnt = this.page_cnt * 20;
                 var cid = this.cid||"";
                 var sim = Number(this.sim_checkbox);
+                var pri = Number(this.privilege);
                 var that = this;
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid+ "/" + sim, function (data) {
+                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid+ "/" + sim + "/" + pri, function (data) {
                     that.dim = false;
                     that.search_func(data);
                 })
@@ -755,11 +773,16 @@ Vue.component("statistic-table", {
                 var page_cnt = this.page_cnt * 20;
                 var cid = this.cid||"";
                 var sim_checkbox = Number(this.sim_checkbox);
+                var pri = Number(this.privilege);
                 var that = this;
-                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid + "/" + sim_checkbox, function (data) {
+                $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid + "/" + sim_checkbox + "/" + pri, function (data) {
+                    that.dim = false;
+                    that.search_func(data);
+                    $.get("../api/status/" + problem_id + "/" + user_id + "/" + language + "/" + result + "/" + page_cnt+"/"+cid + "/" + sim_checkbox + "/" + pri, function (data) {
                     that.dim = false;
                     that.search_func(data);
                 })
+                });
             },
             submit: function (data) {
                 if(!this.auto_refresh) {
@@ -790,6 +813,9 @@ Vue.component("statistic-table", {
             },
             update: function (data) {
                 if(!this.auto_refresh) {
+                    return;
+                }
+                if(this.privilege && (data.val.id <= 0 || (data.val.cid && data.val.cid <= 0))) {
                     return;
                 }
                 var solution_id = data.solution_id;
