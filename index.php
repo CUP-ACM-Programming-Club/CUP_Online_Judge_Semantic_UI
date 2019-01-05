@@ -180,7 +180,7 @@ $homepage="";
         <br><br>-->
         
         </div>
-        <!--<div class="ui huge primary button" onclick="location.href='<?php if (isset($_SESSION['user_id'])) echo "problemset.php"; else echo "newloginpage.php"; ?>'"><?php if (!isset($_SESSION['user_id'])) echo "Login"; else echo "Get Started"; ?><i class="right arrow icon"></i></div>-->
+        <!--<div class="ui huge primary button" onclick="location.href='<?php /* if (isset($_SESSION['user_id'])) echo "problemset.php"; else echo "newloginpage.php"; ?>'"><?php if (!isset($_SESSION['user_id'])) echo "Login"; else echo "Get Started";*/ ?><i class="right arrow icon"></i></div>-->
     </div>
 
 </div>
@@ -312,21 +312,18 @@ $homepage="";
         position:'top center',
         on:'hover'
     });
-    <?php
-    $result=$database->query("select mtime as t,msg,version,vj_version from maintain_info order by t desc limit 1")->fetchAll();
-    $time=$result[0]['t'];
-    $msg=$result[0]['msg'];
-    $ver=$result[0]['version'];
-    $vj_ver=$result[0]['vj_version'];
-    ?>
-    
-    $('.maintain').html("Version:<?=$time?>").attr("data-html", "<div class='ui header'>"+"升级维护内容"+"<div class='sub header'>引擎版本:<?=$ver?></div><div class='sub header'>VJ版本:<?=$vj_ver?></div></div><div class='content'><?=str_replace("\n","",str_replace("&gt;",">",str_replace("&lt;","<",htmlentities($msg,ENT_COMPAT))))?></div>")
+    $.get("/api/update_log/latest", function(d){
+        var data = d.data[0];
+        var version = data.version;
+        var vj_version = data.vj_version;
+        var content = data.msg;
+        var time = dayjs(data.mtime).format("YYYY-MM-DD");
+        $('.maintain').html("Version:" + time).attr("data-html", "<div class='ui header'>"+"升级维护内容"+"<div class='sub header'>引擎版本:"+ version +"</div><div class='sub header'>VJ版本:" + vj_version +"</div></div><div class='content'>" + content + "</div>")
         .popup({
             position: 'top center',
             on: 'hover'
         })
-    ;
-
+    });
     $('.support')
                 .popup({
                     position:'bottom center',
