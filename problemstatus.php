@@ -30,7 +30,7 @@
       
       <div class="ui container padding" v-cloak>
           <h1 class="ui dividing header">
-              Problem {{pid}} Status
+              Problem <a href="newsubmitpage.php?id={{pid}}&js">{{pid}}</a> Status
               </h1>
               <div class="ui stacked segment">
                       <div class="ui statistics">
