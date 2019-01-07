@@ -125,7 +125,7 @@ $homepage="";
             </a>
             <a href="fame.php" target="_blank" class="ui inverted large button download basic">
               <i class="chess queen icon"></i>
-              Hall of Fame(NEW!)
+              Hall of Fame
             </a>
             
             </div>
@@ -133,8 +133,8 @@ $homepage="";
 
             <div class="column">
             <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a><!-- Place this tag where you want the button to render. -->
-            <iframe class="github_button" src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="30px"></iframe>
             <a class="github_button" href="https://travis-ci.com/CUP-ACM-Programming-Club/CUP-Online-Judge-Express" target="_blank"><img src="https://travis-ci.com/CUP-ACM-Programming-Club/CUP-Online-Judge-Express.svg?branch=master" style="vertical-align: middle;"></a>
+            <a class="github_button" href="https://codebeat.co/projects/github-com-cup-acm-programming-club-cup-online-judge-express-master"><img alt="codebeat badge" src="https://codebeat.co/badges/5dd7ac11-3c39-4815-8aee-aa9dbb947d84" style="vertical-align: middle;" /></a>
             </div>
             <br><a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
 <!--<h4></h4>-->
@@ -443,7 +443,7 @@ $homepage="";
       targets: '.github_button',
       opacity:[0,1],
       translateY:17,
-      paddingLeft:20,
+      paddingLeft:10,
       scale:1.25,
       duration: 500,
       offset: '-=600',
