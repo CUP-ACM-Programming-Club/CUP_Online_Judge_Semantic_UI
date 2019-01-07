@@ -145,7 +145,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="five fields center aligned">
+                    <div :class="(isadmin ? 'five':'four') +' fields center aligned'">
                         <div class="field" style="margin:auto">
                             <div class="ui toggle checkbox">
                                 <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
@@ -730,6 +730,7 @@
                 obj.ip = data.val.ip;
                 obj.total_point = 0;
                 obj.fingerprint = data.val.fingerprint;
+                obj.fingerprintRaw = data.val.fingerprintRaw;
                 obj.sim = false;
                 obj.avatar = !!data.val.avatar;
                 obj.contest_id = data.val.cid ? Math.abs(data.val.cid):null;
@@ -751,6 +752,7 @@
                 var ip = data.ip;
                 var total_point = parseInt(data.total_point) || 0;
                 var fingerprint = data.fingerprint;
+                var fingerprintRaw = data.fingerprintRaw;
                 var pass_point = data.pass_point;
                 var that = this;
                 _.forEach(this.problem_list,function(val,key){
@@ -767,6 +769,7 @@
                         i.contest_id = data.contest_id ? Math.abs(data.contest_id):null;
                         i.ip = ip;
                         i.fingerprint = fingerprint;
+                        i.fingerprintRaw = fingerprintRaw;
                         return;
                     }
                 })
