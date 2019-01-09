@@ -82,9 +82,11 @@
                 <tr class='toprow'>
                     <th @click="orderBy(0)" style="text-align: center;"  width="18%" ><a style="cursor:pointer">
                         <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 0"></i>
+                        <i class="checkmark icon" v-else style="opacity: 0"></i>
                         <?php echo $MSG_PROBLEM_ID?></th></a>
                     <th @click="orderBy(1)" width='44%'><a style="cursor:pointer">
                         <i :class="'sort numeric icon ' + (order > 0?'up':'down')" v-if="type === 1"></i>
+                        <i class="checkmark icon" v-else style="opacity: 0"></i>
                         <?php echo $MSG_TITLE?></a></th>
                         <th width="10%"  v-if="now.isAfter(end_time)">
                         </th>
@@ -105,8 +107,8 @@
                         <i class="remove icon" v-else-if="row.ac === -1"></i>
                         <i class="checkmark icon" v-else style="opacity: 0"></i>
                         
-                        <a v-if="dayjs().isBefore(end_time) && dayjs().isAfter(start_time)" :href="'newsubmitpage.php?cid='+cid+'&pid='+row.pnum"  v-html="contest(markdownIt.renderRaw(row.title),row.pnum)"></a>
-                            <a v-else :href="'newsubmitpage.php?id=' + row.pid" v-html="contest(markdownIt.renderRaw(row.title),row.pnum)"></a>
+                        <a v-if="dayjs().isBefore(end_time) && dayjs().isAfter(start_time)" :href="detect_source(row) + 'submitpage.php?cid='+cid+'&pid='+row.pnum"  v-html="contest(markdownIt.renderRaw(row.title),row.pnum)"></a>
+                            <a v-else :href="detect_source(row) + 'submitpage.php?id=' + row.pid" v-html="contest(markdownIt.renderRaw(row.title),row.pnum)"></a>
                         </td>
                         <td v-if="now.isAfter(end_time)">
                             <a :href="'tutorial.php?from=' + (row.oj_name?row.oj_name:'local') + '&id=' + row.pid" target="_blank">题解</a>
@@ -291,6 +293,14 @@ Vue.component("contest-detail",{
                     resolve();
                 }
             });
+            },
+            detect_source: function(row){
+                if(!row.oj_name || row.oj_name.toLowerCase() == "local") {
+                    return "new";
+                }
+                else {
+                    return row.oj_name.toLowerCase();
+                }
             },
             contest: function(html,num) {
                 console.log(this.contest_mode);

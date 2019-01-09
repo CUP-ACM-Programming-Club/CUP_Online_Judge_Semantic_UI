@@ -164,7 +164,7 @@ td{
         <td>{{row.handwareFingerprintSet.size}}</td>
         <td>{{row.ipSet.size}}</td>
         <td>{{row.ipSet.size === 1 ? detect_place(Array.from(row.ipSet)[0]) : row.ipSet.size === 0?"无":"略"}}</td>
-        <td :bgcolor="'#FF' + (format_color(Math.max(Math.floor((1 << 8) - (256 * Math.max(p.sim - 69,0) / 31.0)) - 1, 0))).toString(16)" v-for="p in row.problem" align="left">
+        <td :bgcolor="'#FF' + (format_color(Math.max(Math.floor((1 << 8) - (256 * Math.max(p.sim - 69,0) / 31.0)) - 1, 0)))" v-for="p in row.problem" align="left">
                 {{ (p.submit.length > 0)?'(-':''}}{{p.try_time > 0 ? p.try_time + ")" : p.submit.length > 0?p.submit.length + ")" : ""}}{{p.accept.length > 0 ? format_date(p.accept[0].diff(p.start_time,'second')):""}}{{p.sim > 0?"("+p.sim + "%) ":''}}
         </td>
     </tr>
@@ -511,11 +511,12 @@ var contestrank = window.contestrank = new Vue({
                     return hour + ":" + minute + ":" + sec;
            },
            format_color:function(num){
-               if(num < 10) {
-                   return "0" + num + "0" + num;
+               var str = num.toString(16);
+               if(num < 16) {
+                   return "0" + str + "0" + str;
                }
                else {
-                   return "" + num + "" + num;
+                   return "" + str + "" + str;
                }
            },
         detect_place: function(ip) {

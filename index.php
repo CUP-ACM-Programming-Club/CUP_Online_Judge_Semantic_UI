@@ -146,8 +146,8 @@ $homepage="";
                 <div class="twelve wide column">
                     <div class="ui warning message" style="margin-top:15em">
                         <!--<i class="close icon"></i>-->
-                        <div class="header">维护提示</div>
-                        <p style="font-size:1em">正在维护中。</p>
+                        <div class="header">提示</div>
+                        <p style="font-size:1em">系统将于2019年1月9日10:00-16:00期间停止一般用户的访问提交。</p>
                         <!--
                         <ul class="list">
     <li>考试/测验请访问http://acm.cup.edu.cn</li>

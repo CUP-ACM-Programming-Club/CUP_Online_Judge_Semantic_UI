@@ -19,7 +19,8 @@
         window.lastlang = parseInt("<?=$lastlang?>")||1;
     </script>
     <script>
-        $.get("https://uhunt.onlinejudge.org/api/p/num/" + getParameterByName("pid"), function (result) {
+    var gid = "<?=$pid?>" ?"<?=$pid?>":getParameterByName("pid") ? getParameterByName("pid") : getParameterByName("id");
+        $.get("https://uhunt.onlinejudge.org/api/p/num/" + gid, function (result) {
             //  console.log(result);
             $spj = $("#spj");
             if (result['status'] == 2) {
@@ -30,7 +31,7 @@
                 $spj.show();
             }
         });
-        $.get("/api/problem/UVA/" + getParameterByName("pid"), function (data) {
+        $.get("/api/problem/UVA/" + gid, function (data) {
             var result = data.problem;
             //result=JSON.parse(result);
             $title = $("#ptitle");
