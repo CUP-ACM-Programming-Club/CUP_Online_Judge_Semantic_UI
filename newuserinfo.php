@@ -100,7 +100,7 @@
                             </div>
                         </div>
                         <div class="extra content" v-cloak>
-                            <a><i class="check icon"></i>本地&nbsp;通过 {{local_accepted + other_accepted}} 题
+                            <a><i class="check icon"></i>本地&nbsp;通过 {{local_accepted}} 题
                             </a>
                             <a style="float:right;"><i class="line chart icon"></i>Rank:&nbsp;{{rank}}</a></a>
                             <br>
@@ -160,7 +160,7 @@
                                             {{row.article_id}}
                                         </td>
                                         <td>
-                                            <a :href="'discuss.php?id='+row.article_id" target="_blank">
+                                            <a :href="'discusscontext.php?id='+row.article_id" target="_blank">
                                                 {{row.title}}
                                             </a>
                                         </td>

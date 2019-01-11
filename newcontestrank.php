@@ -121,13 +121,15 @@ td{
                  ></time_pattern>
              </div>
              <div class="right aligned four wide column">
+                 <div class="ui toggle checkbox"><input @click="add_name=!add_name" type="checkbox"> 
+                 <label>加入学号</label></div>
                  <a class="ui primary mini button" @click="exportXLS">Save to XLS</a>
              </div>
          </div>
          <div class="row">
              <div style="width:100%;height:100%;overflow:auto" class="ranking">
 <table id='rank' class="ui small celled table">
-    <thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=5%>User</th><th style="min-width:90px">Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
+    <thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=5%>User</th><th style="min-width:90px">Nick</th><th width=5% v-if="add_name">Id</th><th width=5%>Solved</th><th width=5%>Penalty</th>
 <th style="min-width: 85.71px;" v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</th></tr>
 </thead>
 <tbody>
@@ -135,6 +137,7 @@ td{
         <td style="text-align:center;font-weight:bold">{{row.rank}}</td>
         <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{row.user_id}}</a></td>
         <td style="text-align:center"><a :href="'userinfo.php?user='+row.user_id" target="_blank">{{convertHTML(row.nick)}}</a></td>
+        <td v-if="add_name" style="text-align:center">{{convertHTML(row.real_name)}}</td>
         <td style="text-align:center"><a :href="'status.php?user_id=' + row.user_id + '&cid=' + cid">{{row.ac}}</a></td>
         <td style="text-align:center">{{format_date(row.penalty_time)}}</td>
         <td v-for="p in row.problem" style="text-align:center" 
@@ -152,12 +155,13 @@ td{
 </table>
 <table id="save" style="display:none;vnd.ms-excel.numberformat:@">
 <tbody>
-    <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5%>Solved</td><td width=5%>Penalty</td><td>环境指纹数</td><td>硬件指纹数</td><td>IP总数</td><td>地点</td>
+    <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5% v-if="add_name">学号</td><td width=5%>Solved</td><td width=5%>Penalty</td><td>环境指纹数</td><td>硬件指纹数</td><td>IP总数</td><td>地点</td>
 <td v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</td></tr>
     <tr v-for="row in submitter">
         <td align="center">{{row.rank}}</td>
         <td align="center">{{row.user_id}}</td>
         <td align="center">{{convertHTML(row.nick)}}</td>
+        <td v-if="add_name" align="center">{{convertHTML(row.real_name)}}</td>
         <td align="center">{{row.ac}}</td>
         <td>{{format_date(row.penalty_time)}}</td>
         <td>{{row.fingerprintSet.size}}</td>
@@ -298,8 +302,9 @@ var contestrank = window.contestrank = new Vue({
            start_time:false,
            title:"",
            users:[],
+           add_name: false,
            state:true,
-           errormsg:""
+           errormsg:"",
        },
        computed:{
            scoreboard:{
@@ -333,7 +338,8 @@ var contestrank = window.contestrank = new Vue({
                                penalty_time:0,
                                fingerprintSet:new Set(),
                                handwareFingerprintSet:new Set(),
-                               ipSet: new Set()
+                               ipSet: new Set(),
+                               real_name:""
                            }
                            for(var j = 0;j<total;++j) {
                                submitter[val.user_id].problem[j] = {
@@ -361,7 +367,8 @@ var contestrank = window.contestrank = new Vue({
                                penalty_time:0,
                                fingerprintSet:new Set(),
                                handwareFingerprintSet:new Set(),
-                               ipSet: new Set()
+                               ipSet: new Set(),
+                               real_name:""
                            }
                            for(var j = 0;j<total;++j) {
                                submitter[val[i].user_id].problem[j] = {
@@ -371,6 +378,8 @@ var contestrank = window.contestrank = new Vue({
                                 }
                            }
                        }
+                       
+                       
                        if(!!val[i].fingerprint) {
                             submitter[val[i].user_id].fingerprintSet.add(val[i].fingerprint);
                        }
@@ -603,6 +612,9 @@ var contestrank = window.contestrank = new Vue({
                d.innerHTML = str;
                return d.innerText;
            },
+           decodeHTML:function(str){
+               return str.replace("·", "&middot;");
+           },
            exportXLS:function(){
                var doc = document.getElementById("save");
                var plain_text = "<html><head><meta http-equiv='Content-Type' content='application/vnd.ms-excel; charset=utf-8' /></head>";
@@ -643,6 +655,35 @@ var contestrank = window.contestrank = new Vue({
                        this.scoreboard = ndata;
                    }
                }
+           }
+       },
+       watch: {
+           add_name: function(newVal, oldVal) {
+               var that = this;
+               if(!newVal)return;
+               for(var i = 0; i < this.submitter.length; ++i) {
+                   $.get("../api/user/nick/" + this.decodeHTML(this.submitter[i].nick), function(data){
+                       if(data && data.data && data.data.length > 0) {
+                       var nick = data.nick;
+                       var nickArray = data.data;
+                       var user_id = "";
+                       for(var j = 0; j < nickArray.length; ++j) {
+                           if(!isNaN(nickArray[j].user_id)) {
+                               user_id = nickArray[j].user_id;
+                               break;
+                           }
+                       }
+                       for(var j = 0;j < that.submitter.length; ++j) {
+                           if(that.decodeHTML(that.submitter[j].nick) == nick) {
+                               that.submitter[j].real_name = user_id;
+                               break;
+                           }
+                       }
+                        //that.submitter[i].real_name = "t";
+                       }
+                   })
+               }
+               
            }
        },
        updated:function(){

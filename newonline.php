@@ -151,6 +151,9 @@ include("csrf.php");
                 else if (tmp.intranet_ip.match(/10\.103\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "地质楼Wi-Fi";
                 }
+                else if (tmp.intranet_ip.match(/10\.116\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "新综合楼Wi-Fi";
+                }
                 else if (tmp.intranet_ip.match(/10\.1[0-9]{2}\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "其他Wi-Fi";
                 }
@@ -199,6 +202,9 @@ include("csrf.php");
                 }
                 else if (tmp.intranet_ip.match(/10\.110\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "润杰公寓Wi-Fi";
+                }
+                else if (tmp.intranet_ip.match(/10\.116\.[0-9]{1,3}\.[0-9]{1,3}/)) {
+                    tmp.place = "新综合楼Wi-Fi";
                 }
                 else if (tmp.intranet_ip.match(/10\.102\.[0-9]{1,3}\.[0-9]{1,3}/)) {
                     tmp.place = "第三教学楼Wi-Fi";
