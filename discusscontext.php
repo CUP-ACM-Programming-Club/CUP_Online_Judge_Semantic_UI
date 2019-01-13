@@ -70,9 +70,12 @@
       </span>
     </div>
   </div>
+  <div class="ui sticky" style="left: 50.1429px;" id="sticky_content">
+            <h3 class="ui header" id="contents" v-show="content">目录</h3>
+          </div>
               </div>
               <div class="twelve wide column">
-                 <div class="ui existing full segment">
+                 <div class="ui existing full segment" id="main_context">
                      <a v-if="thread_head.user_id + '' === owner" class="ui blue right ribbon label" :href="'discussedit.php?id='+id">Edit</a>
                      <div class="ui info message">
                          <div class="header">
@@ -134,6 +137,7 @@
                 replyText:"",
                 captcha:"",
                 owner:"",
+                content:false,
                 isadmin:false
             }
         },
@@ -173,6 +177,20 @@
             }
         },
         created:function(){
+        },
+        updated:function(){
+            if(!this.content) {
+                $content = $(".table-of-contents").html();
+                if(!$content)$content = "";
+                $(".table-of-contents").html("");
+                console.log("content",$content);
+                $("#contents").after("" + $content + "");
+                $("#sticky_content").sticky({
+                    context: "#main_context",
+                    offset: 50
+                });
+                this.content = $content && $content.length > 0;
+            }
         },
         mounted:function(){
             var page = this.page * 20;
