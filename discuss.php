@@ -25,7 +25,7 @@
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php") ?>
     <!-- Main component for a primary marketing message or call to action -->
-    <div class="ui container padding" style="min-height:400px">
+    <div class="ui container padding">
         <contest-mode v-if="contest_mode"></contest-mode>
         <h2 class="ui dividing header" v-if="!contest_mode">Discuss</h2>
         <div class="ui grid" v-if="!contest_mode">

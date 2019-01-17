@@ -72,6 +72,7 @@
   </div>
   <div class="ui sticky" style="left: 50.1429px;" id="sticky_content">
             <h3 class="ui header" id="contents" v-show="content">目录</h3>
+            <div id="contentContainer"></div>
           </div>
               </div>
               <div class="twelve wide column">
@@ -179,18 +180,18 @@
         created:function(){
         },
         updated:function(){
-            if(!this.content) {
                 $content = $(".table-of-contents").html();
+                $container = $("#contentContainer");
                 if(!$content)$content = "";
                 $(".table-of-contents").html("");
-                console.log("content",$content);
-                $("#contents").after("" + $content + "");
+                if($content) {
+                    $container.html("" + $content + "");
+                }
                 $("#sticky_content").sticky({
                     context: "#main_context",
                     offset: 50
                 });
-                this.content = $content && $content.length > 0;
-            }
+                this.content = $content && $content.length > 0 || ($container && $container.length > 0);
         },
         mounted:function(){
             var page = this.page * 20;

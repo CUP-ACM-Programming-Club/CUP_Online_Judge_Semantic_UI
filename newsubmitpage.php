@@ -92,6 +92,9 @@
         var loadVue = new Promise(function (resolve, reject) {
             $.get("/api/problem/local" + window.location.search, function (data) {
                 if (data['status'] == "error") {
+                    if(data.redirect) {
+                        location.href = data.redirect;
+                    }
                     if(data['statement']) {
                         alert(data['statement']);
                     }
@@ -778,10 +781,14 @@
                                 that.fingerprint = Fingerprint2.x64hash128(values.join(''), 31);
                             })
                         })
-                        this.description = markdownIt.render(this.description || '');
-                        this.input = markdownIt.render(this.input || '');
-                        this.output = markdownIt.render(this.output || '');
-                        this.hint = markdownIt.render(this.hint || '');
+                        var descriptionMarkdownIt = markdownIt.newInstance("description", that.original_id);
+                        var inputMarkdownIt = markdownIt.newInstance("input", that.original_id);
+                        var outputMarkdownIt = markdownIt.newInstance("output", that.original_id);
+                        var hintMarkdownIt = markdownIt.newInstance("hint", that.original_id);
+                        this.description = descriptionMarkdownIt.render(this.description || '');
+                        this.input = inputMarkdownIt.render(this.input || '');
+                        this.output = outputMarkdownIt.render(this.output || '');
+                        this.hint = hintMarkdownIt.render(this.hint || '');
                         this.bodyOnTop = true;
                         $(".not-compile").removeClass("not-compile");
                         $(".loading.dimmer").remove();

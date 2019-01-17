@@ -117,7 +117,7 @@
             <br><br>
             </form></div><?php
         } else {
-            echo "<h2 class='ui header'>注册已关闭，如需注册请联系管理员<a href=\"mailto:gxlhybh@gmail.com\" target=\"_blank\">Ryan</a></h2>";
+            echo "<h2 class='ui header'>外网注册已关闭，校内用户请通过<a href='http://acm.cup.edu.cn/registerpage.php'>校内注册</a>渠道注册，特殊情况需注册的请联系管理员<a href=\"mailto:gxlhybh@gmail.com\" target=\"_blank\">Ryan</a></h2>";
         }
 
         ?>

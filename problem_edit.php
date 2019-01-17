@@ -32,28 +32,43 @@ include("csrf.php");
                     Title
                 </h2>
             </div>
-            <div class="row">
-                <div class="ui input" style="width:40%">
+            <div class="two column row">
+                <div class="column">
+                    <div class="ui input" style="width:100%">
                   <input type="text" v-model="title">
                 </div>
+                </div>
+                <div class="column">
+                    <select multiple class="ui search dropdown label selection"  @change="label = $('.label.selection.ui.dropdown').dropdown('get value');">
+                            <option v-for="lb in all_label" :value="lb" v-text="lb"></option>
+                        </select>
+                </div>
+                
             </div>
-            <div class="row">
+            <div class="three column row">
+                <div class="column">
                         <div class="ui labeled input">
                             <div class="ui label">
                             Time
                               </div>
                             <input type="text" v-model="time">
                         </div>
+                </div>
+                <div class="column">
                         <div class="ui labeled input">
                             <div class="ui label">
                             Memory
                               </div>
                             <input type="text" v-model="memory">
                         </div>
-                        
-                        <select multiple class="ui search dropdown label selection"  @change="label = $('.label.selection.ui.dropdown').dropdown('get value');">
-                            <option v-for="lb in all_label" :value="lb" v-text="lb"></option>
-                        </select>
+                </div>
+                    <div class="column"  style="margin: auto">
+                        <div class="ui toggle checkbox">
+                            <input type="checkbox" :checked="spj" v-model="spj"> 
+                            <label>Special Judge</label>
+                        </div>
+                
+                </div>
             </div>
             <div class="row">
                 <h2 class="ui header">
@@ -61,7 +76,7 @@ include("csrf.php");
                 </h2>
                 </div>
                 <div class="row">
-                <mavon-editor v-model="description"></mavon-editor>
+                <mavon-editor v-model="description" :markInstance="descriptionInstance"></mavon-editor>
                 </div>
                 <br>
                 <div class="row">
@@ -70,7 +85,7 @@ include("csrf.php");
                 </h2>
                 </div>
                 <div class="row">
-                <mavon-editor v-model="input"></mavon-editor>
+                <mavon-editor v-model="input" :markInstance="inputInstance"></mavon-editor>
                 </div>
                 <br>
                 <div class="row">
@@ -79,7 +94,7 @@ include("csrf.php");
                 </h2>
                 </div>
                 <div class="row">
-                <mavon-editor v-model="output"></mavon-editor>
+                <mavon-editor v-model="output" :markInstance="outputInstance"></mavon-editor>
                 </div>
                 <br>
                 <div class="row">
@@ -88,7 +103,11 @@ include("csrf.php");
                 </h2>
                 </div>
                 <div class="row">
-                    <mavon-editor v-model="sampleinput"></mavon-editor>
+                    <div class="ui form" style="min-width:85%">
+                         <div class="field">
+                        <textarea v-model="sampleinput"></textarea>
+                        </div>
+                    </div>
                 </div>
                 <br>
                 <div class="row">
@@ -97,7 +116,11 @@ include("csrf.php");
                 </h2>
                 </div>
                 <div class="row">
-                <mavon-editor v-model="sampleoutput"></mavon-editor>
+                    <div class="ui form" style="min-width:85%">
+                         <div class="field">
+                        <textarea v-model="sampleoutput"></textarea>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <h2 class="ui header">Files</h2>
@@ -177,7 +200,7 @@ include("csrf.php");
                 </h2>
                 </div>
                 <div class="row" v-if="from === 'local'">
-                <mavon-editor v-model="hint"></mavon-editor>
+                <mavon-editor v-model="hint" :markInstance="hintInstance" :test="'1'"></mavon-editor>
                 </div>
                 <a class="ui button" @click="submit">提交</a>
             </div>
@@ -201,8 +224,13 @@ include("csrf.php");
                         memory:d.memory_limit,
                         input:d.input,
                         output:d.output,
+                        spj:!!parseInt(d.spj),
                         sampleinput:d.sample_input,
                         sampleoutput:d.sample_output,
+                        descriptionInstance:markdownIt.newInstance(),
+                        inputInstance:markdownIt.newInstance(),
+                        outputInstance:markdownIt.newInstance(),
+                        hintInstance:markdownIt.newInstance(),
                         hint:d.hint,
                         source:from,
                         label:d.label?d.label.split(" "):[],
@@ -212,16 +240,20 @@ include("csrf.php");
                 },
                 methods:{
                     submit:function(){
-                        var send_obj={};
+                        var send_obj={imageData:{}};
                         for(var i of this.$children)
                         {
                             var target = i.$vnode.data.model;
                             send_obj[target.expression] = target.value;
+                            send_obj.imageData[target.expression] = i.markdownIt.__image || {};
                         }
                         
                         send_obj["time"] = this.time;
                         send_obj["memory"] = this.memory;
                         send_obj["title"] = this.title;
+                        send_obj["sampleinput"] = this.sampleinput;
+                        send_obj["sampleoutput"] = this.sampleoutput;
+                        send_obj["spj"] = Number(this.spj);
                         var labels = this.label;
                         function unique(array) {
                             var res = array.filter(function(item, index, array){
@@ -231,12 +263,24 @@ include("csrf.php");
                         }
                         
                         send_obj["label"] = unique(labels).join(" ");
+                        console.log(send_obj);
                         $.post("/api/problem/"+this.source+"/"+id,{json:send_obj},function(data){
                             if(data.status == "OK"){
                                 $.get("/api/problem/"+from+"?id="+id);
                                 alert("提交成功");
                             }
                         });
+                    },
+                    imageHandler: function(key, data) {
+                        var mx = 0;
+                        var that = this;
+                        that.$children[key].markdownIt.__image = {};
+                        _.forEach(data.data, function(val, idx){
+                            that.$children[key].markdownIt.__image[val.name] = val.data;
+                            mx = Math.max(mx, parseInt(val.name));
+                        });
+                        that.$children[key].$children[0].num = mx + 1;
+                        that.$children[key].iRender();
                     }
                 },
                 mounted:function(){
@@ -255,7 +299,27 @@ include("csrf.php");
                             $('.label.selection.ui.dropdown').dropdown('set selected',has_label[i]);
                         }
                         
-                    })
+                    });
+                    $.get("/api/photo/description/" + id, function(data){
+                        if(data.status == "OK") {
+                            that.imageHandler(0, data);
+                        }
+                    });
+                    $.get("/api/photo/input/" + id, function(data){
+                        if(data.status == "OK") {
+                            that.imageHandler(1, data);
+                        }
+                    });
+                    $.get("/api/photo/output/" + id, function(data){
+                        if(data.status == "OK") {
+                            that.imageHandler(2, data);
+                        }
+                    });
+                    $.get("/api/photo/hint/" + id, function(data){
+                        if(data.status == "OK") {
+                            that.imageHandler(3, data);
+                        }
+                    });
                     $.get("/api/file/" + id,function(data){
                         that.files = data.data;
                     });
