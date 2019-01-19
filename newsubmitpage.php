@@ -142,6 +142,12 @@
                             original_id: d.problem_id,
                             iscontest: getParameterByName("cid") !== null,
                             description: d.description,
+                            original_content:{
+                                description:d.description,
+                                input: d.input,
+                                output: d.output,
+                                hint: d.hint
+                            },
                             time: "时间限制:" + d.time_limit + "秒",
                             memory: "内存限制:" + d.memory_limit + "MB",
                             input: d.input,
@@ -288,6 +294,12 @@
                     }
                     ,
                     methods: {
+                        iRender: function(){
+                            this.description = this.descriptionMarkdownIt.render(this.original_content.description || '');
+                        this.input = this.inputMarkdownIt.render(this.original_content.input || '');
+                        this.output = this.outputMarkdownIt.render(this.original_content.output || '');
+                        this.hint = this.hintMarkdownIt.render(this.original_content.hint || '');
+                        },
                         initHighlight: function () {
                             if (!this.highlight) {
                                 this.highlight = ace.require("ace/ext/static_highlight");
@@ -772,6 +784,46 @@
                     },
                     mounted: function () {
                         var that = this;
+                        var descriptionMarkdownIt = this.descriptionMarkdownIt = markdownIt.newInstance("description", that.original_id);
+                        var inputMarkdownIt = this.inputMarkdownIt = markdownIt.newInstance("input", that.original_id);
+                        var outputMarkdownIt = this.outputMarkdownIt = markdownIt.newInstance("output", that.original_id);
+                        var hintMarkdownIt = this.hintMarkdownIt = markdownIt.newInstance("hint", that.original_id);
+                        $.get("/api/photo/description/" + id, function(data){
+                        if(data.status == "OK") {
+                            descriptionMarkdownIt.__image = {};
+                            _.forEach(data.data, function(val, idx){
+                            descriptionMarkdownIt.__image[val.name] = val.data;
+                            that.description = descriptionMarkdownIt.render(that.original_content.description || '');
+                        });
+                        }
+                    });
+                    $.get("/api/photo/input/" + id, function(data){
+                        if(data.status == "OK") {
+                            inputMarkdownIt.__image = {};
+                            _.forEach(data.data, function(val, idx){
+                            inputMarkdownIt.__image[val.name] = val.data;
+                            that.input = inputMarkdownIt.render(that.original_content.input || '');
+                        });
+                        }
+                    });
+                    $.get("/api/photo/output/" + id, function(data){
+                        if(data.status == "OK") {
+                            outputMarkdownIt.__image = {};
+                            _.forEach(data.data, function(val, idx){
+                            outputMarkdownIt.__image[val.name] = val.data;
+                            that.output = outputMarkdownIt.render(that.original_content.output || '');
+                            });
+                        }
+                    });
+                    $.get("/api/photo/hint/" + id, function(data){
+                        if(data.status == "OK") {
+                            hintMarkdownIt.__image = {};
+                            _.forEach(data.data, function(val, idx){
+                            hintMarkdownIt.__image[val.name] = val.data;
+                            that.hint = hintMarkdownIt.render(that.original_content.hint || '');
+                            });
+                        }
+                    });
                         Fingerprint2.get(function (components) {
                             var values = components.map(function (component) { return component.value })
                             that.fingerprintRaw = Fingerprint2.x64hash128(values.join(''), 31);
@@ -781,10 +833,7 @@
                                 that.fingerprint = Fingerprint2.x64hash128(values.join(''), 31);
                             })
                         })
-                        var descriptionMarkdownIt = markdownIt.newInstance("description", that.original_id);
-                        var inputMarkdownIt = markdownIt.newInstance("input", that.original_id);
-                        var outputMarkdownIt = markdownIt.newInstance("output", that.original_id);
-                        var hintMarkdownIt = markdownIt.newInstance("hint", that.original_id);
+                        
                         this.description = descriptionMarkdownIt.render(this.description || '');
                         this.input = inputMarkdownIt.render(this.input || '');
                         this.output = outputMarkdownIt.render(this.output || '');

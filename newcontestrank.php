@@ -144,7 +144,7 @@ td{
         :class="p.accept.length > 0?p.first_blood ? 'first accept':'accept':''">
             <b :class="'text '+ (p.accept.length > 0 ? p.first_blood?'first accept':'accept':'red')">
                 {{ (p.accept.length > 0 || p.submit.length > 0)?'+':''}}
-                {{p.try_time > 0 ? p.try_time : p.submit.length > 0?p.submit.length : ""}}</b>
+                {{p.try_time > 0 ? p.try_time : p.accept.length == 0 && p.submit.length > 0?p.submit.length : ""}}</b>
             <br v-if="p.accept.length > 0">
             <span v-if="p.accept.length > 0 && typeof p.accept[0].diff === 'function'" :class="p.first_blood?'first accept text':''">
                 {{format_date(p.accept[0].diff(p.start_time,'second'))}}
