@@ -75,14 +75,13 @@ include("csrf.php");
                         solution_id:0,
                         captcha:"",
                         from:from,
-                        id:id,
-                        sid:<?php echo $_SESSION['user_id'] ?>
+                        id:id
                     }
                 },
                 methods:{
                     fetch_solution:function() {
                         var that = this;
-                        $.get("../api/status/" + this.id + "/" + this.sid + "/null/4/0/0/0", function(data){
+                        $.get("../api/status/" + this.id + "/my/null/4/0", function(data){
                             if(data.result.length == 0) {
                                 alert("未找到相关提交！");
                             }
