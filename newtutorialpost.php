@@ -37,6 +37,9 @@ include("csrf.php");
                 <div class="ui input">
                   <input type="text" v-model="solution_id" size="50">
                 </div>
+                <div class="ui blue icon button" @click="fetch_solution">
+                    自动获取
+                </div>
             </div>
             <div class="row">
                 <h2 class="ui header">
@@ -76,6 +79,17 @@ include("csrf.php");
                     }
                 },
                 methods:{
+                    fetch_solution:function() {
+                        var that = this;
+                        $.get("../api/status/" + this.id + "/my/null/4/0", function(data){
+                            if(data.result.length == 0) {
+                                alert("未找到相关提交！");
+                            }
+                            else {
+                                that.solution_id = data.result[0].solution_id;
+                            }
+                        });
+                    },
                     create_post:function() {
                         var send = {
                             solution_id:this.solution_id,
