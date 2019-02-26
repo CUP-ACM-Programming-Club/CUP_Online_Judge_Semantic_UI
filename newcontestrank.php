@@ -98,7 +98,8 @@ td{
             </div>
             <br>
             <h5 class="ui header">URL:{{location.href}}</h5>
-            <p v-html="errormsg"></p>
+            <br>
+            <b><p v-html="errormsg"></p></b>
         </div>
     </div>
     </div>
@@ -107,7 +108,7 @@ td{
 <error-handle :errormsg="errormsg" v-if="!state"></error-handle>
     <div class="contestrank scoreboard padding" v-cloak v-show="state">
         <h2 class="ui dividing header">
-            {{total === 0?"计算中,请稍后":"Contest Rank"}}
+            {{total === -1?"计算中,请稍后":"Contest Rank"}}
             <div class="sub header">
                  {{title}}
             </div>
@@ -130,7 +131,7 @@ td{
              <div style="width:100%;height:100%;overflow:auto" class="ranking">
 <table id='rank' class="ui small celled table">
     <thead><tr class=toprow align=center><th class="{sorter:'false'}" width=5%>Rank<th width=5%>User</th><th style="min-width:90px">Nick</th><th width=5% v-if="add_name">Id</th><th width=5%>Solved</th><th width=5%>Penalty</th>
-<th style="min-width: 85.71px;" v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</th></tr>
+<th style="min-width: 85.71px;" v-for="i in Array.from(Array(Math.max(0,total)).keys())">{{1001 + i}}</th></tr>
 </thead>
 <tbody>
     <tr v-for="row in submitter">
@@ -156,7 +157,7 @@ td{
 <table id="save" style="display:none;vnd.ms-excel.numberformat:@">
 <tbody>
     <tr class=toprow align=center><td width=5%>Rank<td width=5%>User</td><td>Nick</td><td width=5% v-if="add_name">学号</td><td width=5%>Solved</td><td width=5%>Penalty</td><td>环境指纹数</td><td>硬件指纹数</td><td>IP总数</td><td>地点</td>
-<td v-for="i in Array.from(Array(total).keys())">{{1001 + i}}</td></tr>
+<td v-for="i in Array.from(Array(Math.max(0,total)).keys())">{{1001 + i}}</td></tr>
     <tr v-for="row in submitter">
         <td align="center">{{row.rank}}</td>
         <td align="center">{{row.user_id}}</td>
@@ -298,7 +299,7 @@ var contestrank = window.contestrank = new Vue({
        data:{
            cid: getParameterByName("cid"),
            submitter:{},
-           total:0,
+           total:-1,
            start_time:false,
            title:"",
            users:[],
@@ -390,6 +391,10 @@ var contestrank = window.contestrank = new Vue({
                            submitter[val[i].user_id].ipSet.add(val[i].ip);
                        }
                        if(val[i].sim !== null) {
+                           if(typeof submitter[val[i].user_id].problem[val[i].num] === "undefined") {
+                               console.info(submitter[val[i].user_id]);
+                               console.info(val[i]);
+                           }
                            submitter[val[i].user_id].problem[val[i].num].sim = parseInt(val[i].sim);
                        }
                        if(submitter[val[i].user_id].problem[val[i].num] === undefined) {
@@ -401,7 +406,7 @@ var contestrank = window.contestrank = new Vue({
                             );
                             submitter[val[i].user_id].problem[val[i].num].start_time = val[i].start_time;
                        }
-                       else if(val[i].result >= 6 && val[i].result <= 10){
+                       else if(val[i].result >= 5 && val[i].result <= 10){
                            submitter[val[i].user_id].problem[val[i].num].submit.push(
                                val[i].in_date
                            )
@@ -488,7 +493,7 @@ var contestrank = window.contestrank = new Vue({
                    catch (e) {
                        that.state = false;
                        that.submitter = {};
-                       console.log(typeof e);
+                       console.log(e);
                        var str = e.stack;
                        str = str.replace(/\n/g,"<br>");
                        that.errormsg = str;
@@ -717,11 +722,17 @@ var contestrank = window.contestrank = new Vue({
         cid = cidArr.shift();
         $.get("/api/scoreboard/"+cid);
         $.get("/api/scoreboard/"+cid,function(d){
-            if(d.status != "OK" && !d.statement) {
+            if(d.status != "OK") {
                 var that = window.contestrank;
                 that.state = false;
                 that.submitter = {};
-                var str ="根据设置，内容非公开";
+                var str;
+                if(d.contest_mode === true) {
+                    str ="根据设置，内容非公开";
+                }
+                else {
+                    str = "Contest " + cid +":\n" +  d.statement;
+                }
                 str = str.replace(/\n/g,"<br>");
                 that.errormsg = str;
                 return;
@@ -736,11 +747,12 @@ var contestrank = window.contestrank = new Vue({
             _.forEach(d.users, function(val){
                 users.add(val);
             });
+            
             cnt += d.total;
 
             if(cidArr.length > 0) {
                 convert_flag = true;
-            work();
+                work();
             }
             else {
                 finished = true;
@@ -782,6 +794,9 @@ var contestrank = window.contestrank = new Vue({
             window.contestrank.scoreboard = d.data;
             window.temp_data = d.data;
             data = d.data;
+            if(typeof d.title === "string" && d.title.length === 0) {
+                d.title = "未设置标题";
+            }
             window.contestrank.title = d.title;
         });
     }
