@@ -55,7 +55,12 @@ include("csrf.php");
                         <tr style="text-align:center" v-for="value in user" v-cloak>
                             <td>{{ value.user_id }}</td>
                             <td><a :href="'userinfo.php?user='+value.user_id" target="_blank">{{ value.nick }}</a></td>
-                            <td><a :href="decodeURI(location.protocol+'//'+window.hostname+value.url)">{{
+                            <td style="
+    width: 450px;
+    float: left; /* add this */
+    white-space: nowrap;
+    overflow: hidden;
+"><a :href="decodeURI(location.protocol+'//'+window.hostname+value.url)">{{
                                     decodeURI(location.protocol+"//"+window.hostname+value.url) }}</a></td>
                         </tr>
                         </tbody>
