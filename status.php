@@ -12,6 +12,16 @@
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
     <script src="/js/dayjs.min.js"></script>
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+    <style>
+        .amcharts {
+          width: 100%;
+          height: 500px;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -225,7 +235,10 @@
             </div>
         </div>
         <div class="ui attached bottom segment" v-show="current_tag == 'user'">
-            
+            <h2 class="ui dividing header">浏览器</h2>
+                <div id="browser_statistics" class="amcharts">加载中</div>
+                <h2 class="ui dividing header">操作系统</h2>
+                <div id="os_statistics" class="amcharts">加载中</div>
         </div>
     </div>
 </div>
@@ -235,6 +248,7 @@
 <!-- Placed at the end of the document so the pages load faster -->
 
 <script>
+
     function draw(_result) {
         var result = _result.result;
         var _label = _result.label;
@@ -448,6 +462,109 @@
 		//console.log(data);
 		//console.log(config);
     }
+    var hasRendered = {};
+    function drawDynamicInteractiveLineChart(dataSets, prefix, target){
+
+ 
+var adapter_object = {};
+var full_name = prefix + "_name";
+var full_version = prefix + "_version";
+if(hasRendered[target]) {
+    return;
+}
+if(window.temp_data_object && window.temp_data_object[target]) {
+    adapter_object = window.temp_data_object[target];
+}
+else if(dataSets === undefined) {
+    return;
+}
+else {
+    hasRendered[target] = true;
+_.forEach(dataSets, function(d){
+    if(!adapter_object[d[full_name]]) {
+        adapter_object[d[full_name]] = {
+            name: d[full_name],
+            version:{}
+        }
+    }
+    if(!adapter_object[d[full_name]].version[d[full_version]]) {
+        adapter_object[d[full_name]].version[d[full_version]] = 1;
+    }
+    else {
+        ++adapter_object[d[full_name]].version[d[full_version]];
+    }
+});
+adapter_object = _.values(adapter_object);
+console.log(adapter_object);
+
+_.forEach(adapter_object, function(val, idx){
+    if(!adapter_object[idx].children) {
+        adapter_object[idx].children = [];
+    }
+    _.forEach(val.version, function(v,id){
+        adapter_object[idx].children.push({
+            name: id,
+            value: v
+        })
+    })
+});
+if(!window.temp_data_object) {
+    window.temp_data_object = {};
+}
+window.temp_data_object[target] = adapter_object;
+
+}
+
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+// create chart
+var chart = am4core.create(target, am4charts.TreeMap);
+chart.hiddenState.properties.opacity = 0; // this makes initial fade in effect
+
+chart.data = adapter_object;
+
+
+chart.colors.step = 2;
+
+// define data fields
+chart.dataFields.value = "value";
+chart.dataFields.name = "name";
+chart.dataFields.children = "children";
+
+chart.zoomable = true;
+var bgColor = new am4core.InterfaceColorSet().getFor("background");
+
+// level 0 series template
+var level0SeriesTemplate = chart.seriesTemplates.create("0");
+var level0ColumnTemplate = level0SeriesTemplate.columns.template;
+
+level0ColumnTemplate.column.cornerRadius(10, 10, 10, 10);
+level0ColumnTemplate.fillOpacity = 0;
+level0ColumnTemplate.strokeWidth = 4;
+level0ColumnTemplate.strokeOpacity = 0;
+
+// level 1 series template
+var level1SeriesTemplate = chart.seriesTemplates.create("1");
+var level1ColumnTemplate = level1SeriesTemplate.columns.template;
+
+level1SeriesTemplate.tooltip.animationDuration = 0;
+level1SeriesTemplate.strokeOpacity = 1;
+
+level1ColumnTemplate.column.cornerRadius(10, 10, 10, 10)
+level1ColumnTemplate.fillOpacity = 1;
+level1ColumnTemplate.strokeWidth = 4;
+level1ColumnTemplate.stroke = bgColor;
+
+var bullet1 = level1SeriesTemplate.bullets.push(new am4charts.LabelBullet());
+bullet1.locationY = 0.5;
+bullet1.locationX = 0.5;
+bullet1.label.text = "{name}";
+bullet1.label.fill = am4core.color("#ffffff");
+
+chart.maxLevels = 2;
+    }
 </script>
 <script>
     Vue.component("status-table", {
@@ -623,6 +740,20 @@
                 var that = this;
                 if(newVal) {
                     this.search().then(function(){that.search()});
+                }
+            },
+            current_tag: function(newVal, oldVal) {
+                if(newVal === "user") {
+                    $.get("../api/status/device/browser", function(data){
+                        if(data.status == "OK") {
+                            _.delay(drawDynamicInteractiveLineChart, 0, data.data, "browser", "browser_statistics");
+                    };
+                    $.get("../api/status/device/os", function(data){
+                        if(data.status == "OK") {
+                            _.delay(drawDynamicInteractiveLineChart, 0, data.data, "os", "os_statistics");
+                        }
+                    })
+                });
                 }
             }
         },
@@ -814,6 +945,7 @@
         mounted: function () {
             $.get("../api/status/graph",function(data){
                 draw(data);
+                drawDynamicInteractiveLineChart();
             });
         }
     })
