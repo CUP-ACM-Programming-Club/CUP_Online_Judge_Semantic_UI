@@ -12,16 +12,9 @@
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
     <script src="/js/dayjs.min.js"></script>
-    <script src="https://www.amcharts.com/lib/4/core.js"></script>
-    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
-    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
-    <style>
-        .amcharts {
-          width: 100%;
-          height: 500px;
-        }
-
-    </style>
+    <script src="/js/amcharts4/core.js"></script>
+    <script src="/js/amcharts4/charts.js"></script>
+    <script src="/js/amcharts4/themes/animated.js"></script>
 </head>
 
 <body>
@@ -239,6 +232,8 @@
                 <div id="browser_statistics" class="amcharts">加载中</div>
                 <h2 class="ui dividing header">操作系统</h2>
                 <div id="os_statistics" class="amcharts">加载中</div>
+                <h2 class="ui dividing header">Chord graph</h2>
+                <div id="chord_graph" class="amcharts">加载中</div>
         </div>
     </div>
 </div>
@@ -522,7 +517,7 @@ am4core.useTheme(am4themes_animated);
 // create chart
 var chart = am4core.create(target, am4charts.TreeMap);
 chart.hiddenState.properties.opacity = 0; // this makes initial fade in effect
-
+window.chart_graph = chart;
 chart.data = adapter_object;
 
 
@@ -564,6 +559,72 @@ bullet1.label.text = "{name}";
 bullet1.label.fill = am4core.color("#ffffff");
 
 chart.maxLevels = 2;
+    }
+    function drawChordGraph(data, prefix = "chord_graph") {
+        if(hasRendered[prefix]) {
+            return;
+        }
+        hasRendered[prefix] = true;
+        // Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+
+
+var chart = am4core.create("chord_graph", am4charts.ChordDiagram);
+
+_.forEach(data, function(el){
+    if(el.from > el.to) {
+        var tmp = el.from;
+        el.from = el.to;
+        el.to = tmp;
+    }
+});
+
+data.sort(function(a, b) {
+    return b.value - a.value;
+});
+
+while(data.length > 30) {
+    data.pop();
+}
+
+console.log(data);
+
+chart.data = data;
+
+chart.dataFields.fromName = "from";
+chart.dataFields.toName = "to";
+chart.dataFields.value = "value";
+
+// make nodes draggable
+var nodeTemplate = chart.nodes.template;
+nodeTemplate.readerTitle = "Click to show/hide or drag to rearrange";
+nodeTemplate.showSystemTooltip = true;
+
+var nodeLink = chart.links.template;
+var bullet = nodeLink.bullets.push(new am4charts.CircleBullet());
+bullet.fillOpacity = 1;
+bullet.circle.radius = 5;
+bullet.locationX = 0.5;
+
+// create animations
+chart.events.on("ready", function() {
+    for (var i = 0; i < chart.links.length; i++) {
+        var link = chart.links.getIndex(i);
+        var bullet = link.bullets.getIndex(0);
+
+        animateBullet(bullet);
+    }
+})
+
+function animateBullet(bullet) {
+    var duration = 3000 * Math.random() + 2000;
+    var animation = bullet.animate([{ property: "locationX", from: 0, to: 1 }], duration)
+    animation.events.on("animationended", function(event) {
+        animateBullet(event.target.object);
+    })
+}
     }
 </script>
 <script>
@@ -752,7 +813,12 @@ chart.maxLevels = 2;
                         if(data.status == "OK") {
                             _.delay(drawDynamicInteractiveLineChart, 0, data.data, "os", "os_statistics");
                         }
-                    })
+                    });
+                    $.get("../api/status/problem/solve_map/", function(data){
+                        if(data.status == "OK") {
+                            _.delay(drawChordGraph, 0, data.data);
+                        }
+                    });
                 });
                 }
             }

@@ -216,7 +216,7 @@
         <div class="ui segment" id="ccpc2018shenzhen">
             <h3 class="ui header contents">2018 深圳(哈尔滨工业大学(深圳)) Final</h3>
             <div class="ui right rail">
-                <div class="ui sticky ICPC2018SHENZHEN">
+                <div class="ui sticky CCPC2018SHENZHEN">
             <h3 class="ui header">CCPC2018Final 深圳</h3>
             <h4>纪念奖</h4>
             <p>队名:我为祖国献石油</p>
@@ -236,6 +236,34 @@
             </div>
             </div>
             <img src="/glory_image/ICPC2018ECFINAL.jpg" class="ui image">
+        </div>
+        <div class="ui segment" id="tianti2019">
+            <h3 class="ui header contents">2019 北京(北京工业大学)</h3>
+            <div class="right ui rail">
+                <div class="ui sticky 2019tianti">
+                    <h3 class="ui header">2019程序设计天梯赛</h3>
+                    <h4>团体全国一等奖 北京市特等奖</h4>
+                    <p>队名:锦绣河山美如画</p>
+                    <p>成员:王亚奇 李昊元 夏方略 吕博枫 赵云霄<br>连浩丞 高宇翔 许思睿 陈若朋 冯云豪</p>
+                    <h4>北京市三等奖</h4>
+                    <p>队名:祖国建设跨骏马</p>
+                    <p>成员:王博 付旭 李贺 赵明仪 单联天<br>胡思颍 杨德闯 周浩楠 王振洋 李军贤</p>
+                </div>
+            </div>
+            <img class="ui image" src="/glory_image/2019CCCC_1.jpg">
+            <img class="ui image" src="/glory_image/2019CCCC_2.jpg">
+        </div>
+        <div class="ui segment" id="yourlegend">
+            <h3 class="ui header contents">20XX XX(XX大学)</h3>
+            <div class="ui right rail">
+                <div class="ui sticky YOURLEGEND">
+            <h3 class="ui header">CONTEST XX</h3>
+            <h4>...奖？</h4>
+            <p>队名: ...?</p>
+            <p>成员: You...?</p>
+            </div>
+            </div>
+            <img src="/assets/images/wireframe/white-image.png" class="ui image">
         </div>
         </div>
         
@@ -315,6 +343,16 @@
         $(".ui.sticky.ICPC2018ECFINAL")
         .sticky({
             context:"#icpc2018ecfinal",
+            offset: 50
+        });
+        $(".ui.sticky.2019tianti")
+        .sticky({
+            context: "#tianti2019",
+            offset: 50
+        });
+        $(".ui.sticky.YOURLEGEND")
+        .sticky({
+            context: "#yourlegend",
             offset: 50
         });
         $('.ui.sticky.two')

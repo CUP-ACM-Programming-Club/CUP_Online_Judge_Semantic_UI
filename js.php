@@ -9,7 +9,7 @@ if(result.name === "ie" && result.versionNumber < 10 || (result.name == "chrome"
 <script src="/semantic-ui/semantic.min.js?ver=1.0.6"></script>
 <script src="/js/markdown-it.js?ver=1.0.7"></script>
 <!-- Place this tag in your head or just before your close body tag. -->
-<script src="/js/vue.min.js?ver=2.5.17"></script>
+<script src="/js/vue.min.js?ver=2.6.10"></script>
 <script src="/template/semantic-ui/js/base64.js?type=min&ver=1.0"></script>
 <script src="/template/semantic-ui/js/utils.js?ver=1.0.6"></script>
 <script src="/template/semantic-ui/js/anime.min.js"></script>

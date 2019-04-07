@@ -315,6 +315,8 @@ var contestrank = window.contestrank = new Vue({
                set:function(val){
                    var that = this;
                    var total = this.total;
+                   console.warn(val);
+                   
                    try {
                    if(val && val.length) {
                    _.forEach(val,function(v){
@@ -355,8 +357,12 @@ var contestrank = window.contestrank = new Vue({
                    var private_contest = this.users.length > 0;
                    for(var i = 0;i<len;++i)
                    {
+                       
                        if(!val[i].nick)continue;
                        val[i].nick = val[i].nick.trim();
+                       if(val[i].user_id.charAt(0) == 'g') {
+                        val[i].user_id = "G" + val[i].user_id.substring(1);
+                   }
                        if(!submitter[val[i].user_id]) {
                            if(private_contest) {
                                 continue;
@@ -380,7 +386,9 @@ var contestrank = window.contestrank = new Vue({
                            }
                        }
                        
-                       
+                       if(typeof submitter[val[i].user_id].problem[val[i].num] === "undefined") {
+                            continue;
+                        }
                        if(!!val[i].fingerprint) {
                             submitter[val[i].user_id].fingerprintSet.add(val[i].fingerprint);
                        }
@@ -391,16 +399,13 @@ var contestrank = window.contestrank = new Vue({
                            submitter[val[i].user_id].ipSet.add(val[i].ip);
                        }
                        if(val[i].sim !== null) {
-                           if(typeof submitter[val[i].user_id].problem[val[i].num] === "undefined") {
-                               console.info(submitter[val[i].user_id]);
-                               console.info(val[i]);
-                           }
-                           submitter[val[i].user_id].problem[val[i].num].sim = parseInt(val[i].sim);
+                            submitter[val[i].user_id].problem[val[i].num].sim = parseInt(val[i].sim);
                        }
                        if(submitter[val[i].user_id].problem[val[i].num] === undefined) {
                             continue;
                         }
                        if(val[i].result == 4) {
+                           //console.log(val[i]);
                             submitter[val[i].user_id].problem[val[i].num].accept.push(
                                 val[i].in_date
                             );

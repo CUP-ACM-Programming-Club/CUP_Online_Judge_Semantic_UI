@@ -190,10 +190,13 @@
    var url=location.href;
    var arr=url.split("/");
    var protocol=arr[0];
-   window.addEventListener("beforeunload", function (event) {
+   var unloadfunc = function (event) {
        window.socket.windowDestroyClose = true;
        window.socket.close();
-});
+};
+   window.addEventListener("beforeunload", unloadfunc);
+   window.addEventListener("unload", unloadfunc);
+   
   // $.getScript( protocol+"//"+location.hostname+"/socket.io/socket.io.js",function(){
         
   // });

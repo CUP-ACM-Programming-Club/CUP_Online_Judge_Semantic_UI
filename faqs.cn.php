@@ -37,6 +37,16 @@
 </div>
  
 作者:[Ryan Lee(李昊元)](/userinfo.php?user=2016011253)
+
+<div class="ui message">
+<div class="header">兼容性提示</div>
+本系统基于最新版本的Chrome浏览器进行前端开发，为了保证所有功能正常工作，建议使用推荐配置计算机进行访问:<br>
+* <b>分辨率不低于1440×900</b><br>
+* <b>Windows 7以上的64位现代操作系统/macOS 10.12以上的64位操作系统/Ubuntu 14.04以上的64位操作系统</b><br>
+* <b>最新版本的Chrome浏览器/Firefox浏览器/基于Chromium内核的Edge浏览器</b><br>
+* <b>2GB以上的内存</b><br>
+</div>
+
 ## 我如何能够提交我的代码?
 
 1. 注册一个账号
@@ -53,12 +63,12 @@
 ## 我的代码在什么环境上运行？
 
 - CPU:Intel(R) Xeon(R) CPU E5-2609 0 @ 2.40GHz
-- RAM:16G
+- RAM:16GB
 - OS:CentOS 7
 - GCC:8.2.0
 - Clang:LLVM 6.0.0
 - Java:6/7/8/10(OpenJDK)
-- JavaScript:NodeJS 10.14.0
+- JavaScript:Node.JS Latest
 - Python:CPython/PyPy
 ## 我的编译环境是什么？
 
@@ -202,7 +212,7 @@ print(sum(map(int,input().split()))
 
 
 </script>
-            <h1 class="ui dividing header">FAQ(Version:2018/12/05)</h1>
+            <h1 class="ui dividing header">FAQ(Version:2019/03/27)</h1>
             <div class="markdown target"></div>
             <!--
             <div class="ui info message">

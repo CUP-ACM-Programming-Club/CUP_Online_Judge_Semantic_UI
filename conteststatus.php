@@ -11,6 +11,9 @@
     <?php include("template/semantic-ui/css.php"); ?>
     <?php include("template/semantic-ui/js.php"); ?>
     <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
+        <script src="/js/amcharts4/core.js"></script>
+    <script src="/js/amcharts4/charts.js"></script>
+    <script src="/js/amcharts4/themes/animated.js"></script>
     <style>
         .table-scroll{
             overflow: auto
@@ -270,6 +273,10 @@
             <div style="width:75%;margin:auto">
                 <canvas id="canvas"></canvas>
             </div>
+            <!--<h2 class="ui dividing header">PlaceHolder</h2>-->
+            <div id="contest_li"></div>
+            <h2 class="ui dividing header">代码长度</h2>
+                <div id="contest_code_length" class="amcharts">加载中</div>
         </div>
         <div class="ui attached bottom segment" v-show="current_tag == 'statistics'">
             <statistic-table :statistics="statistics" :cid="cid" :finish="finish" :language_name="language_name"></statistic-table>
@@ -290,11 +297,14 @@
         var _submits = [];
         var _accepteds = [];
         var _persent = [];
+        var total_submit = 0, total_accepted = 0;
         _.forEach(result,function(i){
             if(i[_label[0]]&&i[_label[1]]){
                 _labels.push(i[_label[0]]+"-"+i[_label[1]]);
-                _submits.push(i.submit||0);
-                _accepteds.push(i.accepted||0);
+                total_submit += i.submit;
+                total_accepted += i.accepted;
+                _submits.push(total_submit||0);
+                _accepteds.push(total_accepted||0);
                 _persent.push((i.accepted/i.submit*100).toString().substring(0,5));
             }
         })
@@ -374,7 +384,52 @@
         var ctx = document.getElementById("canvas").getContext("2d");
         window.myLine = new Chart(ctx, config);
     }
+    
+    var hasDrawLineChart = {};
+    function drawLineChart(data, target = "default") {
+        
+// Themes begin
 
+// Themes end
+var data_array = [];
+
+
+if(!hasDrawLineChart[target]) {
+    hasDrawLineChart[target] = true;
+_.forEach(data, function(val){
+    data_array.push({date: new Date(val.in_date), value: val.code_length});
+})
+}
+else {
+    return;
+}
+am4core.useTheme(am4themes_animated);
+var chart = am4core.create("contest_code_length", am4charts.XYChart);
+console.log(data_array);
+
+chart.data = data_array;
+
+// Create axes
+var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+dateAxis.renderer.minGridDistance = 60;
+
+var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+var series = chart.series.push(new am4charts.LineSeries());
+series.dataFields.valueY = "value";
+series.dataFields.dateX = "date";
+series.tooltipText = "{value}"
+
+series.tooltip.pointerOrientation = "vertical";
+
+chart.cursor = new am4charts.XYCursor();
+chart.cursor.snapToSeries = series;
+chart.cursor.xAxis = dateAxis;
+
+//chart.scrollbarY = new am4core.Scrollbar();
+chart.scrollbarX = new am4core.Scrollbar();
+    }
 </script>
 <script>
 Vue.component("statistic-table", {
@@ -574,6 +629,15 @@ Vue.component("statistic-table", {
                 var that = this;
                 if(newVal) {
                     this.search().then(function(){that.search()});
+                }
+            },
+            current_tag: function(newVal, oldVal) {
+                if(newVal === "graph") {
+                    $.get("../api/status/problem/code_length/contest/" + this.cid, function(data){
+                        if(data.status == "OK") {
+                            _.delay(drawLineChart, 0, data.data);
+                        }
+                    })
                 }
             }
         },

@@ -22,9 +22,10 @@
             charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-emmet.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-static_highlight.js"></script>
+    <script src="/js/lang_detector.js"></script>
     <style>
         .ui.modal {
-            top: 30%;
+            top: 3%;
         }
 
         script {
@@ -88,7 +89,7 @@
             doc.innerHTML = str;
             return doc.innerText;
         }
-
+    
         var loadVue = new Promise(function (resolve, reject) {
             $.get("/api/problem/local" + window.location.search, function (data) {
                 if (data['status'] == "error") {
@@ -155,8 +156,11 @@
                             uploader:d.uploader,
                             sampleinput: d.sample_input,
                             sampleoutput: d.sample_output,
+                            test_run_sampleinput: d.sample_input,
+                            test_run_sampleoutput: d.sample_output,
                             hint: d.hint,
                             fingerprint:"",
+                            auto_detect: false,
                             fingerprintRaw: "",
                             submit: "提交:" + d.submit,
                             accepted: "正确:" + d.accepted,
@@ -253,6 +257,31 @@
                             }
                             if (append && append[newVal] !== this.current_append) {
                                 this.current_append = append[newVal];
+                            }
+                        },
+                        auto_detect: function(newVal, oldVal){
+                            var that = this;
+                            if (newVal === oldVal) {
+                                return;
+                            }
+                            if(newVal) {
+                            function detectLanguage() {
+    detected_lang = detectLang(window.editor.getSession().getValue(),  window.problemsubmitter.lang_list.map(function(e) {return e.num}));
+        console.log("this.selected_language", that.selected_language);
+        console.log("detected_lang", detected_lang);
+      if (that.selected_language != detected_lang) {
+          console.log("change");
+        that.selected_language = detected_lang;
+    }
+  }
+  var detectLanguageDebouncer = _.debounce(detectLanguage, 100);
+
+  window.editor.on("change", function (event) {
+    detectLanguageDebouncer();
+  });
+                            }
+                            else {
+                                window.editor.off("change");
                             }
                         },
                         current_append: function (newVal, oldVal) {
@@ -400,6 +429,7 @@
                             var memory = data["memory"];
                             var test_run_result = data["test_run_result"];
                             var compile_info = data["compile_info"];
+                            /*
                             var tb = window.document.getElementById('result');
                             var loader = "<img style='inline-block' width=18 src=image/loader.gif>";
                             var tag = "span";
@@ -417,6 +447,7 @@
                             if (state < 4) tb.innerHTML += loader;
                             tb.innerHTML += "Memory:" + memory + "kb&nbsp;&nbsp;";
                             tb.innerHTML += "Time:" + time + "ms";
+                            */
                             if (state >= 4) {
                                 if (test_run_result || compile_info) {
                                     $("#out").text("运行结果:\n" + (test_run_result || "") + (compile_info || ""));
@@ -449,23 +480,23 @@
                                 $("#right-side").transition("shake");
                             }
                             if (status == 0) {
-                                $("#progess_text").text(judge_result[status]);
+                                $(".progess_text").text(judge_result[status]);
                                 //setTimeout("frush_result(" + runner_id + ")", 250);
-                                $('#progress').progress({
+                                $('.progress.result').progress({
                                     percent: 20
                                 });
                             }
                             else if (status == 2) {
-                                $("#progess_text").text(judge_result[status]);
+                                $(".progess_text").text(judge_result[status]);
                                 //setTimeout("frush_result(" + runner_id + ")", 250);
-                                $('#progress').progress({
+                                $('.progress.result').progress({
                                     percent: 40
                                 });
                             }
                             else if (status == 3) {
-                                $("#progess_text").text(judge_result[status] + " 已通过测试点:" + pass_point + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
+                                $(".progess_text").text(judge_result[status] + " 已通过测试点:" + pass_point + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
                                 // setTimeout("frush_result(" + runner_id + ")", 250);
-                                $('#progress').progress({
+                                $('.progress.result').progress({
                                     percent: 40
                                 });
                             }
@@ -475,11 +506,11 @@
                                 if (sim) {
                                     str += " 触发判重 与运行号: " + sim_s_id + "代码重复 重复率:" + sim + "%";
                                 }
-                                $("#progess_text").text(str);
-                                $('#progress').progress({
+                                $(".progess_text").text(str);
+                                $('.progress.result').progress({
                                     percent: 100
                                 });
-                                $("#progress").progress('set success');
+                                $(".progress.result").progress('set success');
                                 if (getParameterByName("cid") && parseInt(getParameterByName("cid")) > 1000) {
                                     $.get("contest_problem_ajax.php?cid=" + getParameterByName("cid"), function (data) {
                                         var json = JSON.parse(data);
@@ -513,25 +544,38 @@
                             }
                             else if (status == 5 || status == 6) {
                                 //count=0;
-                                $("#progess_text").text("在第" + (pass_point + 1) + "个测试点发生 " + judge_result[status] + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
-                                $('#progress').progress({
+                                $(".progess_text").text("在第" + (pass_point + 1) + "个测试点发生 " + judge_result[status] + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
+                                $('.progress.result').progress({
                                     percent: 100
                                 });
-                                $("#progress").progress('set error');
+                                $(".progress.result").progress('set error');
+                            }
+                            else if(status == 13) {
+                                if (typeof compile_info != "undefined") compile_info = this.nl2br(compile_info);
+                                else compile_info = "";
+                                $(".progess_text").text("在第" + (pass_point + 1) + "个测试点发生 " + judge_result[status] + " 内存使用:" + memory + "KB 运行时间:" + time + "ms");
+                                if (compile_info && compile_info.trim().length > 0) {
+                                    $(".compile.header").html("<br>" + compile_info);
+                                    $(".warning.message").show();
+                                }
+                                $('.progress.result').progress({
+                                    percent: 100
+                                });
+                                $(".progress.result").progress('set warning');
                             }
                             else {
                                 //count=0;
                                 if (typeof compile_info != "undefined") compile_info = "<br>" + this.nl2br(compile_info);
                                 else compile_info = "";
-                                $("#progess_text").text("在第" + (pass_point + 1) + "个测试点发生 " + judge_result[status] + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
+                                $(".progess_text").text("在第" + (pass_point + 1) + "个测试点发生 " + judge_result[status] + "  通过率:" + pass_rate.toString().substring(0, 3) + "%");
                                 if (compile_info.length > 0) {
                                     $(".compile.header").html(compile_info);
                                     $(".warning.message").show();
                                 }
-                                $('#progress').progress({
+                                $('.progress.result').progress({
                                     percent: 100
                                 });
-                                $("#progress").progress('set warning');
+                                $(".progress.result").progress('set warning');
                             }
                         },
 
@@ -591,11 +635,11 @@
                             }
                             this.submitDisabled = true;
                             $(".ui.teal.progress").show();
-                            $("#progess_text").text("提交");
-                            $('#progress').progress({
+                            $(".progess_text").text("提交");
+                            $('.progress.result').progress({
                                 percent: 0
                             });
-                            $("#progress").progress('set active');
+                            $(".progress.result").progress('set active');
                             var postdata = {
                                 id: qstring("id"),
                                 cid: qstring("cid"),
@@ -654,7 +698,7 @@
                                 window.handler_interval = setTimeout(this.resume, 1000);
                             }
                         },
-                        test_run: function () {
+                        pre_test_run: function() {
                             if (!window.connected) {
                                 alert("WebSocket服务未启动，请等待服务启动后提交\nWebSocket服务启动标志未:\n右上角显示在线人数");
                                 return;
@@ -673,7 +717,7 @@
                             }
                             localStorage.setItem("test_run_time",now + 300 * 1000);
 
-                            this.hide_warning = true;
+                            
                             var submit_language = parseInt($("#language").val());
                             if (!this.checkJava(submit_language)) {
                                 return;
@@ -690,19 +734,27 @@
                                     .modal('show')
                                 return;
                             }
-                            $("#out").html($("#hidden_sample_output").html());
-                            $('.ui.standard.modal')
+                            $("#test_run_modal")
                                 .modal({
-                                    blurring: false,
-                                    allowMultiple: true
+                                    blurring: false
                                 })
                                 .modal('show')
                             ;
+                            //this.test_run();
+                        },
+                        test_run: function () {
+                            var that = this;
+                            
+                            $("#out").html("样例输出为:\n" + this.sampleoutput);
+                            if(that.test_run_sampleinput && that.test_run_sampleinput.length > 1000) {
+                                alert("测试运行输入用例长度不能超过1000字!");
+                                return;
+                            }
                             if (window.handler_interval) window.clearInterval(handler_interval);
-                            var loader = "<img style='display:inline-block' width=18 src=image/loader.gif>";
-                            var tb = window.document.getElementById('result');
+                            //var loader = "<img style='display:inline-block' width=18 src=image/loader.gif>";
                             if (editor.getValue().length < 10) return alert("too short!");
-                            tb.innerHTML = loader;
+                            //var tb = window.document.getElementById('result');
+                            //tb.innerHTML = loader;
                             var qstring = getParameterByName;
                             var type = "problem";
                             if (qstring("cid")) {
@@ -711,6 +763,7 @@
                             else if (qstring("tid")) {
                                 type = "topic"
                             }
+                            this.hide_warning = true;
                             if (typeof window.socket === "object") {
                                 var postdata = {
                                     id: -Math.abs(parseInt(qstring("id"))) || -Math.abs(parseInt(that.original_id)),
@@ -718,7 +771,7 @@
                                     tid: -Math.abs(parseInt(qstring("tid"))) || null,
                                     pid: qstring("pid"),
                                     share: this.share,
-                                    input_text: window.problemsubmitter.$data.sampleinput,
+                                    input_text: window.problemsubmitter.$data.test_run_sampleinput,
                                     language: $("#language").val(),
                                     source: window.editor.getValue(),
                                     type: type,
@@ -751,6 +804,7 @@
                             this.submitDisabled = true;
                             this.resume_time = 20;
                             window.handler_interval = setTimeout(that.resume, 1000);
+                            $("#test_run_modal").modal("set").clickaway()
                         }
                     },
                     updated: function () {
@@ -935,8 +989,14 @@
                             var fonts = document.getElementById('source').style.fontSize;
                             $("#fontsize").val(fonts.substring(0, fonts.indexOf("px")));
                         }
-
+                        try {
                         load_editor();
+                        }
+                        catch (e) {
+                            if(e.message.indexOf("ace.edit") !== -1) {
+                                location.href = location.href;
+                            }
+                        }
                         window.editor.getSession().setValue(this.source_code);
                         $('.ui.accordion')
                             .accordion({
@@ -1036,30 +1096,61 @@
             </div>
         </div>
     </div>
-    <div class="ui standard modal scrolling hidden center align" style="height:300px;background-color: #ffffff">
+    <div class="ui modal" style="background-color: #ffffff" id="test_run_modal">
+        <i class="close icon"></i>
         <div class="header">测试运行</div>
         <div class="content">
-            <div class="ui two column grid" style="height:70%;margin:auto;text-align: center">
-                <div class="column">
-                    <?php echo $MSG_Input ?>:<textarea style="height:100%;resize: none;border-radius:10px;font-family:SF Mono,Monaco,monospace" cols=40
-                                                       rows=5
-                                                       id="input_text"
-                                                       v-model="sampleinput"></textarea>
+            <div class="ui grid" style="height:70%;margin:auto;">
+                <div class="row">
+                    <div class="ui message" style="width: 100%; padding: 1rem">
+                        <div class="header">
+                            使用说明
+                        </div>
+                        在测试输入框中输入测试数据后，点击执行，会根据输入的测试数据运行，得出输出结果。
+                    </div>
                 </div>
-                <div class="column">
-                    <?php echo $MSG_Output ?>:
-                    <textarea style="height:100%;resize: none;border-radius:10px;font-family:SF Mono,Monaco,monospace" cols=40 rows=5 id="out" name="out"
-                              :placeholder="'SHOULD BE:'+sampleoutput">
+                <div class="row">
+                    <div class="ten wide column" style="margin: auto">
+                        <div class="ui header" style="margin: auto">测试输入</div>
+                    </div>
+                    <div class="six wide right aligned column">
+                        <div class="ui basic button" @click="test_run_sampleinput = sampleinput">复制样例输入</div>
+                    </div>
+                </div>
+                <div class="row" style="padding: 1rem">
+                    <textarea style="width:100%;resize: none;border-radius:10px;font-family:SF Mono,Monaco,monospace;" cols=40
+                                                       rows=7
+                                                       id="input_text" v-model="test_run_sampleinput"></textarea>
+                </div>
+                <div class="row">
+                    <div class="ten wide column" style="margin: auto">
+                        <div class="ui header" style="margin: auto">测试结果</div>
+                    </div>
+                    <div class="six wide right aligned column">
+                        <div class="ui basic button" style="opacity: 0"></div>
+                    </div>
+                </div>
+                <div class="row" style="padding: 1rem">
+                    <textarea style="width:100%;resize: none;border-radius:10px;font-family:SF Mono,Monaco,monospace" cols="40" rows="7" id="out" name="out"
+                              :placeholder="'SHOULD BE:\n'+sampleoutput">
                         </textarea>
-                    <textarea style="display:none" id="hidden_sample_output" class="sample_output">
-SHOULD BE:
-                        
-</textarea>
                 </div>
-                <br>
-                <div style="margin: auto;text-align:right;padding-right:50px">
-                    <br>
-                    <div id="result" class="ui blue button right" style="text-align: right">状态</div>
+                <div class="row" style="padding: 1rem">
+                    <a class="ui basic button" @click.prevent="test_run">执行</a>
+                </div>
+                <div class="row" style="padding:1rem;margin: auto;text-align:right;">
+                    <div class="ui teal progress result" style="width: 100%" data-value="0" data-total="3" id="progress">
+                    <div class="bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="label progess_text" id="progess_text"></div>
+                </div>
+                <div class="ui warning message" :class="'ui warning message '+(hide_warning?'hidden':'')">
+                    <i class="close icon"></i>
+                    <div class="header compile">
+                    </div>
+                </div>
+                    <!--<div id="result" class="ui blue button right" style="text-align: right">状态</div>-->
                     &nbsp;
                 </div>
             </div>
@@ -1277,7 +1368,7 @@ SHOULD BE:
             <div style="width:65%;position:relative;float:left; border-radius: " id="right-side">
                 <script src="template/semantic-ui/js/editor_config.js?ver=1.0.8.1"></script>
                 <textarea style="display:none" cols=40 rows=5 name="input_text"
-                          id="ipt" class="sample_input"><?php echo $view_sample_input ?></textarea>
+                          id="ipt" class="sample_input">样例输入</textarea>
                 <div id="modeBar" style="margin: 0;
         padding: 0;
         position: relative;
@@ -1288,9 +1379,16 @@ SHOULD BE:
                                 name="language" v-model="selected_language">
                             <option v-for="language in lang_list" :value="language.num">{{language.name}}</option>
                         </select>
+                        <div class="item">
+                            <div class="ui toggle checkbox" v-cloak>
+                                <input type="checkbox" name="auto_detect" v-model="auto_detect">
+                                <label>自动选择</label>
+                            </div>
+                        </div>
                         <a
                                 :class="'item'" class="not-compile" v-cloak id="clipbtn" data-clipboard-action="copy"
                                 style="float:left;" v-if="prepend||append">复制代码</a>
+                                
                     </div>
                     <div class="right menu">
                         <div class="item">
@@ -1376,20 +1474,20 @@ SHOULD BE:
                     <div class="ui right menu">
                         <div class="ui buttons">
                             <input id="Submit" class="ui button green " :disabled="submitDisabled" type=button
-                                   value="<?php echo $MSG_SUBMIT ?>"
+                                   value="提交"
                                    @click="do_submit">
                             <div class="or"></div>
-                            <input id="TestRun" class="ui button blue" @click="test_run" :disabled="submitDisabled"
-                                   type=button value="<?php echo $MSG_TR ?>"
+                            <input id="TestRun" class="ui button blue" @click="pre_test_run" :disabled="submitDisabled"
+                                   type=button value="测试运行"
                             >&nbsp;<!--<span class="btn" id=result>状态</span>-->
                         </div>
                     </div>
                 </div>
-                <div class="ui teal progress" data-value="0" data-total="3" id="progress" style="display:none">
+                <div class="ui teal progress result" data-value="0" data-total="3" id="progress" style="display:none">
                     <div class="bar">
                         <div class="progress"></div>
                     </div>
-                    <div class="label" id="progess_text"></div>
+                    <div class="label progess_text"></div>
                 </div>
                 <div class="ui warning message hidden" :class="'ui warning message '+(hide_warning?'hidden':'')">
                     <i class="close icon"></i>

@@ -12,6 +12,9 @@
     <?php include("template/semantic-ui/css.php");?>	    
 <?php include("template/semantic-ui/js.php");?>
 <script src="/template/semantic-ui/js/Chart.bundle.min.js"></script>
+    <script src="/js/amcharts4/core.js"></script>
+    <script src="/js/amcharts4/charts.js"></script>
+    <script src="/js/amcharts4/themes/animated.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -92,6 +95,14 @@
                       <canvas id="memory_bar_area" />
                   </div>
               </div>
+              <div class="ui piled segment">
+                  <h2 class="ui dividing header">代码长度</h2>
+                  <div id="problem_code_length" class="amcharts"></div>
+              </div>
+              <div class="ui piled segment">
+                  <h2 class="ui dividing header">做题人员流向</h2>
+                  <div id="chord_graph" class="amcharts">加载中</div>
+              </div>
           <div class="ui grid">
               <div class="eight wide column">
                   
@@ -145,9 +156,122 @@
  </div>
 
     </div> <!-- /container -->
-    <?php include("template/$OJ_TEMPLATE/bottom.php") ?>
+    <?php include("template/semantic-ui/bottom.php") ?>
 <script>
+var hasDrawLineChart = {};
+var hasRendered = {};
+function drawLineChart(data, target = "default") {
+        
+// Themes begin
 
+// Themes end
+var data_array = [];
+
+
+if(!hasDrawLineChart[target]) {
+    hasDrawLineChart[target] = true;
+_.forEach(data, function(val){
+    data_array.push({date: new Date(val.in_date), value: val.code_length});
+})
+}
+else {
+    return;
+}
+am4core.useTheme(am4themes_animated);
+var chart = am4core.create("problem_code_length", am4charts.XYChart);
+console.log(data_array);
+
+chart.data = data_array;
+
+// Create axes
+var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+dateAxis.renderer.minGridDistance = 60;
+
+var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+var series = chart.series.push(new am4charts.LineSeries());
+series.dataFields.valueY = "value";
+series.dataFields.dateX = "date";
+series.tooltipText = "{value}"
+
+series.tooltip.pointerOrientation = "vertical";
+
+chart.cursor = new am4charts.XYCursor();
+chart.cursor.snapToSeries = series;
+chart.cursor.xAxis = dateAxis;
+
+//chart.scrollbarY = new am4core.Scrollbar();
+chart.scrollbarX = new am4core.Scrollbar();
+    }
+    function drawChordGraph(data, pid, prefix = "chord_graph") {
+        if(hasRendered[prefix]) {
+            return;
+        }
+        hasRendered[prefix] = true;
+        // Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+
+
+var chart = am4core.create("chord_graph", am4charts.ChordDiagram);
+
+_.forEach(data, function(el){
+    if(el.from != pid) {
+        var tmp = el.from;
+        el.from = el.to;
+        el.to = tmp;
+    }
+    el.from = "本题";
+    el.to += "";
+});
+
+data.sort(function(a, b) {
+    return b.value - a.value;
+});
+
+while(data.length > 30) {
+    data.pop();
+}
+
+console.log(data);
+
+chart.data = data;
+
+chart.dataFields.fromName = "from";
+chart.dataFields.toName = "to";
+chart.dataFields.value = "value";
+
+// make nodes draggable
+var nodeTemplate = chart.nodes.template;
+nodeTemplate.readerTitle = "点击块可显示或隐藏";
+nodeTemplate.showSystemTooltip = true;
+
+var nodeLink = chart.links.template;
+var bullet = nodeLink.bullets.push(new am4charts.CircleBullet());
+bullet.fillOpacity = 1;
+bullet.circle.radius = 5;
+bullet.locationX = 0.5;
+
+// create animations
+chart.events.on("ready", function() {
+    for (var i = 0; i < chart.links.length; i++) {
+        var link = chart.links.getIndex(i);
+        var bullet = link.bullets.getIndex(0);
+
+        animateBullet(bullet);
+    }
+})
+
+function animateBullet(bullet) {
+    var duration = 3000 * Math.random() + 2000;
+    var animation = bullet.animate([{ property: "locationX", from: 0, to: 1 }], duration)
+    animation.events.on("animationended", function(event) {
+        animateBullet(event.target.object);
+    })
+}
+    }
     (function(env){
         var problemStatus = new Vue({
         el:".ui.container.padding",
@@ -225,6 +349,11 @@
             var current_title = $("title").text();
             $("title").text("Status:Problem "+this.pid +" - "+current_title);
             this.current_page = Math.max(0,this.current_page-1);
+            $.get("../api/status/problem/code_length/problem/" + this.pid, function(data){
+                if(data.status == "OK") {
+                    drawLineChart(data.data);
+                }
+            });
             $.get("../api/problemstatus/"+this.pid+"?page="+this.current_page,function(data){
                 if(data.status == "OK") {
                 that.submitStatus = data;
@@ -440,7 +569,13 @@
 					}
 				}
 			});
-            })
+            });
+            var that = this;
+            $.get("../api/status/problem/solve_map/" + this.pid, function(data){
+                        if(data.status == "OK") {
+                            _.delay(drawChordGraph, 0, data.data, that.pid);
+                        }
+                    });
         }
     })
     })(window);

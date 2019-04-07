@@ -134,7 +134,11 @@ $homepage="";
             <div class="column">
             <a class="ui white basic label maintain" target="_blank" href='update_log.php'></a><!-- Place this tag where you want the button to render. -->
             <a class="github_button" href="https://travis-ci.com/CUP-ACM-Programming-Club/CUP-Online-Judge-Express" target="_blank"><img src="https://travis-ci.com/CUP-ACM-Programming-Club/CUP-Online-Judge-Express.svg?branch=master" style="vertical-align: middle;"></a>
-            <a class="github_button" href="https://codebeat.co/projects/github-com-cup-acm-programming-club-cup-online-judge-express-master"><img alt="codebeat badge" src="https://codebeat.co/badges/5dd7ac11-3c39-4815-8aee-aa9dbb947d84" style="vertical-align: middle;" /></a>
+            <a class="github_button" href="https://codebeat.co/projects/github-com-cup-acm-programming-club-cup-online-judge-express-master-7e8760db-7670-4c22-9862-1262dddcb4ec"><img alt="codebeat badge"  style="vertical-align: middle;"  src="https://codebeat.co/badges/bf69c0eb-2bdf-4fbe-a6f0-2bf2a98a597a" /></a>
+            <a class="github_button" href="https://codecov.io/gh/CUP-ACM-Programming-Club/CUP-Online-Judge-Express">
+  <img  style="vertical-align: middle;" src="https://codecov.io/gh/CUP-ACM-Programming-Club/CUP-Online-Judge-Express/branch/master/graph/badge.svg" />
+</a>
+
             </div>
             <br><a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
 <!--<h4></h4>-->
@@ -147,7 +151,7 @@ $homepage="";
                     <div class="ui warning message" style="margin-top:15em">
                         <!--<i class="close icon"></i>-->
                         <div class="header">提示</div>
-                        <p style="font-size:1em">系统将于2019年1月9日10:00-16:00期间停止一般用户的访问提交。</p>
+                        <p style="font-size:1em">系统将于2019年3月21日12:00-18:00期间停止一般用户的访问提交。</p>
                         <!--
                         <ul class="list">
     <li>考试/测验请访问http://acm.cup.edu.cn</li>
@@ -448,7 +452,7 @@ $homepage="";
       duration: 500,
       offset: '-=600',
   });
-  if(false && logined) {
+  if(logined && false) {
   main_timeline.
   add({
       targets: '#main_masthead',
