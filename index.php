@@ -140,7 +140,10 @@ $homepage="";
 </a>
 
             </div>
-            <br><a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>
+            <br><a href="https://www.cubecloud.net/aff.php?aff=1461" style="opacity: 0" target="_blank" class="ui inverted large button download basic vultr">
+              Hosted by CubeCloud
+            </a>
+            <!--<a class="vultr" href="https://www.vultr.com/?ref=7250019" target="_blank"><img src="./image/vultr.png" class="ui small image main title" style="display:inline-block"></a>-->
 <!--<h4></h4>-->
              <!--<a class="ui huge inverted download button" href="cprogrammingcontest.php">查看复赛情况</a>-->
         </div>
@@ -357,7 +360,7 @@ $homepage="";
     document.getElementById('myVideo').style.opacity = "0.4";
     $.get("../api/login/",function(data){
         var logined = data.logined;
-        if(!logined) {
+        if(false && !logined) {
         window.backpic = setInterval(function(){
             var index = getRandomIntInclusive(1,5);
            // while(index === window.picid) {

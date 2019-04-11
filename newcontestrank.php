@@ -116,12 +116,14 @@ td{
      
      <div class="ui grid">
          <div class="row">
-             <div class="left aligned twelve wide column">
+             <div class="left aligned eleven wide column">
                  <time_pattern
                  :start_time="start_time"
                  ></time_pattern>
              </div>
-             <div class="right aligned four wide column">
+             <div class="right aligned five wide column">
+                 <div class="ui toggle checkbox"><input @click="auto_update = !auto_update" type="checkbox"> 
+                 <label>暂停自动更新排名</label></div>
                  <div class="ui toggle checkbox"><input @click="add_name=!add_name" type="checkbox"> 
                  <label>加入学号</label></div>
                  <a class="ui primary mini button" @click="exportXLS">Save to XLS</a>
@@ -304,6 +306,8 @@ var contestrank = window.contestrank = new Vue({
            title:"",
            users:[],
            add_name: false,
+           auto_update: true,
+           waiting_queue: [],
            state:true,
            errormsg:"",
        },
@@ -662,12 +666,22 @@ var contestrank = window.contestrank = new Vue({
                            num:parseInt(data.num),
                            result:data.state
                        };
-                       this.scoreboard = ndata;
+                       if(!this.auto_update) {
+                            this.waiting_queue.push(ndata);
+                        }
+                       else {
+                            this.scoreboard = ndata;
+                       }
                    }
                }
            }
        },
        watch: {
+           auto_update: function(newVal, oldVal) {
+                   while(this.waiting_queue.length > 0) {
+                       this.scoreboard = this.waiting_queue.shift();
+                   }
+           },
            add_name: function(newVal, oldVal) {
                var that = this;
                if(!newVal)return;
