@@ -15,8 +15,9 @@
  <script src="/js/dayjs.min.js"></script>
 
 <script src="/js/FileSaver.min.js"></script>
- <!--
+
  <script src="/js/xlsx.core.min.js"></script>
+  <!--
 <script src="/js/tableexport.min.js"></script>
 <script src="/js/localforage.js"></script>
 -->
@@ -320,20 +321,24 @@ var contestrank = window.contestrank = new Vue({
                    var that = this;
                    var total = this.total;
                    console.warn(val);
-                   
+                   console.time = console.time || function(){};
+                   console.timeEnd = console.timeEnd || function(){};
                    try {
+                        console.time("count scoreboard use time");
                    if(val && val.length) {
-                   _.forEach(val,function(v){
-                        temp_data.push(v);
-                   });
+                       temp_data = temp_data.concat(val);
                    }
                    else {
                        temp_data.push(val);
                    }
                    val = temp_data;
+                   console.time("part");
+                   console.time("init submitter");
                    var first_blood = [];
+                   var first_blood_person = {};
                    for(var i = 0;i<that.total;++i) {
-                       first_blood.push(-1);
+                       first_blood.push(parseInt(1e11));
+                       first_blood_person[i] = -1;
                    }
                    var submitter = this.submitter = {};
                    _.forEach(this.users,function(val){
@@ -357,8 +362,10 @@ var contestrank = window.contestrank = new Vue({
                            }
                        }
                    });
+                   console.timeEnd("init submitter");
                    var len = val.length;
                    var private_contest = this.users.length > 0;
+                   console.time("generate submitter");
                    for(var i = 0;i<len;++i)
                    {
                        
@@ -422,7 +429,9 @@ var contestrank = window.contestrank = new Vue({
                            submitter[val[i].user_id].problem[val[i].num].start_time = val[i].start_time;
                        }
                    }
+                   console.timeEnd("generate submitter");
                    var _submitter = [];
+                   console.time("copy submitter");
                    _.forEach(submitter,function(val,index){
                        if(!index) {
                            console.log(val);
@@ -432,7 +441,11 @@ var contestrank = window.contestrank = new Vue({
                        val.user_id = index;
                        _submitter.push(val);
                        }
-                   })
+                   });
+                   console.timeEnd("copy submitter");
+
+                   that.submitter = _submitter;
+                   console.time("count penalty");
                    _.forEach(submitter,function(value,key){
                        var problems = submitter[key].problem;
                        _.forEach(problems,function(value,index){
@@ -458,29 +471,33 @@ var contestrank = window.contestrank = new Vue({
                        })
                         // console.log(submitter[key]);
                    })
+                   console.timeEnd("count penalty");
                    // console.log(submitter);
-                   
+                   console.time("first blood time");
                    _.forEach(_submitter,function(val){
                        _.forEach(val.problem,function(v,idx){
                            if(v.accept.length > 0) {
                                var difftime =  v.accept[0].diff(v.start_time,'second');
                                val.penalty_time += difftime;
-                               if(~first_blood[idx]) {
-                                   first_blood[idx] = Math.min(first_blood[idx],difftime);
-                               }
-                               else {
+                               var prev = first_blood[idx];
+                               if(difftime < prev) {
                                    first_blood[idx] = difftime;
+                                   if(first_blood_person[idx] === -1) {
+                                       first_blood_person[idx] = v;
+                                       v.first_blood = true;
+                                   }
+                                   else {
+                                       first_blood_person[idx].first_blood = false;
+                                       first_blood_person[idx] = v;
+                                       v.first_blood = true;
+                                   }
                                }
                            }
                        })
                    })
-                   
-                   _.forEach(_submitter,function(val){
-                       _.forEach(val.problem,function(v,idx){
-                           v.first_blood = Boolean(v.accept.length > 0 && v.accept[0].diff(v.start_time,'second') === first_blood[idx]);
-                       })
-                   })
-                   
+                   console.timeEnd("first blood time");
+
+                   console.time("sort");
                    _submitter.sort(function(a,b){
                        if(a.ac != b.ac) {
                            return b.ac - a.ac;
@@ -489,15 +506,19 @@ var contestrank = window.contestrank = new Vue({
                             return a.penalty_time - b.penalty_time;
                        }
                    });
-                   
+                   console.timeEnd("sort");
                    var rnk = 1;
+                   console.time("rank");
                    _.forEach(_submitter,function(val){
                        if(val.ac > 0)
                             val.rank = rnk++;
                         else
                             val.rank = rnk;
                    });
-                   window.datas = that.submitter = _submitter;
+                   console.timeEnd("rank");
+                   console.timeEnd("part");
+                   window.datas = _submitter;
+                      console.timeEnd("count scoreboard use time");
                    }
                    catch (e) {
                        that.state = false;
@@ -631,7 +652,7 @@ var contestrank = window.contestrank = new Vue({
            },
            exportXLS:function(){
                var doc = document.getElementById("save");
-               var plain_text = "<html><head><meta http-equiv='Content-Type' content='application/vnd.ms-excel; charset=utf-8' /></head>";
+               var plain_text = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' + "<head><meta http-equiv='Content-Type' content='application/vnd.ms-excel; charset=utf-8' /></head>";
                plain_text += "<center><h3>Contest "+ this.cid + " " + this.title +"</h3></center>";
                plain_text += "<table border=1>" + doc.innerHTML.replace("<tbody>","").replace("</tbody>","");
                plain_text += "<tr><td colspan='8'>环境指纹指根据用户的硬件环境及IP地址不同而产生的不同的指纹</td></tr>";
@@ -640,9 +661,34 @@ var contestrank = window.contestrank = new Vue({
                plain_text += "<tr><td colspan='8'>若硬件指纹唯一而环境指纹不唯一，代表同型号机器在不同IP地址提交</td></tr>";
                plain_text += "<tr><td colspan='8'>若硬件指纹不唯一，代表使用了多台设备进行提交</td></tr>";
                plain_text += "</table></html>";
+               const wopts = { bookType: 'xlsx', bookSST: false, type: 'binary' };//这里的数据是用来定义导出的格式类型
+        // const wopts = { bookType: 'csv', bookSST: false, type: 'binary' };//ods格式
+        // const wopts = { bookType: 'ods', bookSST: false, type: 'binary' };//ods格式
+        // const wopts = { bookType: 'xlsb', bookSST: false, type: 'binary' };//xlsb格式
+        // const wopts = { bookType: 'fods', bookSST: false, type: 'binary' };//fods格式
+        // const wopts = { bookType: 'biff2', bookSST: false, type: 'binary' };//xls格式
+
+        function downloadExl(data, type) {
+            const wb = { SheetNames: ['Sheet1'], Sheets: {}, Props: {} };
+            wb.Sheets['Sheet1'] = XLSX.utils.table_to_sheet(data);//通过json_to_sheet转成单页(Sheet)数据
+            saveAs(new Blob([s2ab(XLSX.write(wb, wopts))], { type: "application/octet-stream" }), "这里是下载的文件名" + '.' + (wopts.bookType=="biff2"?"xls":wopts.bookType));
+        }
+        function s2ab(s) {
+            if (typeof ArrayBuffer !== 'undefined') {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            } else {
+                var buf = new Array(s.length);
+                for (var i = 0; i != s.length; ++i) buf[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+        }
+                //downloadExl(doc);
                console.log(plain_text);
                var blob;
-               blob = new Blob([plain_text], {type: 'application/excel'});
+               blob = new Blob([plain_text], {type: 'application/vnd.ms-excel;charset=UTF-8;'});
                if(convert_flag) {
                    saveAs(blob, "Contest " + this.cid + " 多个contest.xls" );
                }

@@ -14,7 +14,7 @@
     <script src="/js/fingerprint2.min.js?ver=2.0"></script>
     <script src="/template/semantic-ui/js/clipboard.min.js"></script>
     <!--<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>-->
-    <script src="ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-builds/src-min-noconflict/ace.js?ver=1.1" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-language_tools.js" type="text/javascript"
             charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-error_marker.js" type="text/javascript" charset="utf-8"></script>
@@ -1393,11 +1393,7 @@
                     <div class="right menu">
                         <div class="item">
                         </div>
-                        <div class="item"><span class="item">字号:</span>
-                            <div class="ui input"><input type="text" value=""
-                                                         style="width:60px;text-align:center;height:30px"
-                                                         id="fontsize" @keyup="resize($event)"></div>
-                        </div>
+                        
                         <div class="item">
                             <span>主题:</span><select class="ui selection dropdown search" id="theme" size="1">
 
@@ -1455,7 +1451,7 @@
                 <div v-if="append" id="append" class="append code"
                      style="width: 100%; padding:0px; line-height:1.2;text-align:left;margin-bottom:0px;"
                      :ace-mode="'ace/mode/'+language_template[selected_language]"
-                     ace-theme="ace/theme/monokai" v-text="current_append">
+                     ace-theme="ace/theme/monokai" v-html="current_append">
                 </div>
                 <div id="statusBar" style="margin: 0;
         padding: 0;
@@ -1469,6 +1465,11 @@
                                 <input type="checkbox" name="share" v-model="share">
                                 <label>允许他人查看代码</label>
                             </div>
+                        </div>
+                        <div class="item"><span class="item">字号:</span>
+                            <div class="ui input"><input type="text" value=""
+                                                         style="width:60px;text-align:center;height:30px"
+                                                         id="fontsize" @keyup="resize($event)"></div>
                         </div>
                     </div>
                     <div class="ui right menu">

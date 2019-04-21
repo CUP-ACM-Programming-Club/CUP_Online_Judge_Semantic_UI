@@ -148,7 +148,7 @@
                             </div>
                         </div>
                     </div>
-                    <div :class="(isadmin ? 'five':'four') +' fields center aligned'">
+                    <div :class="(isadmin ? 'five' : 'four')+' fields center aligned'">
                         <div class="field" style="margin:auto">
                             <div class="ui toggle checkbox">
                                 <input type="checkbox" @click="auto_refresh=!auto_refresh" checked="true">
@@ -168,10 +168,16 @@
                             </div>
                         </div>
                         <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" @click="list_self_only">
+                                <label>仅显示本人提交</label>
+                            </div>
+                        </div>
+                        <div class="field">
                             <button class="ui labeled icon mini button" @click.prevent="search($event)">
                                 <i class="search icon"></i><?= $MSG_SEARCH ?></button>
                         </div>
-                        <div class="field"></div>
+                        
                     </div>
                 </form>
             </div>
@@ -218,6 +224,9 @@
                             <canvas id="logtime"></canvas>
                         </div>
                     </div>
+                </div>
+                <div class="row" style="width: 100%">
+                    <div id="register_timeline" style="width: 100%;height:600px"></div>
                 </div>
             </div>
             
@@ -626,6 +635,73 @@ function animateBullet(bullet) {
     })
 }
     }
+    function drawRegisterTimeline(data) {
+if(hasRendered["timeline"]) {
+    return;
+}
+hasRendered["timeline"] = true;
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+// Create chart instance
+var chart = am4core.create("register_timeline", am4charts.XYChart);
+chart.paddingRight = 20;
+var title = chart.titles.create();
+title.text = "注册人数变化";
+title.fontSize = 15;
+title.marginBottom = 30;
+// Add data
+chart.data = data;
+
+// Create axes
+var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+var series = chart.series.push(new am4charts.LineSeries());
+series.dataFields.valueY = "value";
+series.dataFields.dateX = "date";
+series.tooltipText = "{value}"
+series.strokeWidth = 2;
+series.minBulletDistance = 15;
+
+// Drop-shaped tooltips
+series.tooltip.background.cornerRadius = 20;
+series.tooltip.background.strokeOpacity = 0;
+series.tooltip.pointerOrientation = "vertical";
+series.tooltip.label.minWidth = 40;
+series.tooltip.label.minHeight = 40;
+series.tooltip.label.textAlign = "middle";
+series.tooltip.label.textValign = "middle";
+
+// Make bullets grow on hover
+var bullet = series.bullets.push(new am4charts.CircleBullet());
+bullet.circle.strokeWidth = 2;
+bullet.circle.radius = 4;
+bullet.circle.fill = am4core.color("#fff");
+
+var bullethover = bullet.states.create("hover");
+bullethover.properties.scale = 1.3;
+
+// Make a panning cursor
+chart.cursor = new am4charts.XYCursor();
+chart.cursor.behavior = "panXY";
+chart.cursor.xAxis = dateAxis;
+chart.cursor.snapToSeries = series;
+
+// Create vertical scrollbar and place it before the value axis
+chart.scrollbarY = new am4core.Scrollbar();
+chart.scrollbarY.parent = chart.leftAxesContainer;
+chart.scrollbarY.toBack();
+
+// Create a horizontal scrollbar with previe and place it underneath the date axis
+chart.scrollbarX = new am4charts.XYChartScrollbar();
+chart.scrollbarX.series.push(series);
+chart.scrollbarX.parent = chart.bottomAxesContainer;
+
+
+}; // end am4core.ready()
 </script>
 <script>
     Vue.component("status-table", {
@@ -821,6 +897,13 @@ function animateBullet(bullet) {
                     });
                 });
                 }
+                else if(newVal === "graph") {
+                    $.get("../api/user/register_timeline", function(data){
+                        if(data.status == "OK") {
+                            _.delay(drawRegisterTimeline, 0, data.data);
+                        }   
+                    })
+                }
             }
         },
         computed: {},
@@ -848,8 +931,12 @@ function animateBullet(bullet) {
                 if(this.language && this.language !== -1)
                     queryobject["language"] = this.language;
                 var url = location.origin+location.pathname+"?"+$.param(queryobject);
+                console.log(url);
                 if(url !== location.origin+location.pathname+"?")
                     history.pushState({},0,url);
+                else {
+                    history.pushState({}, 0, location.origin+location.pathname);
+                }
             },
             search_func: function (data) {
                 var that = this;
@@ -883,6 +970,17 @@ function animateBullet(bullet) {
                         resolve();
                     })
                 });
+            },
+            list_self_only: function() {
+                var that = this;
+                var self_user_id = Cookies.get("user_id");
+                if(this.user_id == null || this.user_id != self_user_id) {
+                    this.user_id = self_user_id;
+                }
+                else {
+                    this.user_id = null;
+                }
+                this.search();
             },
             page: function (num, $event) {
                 this.dim = true;

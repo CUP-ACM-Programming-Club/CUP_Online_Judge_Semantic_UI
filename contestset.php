@@ -86,10 +86,11 @@
                 </tbody>
             </table></div>
             <div v-show="current_column === 'rank'" class="ui bottom attached segment">
-                <div class="ui grid">
+               <h3 class="ui dividing header">排名统计</h3>
+                    <div class="ui grid">
                     <div class="fourteen wide column">
                         <div class="ui fluid multiple search selection dropdown">
-  <input type="hidden" name="country" @change="select = $event.target.value">
+  <input type="hidden" name="country" @change="select1 = $event.target.value">
   <i class="dropdown icon"></i>
   <div class="default text">Select Contest Or Input Contest ID</div>
   <div class="menu">
@@ -98,10 +99,26 @@
   </div>
                     </div>
                     <div class="two wide column">
-                        <a class="primary button ui" @click="run">Go</a>
+                        <a class="primary button ui" @click="run(1)">Go</a>
                     </div>
-                </div>
-                
+                    </div>
+                    <h3 class="ui dividing header">用户提交信息统计</h3>
+                    <div class="ui grid">
+                        
+                    <div class="fourteen wide column">
+                        <div class="ui fluid multiple search selection dropdown">
+  <input type="hidden" name="country" @change="select2 = $event.target.value">
+  <i class="dropdown icon"></i>
+  <div class="default text">Select Contest Or Input Contest ID</div>
+  <div class="menu">
+      <div class="item" :data-value="row.contest_id" v-for="row in contest_list">{{row.title}}</div>
+</div>
+  </div>
+                    </div>
+                    <div class="two wide column">
+                        <a class="primary button ui" @click="run(2)">Go</a>
+                    </div>
+                    </div>
             </div>
 </div> <!-- /container -->
 <?php include("template/semantic-ui/bottom.php");?>
@@ -181,7 +198,8 @@
             return {
                 current_column:"contest",
                 contest_list:[],
-                select:""
+                select1:"",
+                select2:""
             }
         },
         mounted:function(){
@@ -201,8 +219,13 @@
             
         },
         methods:{
-            run:function(){
-                window.open("contestrank.php?cid=" + this.select);
+            run:function(type){
+                switch(type) {
+                    case 1:
+                        window.open("contestrank.php?cid=" + this.select1);
+                    case 2:
+                        window.open("contestuserstatus.php?cid=" + this.select2);
+                }
             }
         }
     })
