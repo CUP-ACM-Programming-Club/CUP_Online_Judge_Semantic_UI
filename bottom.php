@@ -51,9 +51,8 @@
                         <div class="sub header">  Powered By Vue.js,Node.js,Semantic-UI</div>
                         <div class="sub header">Software Designer:<a href="https://github.com/ryanlee2014" target="_blank">Ryan Lee(李昊元)</a></div>
                         </h3>
-                        <iframe src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=star&count=true" frameborder="0" scrolling="0" width="80px" height="20px"></iframe>
-                        <iframe src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=fork&count=true" frameborder="0" scrolling="0" width="80px" height="20px"></iframe>
-                        <iframe src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&type=follow&count=true" frameborder="0" scrolling="0" width="270px" height="20px"></iframe>
+                        <!--<iframe src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=star&count=true" frameborder="0" scrolling="0" width="80px" height="20px"></iframe>
+                        <iframe src="https://ghbtns.com/github-btn.html?user=CUP-ACM-Programming-Club&repo=CUP-Online-Judge-Express&type=fork&count=true" frameborder="0" scrolling="0" width="80px" height="20px"></iframe>-->
                 </div>
             </div>
         </div>

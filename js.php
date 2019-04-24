@@ -5,16 +5,22 @@ if(result.name === "ie" && result.versionNumber < 10 || (result.name == "chrome"
         location.href = "notie.php"
 }
 </script>
-<script src="/template/semantic-ui/js/jquery-3.3.1.min.js"></script>
-<script src="/semantic-ui/semantic.min.js?ver=1.0.6"></script>
-<script src="/js/markdown-it.js?ver=1.0.7"></script>
+<?php 
+$PREFIX = "";
+if($_SERVER["HTTP_HOST"] == "oj.cupacm.com") {
+    $PREFIX = "https://static.cupacm.com";
+}
+?>
+<script src="<?=$PREFIX?>/template/semantic-ui/js/jquery-3.3.1.min.js"></script>
+<script src="<?=$PREFIX?>/semantic-ui/semantic.min.js?ver=1.0.6"></script>
+<script src="<?=$PREFIX?>/js/markdown-it.js?ver=1.0.7"></script>
 <!-- Place this tag in your head or just before your close body tag. -->
-<script src="/js/vue.min.js?ver=2.6.10"></script>
-<script src="/template/semantic-ui/js/base64.js?type=min&ver=1.0"></script>
-<script src="/template/semantic-ui/js/utils.js?ver=1.0.6"></script>
-<script src="/template/semantic-ui/js/anime.min.js"></script>
-<script src="/js/dayjs.min.js"></script>
-<script src="/js/lodash.min.js?ver=4.7.11"></script>
+<script src="<?=$PREFIX?>/js/vue.min.js?ver=2.6.10"></script>
+<script src="<?=$PREFIX?>/template/semantic-ui/js/base64.js?type=min&ver=1.0"></script>
+<script src="<?=$PREFIX?>/template/semantic-ui/js/utils.js?ver=1.0.6"></script>
+<script src="<?=$PREFIX?>/template/semantic-ui/js/anime.min.js"></script>
+<script src="<?=$PREFIX?>/js/dayjs.min.js"></script>
+<script src="<?=$PREFIX?>/js/lodash.min.js?ver=4.7.11"></script>
 <script>
     $(document).ready(function(){
         $(function() {

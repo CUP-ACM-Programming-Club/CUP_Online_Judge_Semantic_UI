@@ -267,15 +267,12 @@
                             if(newVal) {
                             function detectLanguage() {
     detected_lang = detectLang(window.editor.getSession().getValue(),  window.problemsubmitter.lang_list.map(function(e) {return e.num}));
-        console.log("this.selected_language", that.selected_language);
-        console.log("detected_lang", detected_lang);
       if (that.selected_language != detected_lang) {
-          console.log("change");
         that.selected_language = detected_lang;
     }
   }
   var detectLanguageDebouncer = _.debounce(detectLanguage, 100);
-
+    detectLanguageDebouncer();
   window.editor.on("change", function (event) {
     detectLanguageDebouncer();
   });
