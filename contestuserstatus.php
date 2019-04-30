@@ -36,6 +36,25 @@
     <div class="ui container padding" v-cloak>
         <contest-mode v-if="contest_mode"></contest-mode>
         <h2 class="ui dividing header" v-if="!contest_mode" v-html="header"></h2>
+        <div class="ui grid">
+                        
+                    <div class="fourteen wide column">
+                        <div class="ui fluid multiple search selection dropdown">
+  <input type="hidden" name="country" @change="select2 = $event.target.value" :value="getParameterByName('cid')">
+  <i class="dropdown icon"></i>
+  <div class="default text">Select Contest Or Input Contest ID</div>
+  <div class="menu">
+      <div class="item" :data-value="row.contest_id" v-for="row in contest_list" :title="row.title">{{"Contest" + row.contest_id + " " + row.title}}</div>
+</div>
+  </div>
+                    </div>
+                    <div class="two wide column">
+                        <a class="primary button ui" @click="run(2)">Go</a>
+                    </div>
+                    </div>
+                    <div class="ui segment" v-show="loading">
+                        <h2 class="ui header">加载中</h2>
+                    </div>
         <div class="ui segment">
             <div class="ui container" style="padding: 1em">
             <div class="ui labeled input">
@@ -59,7 +78,6 @@
 <a class="ui primary button">应用</a>
 </div>
             <div id="chartdiv" style="height: 500px">
-                <h2 class="ui header">加载中，请稍后</h2>
             </div>
         </div>
         <div class="ui grid">
@@ -272,11 +290,15 @@ series.columns.template.adapter.add("fill", function(fill, target) {
                 status_data: [],
                 data_set: [],
                 order: 1,
+                contest_list:[],
+                select1:"",
+                select2:"",
                 type: 1,
                 row_count: 10,
                 lower: "",
                 greater: "",
-                ranged: false
+                ranged: false,
+                loading: false
             }
         },
         watch:{
@@ -316,7 +338,37 @@ series.columns.template.adapter.add("fill", function(fill, target) {
         },
         mounted:function(){
             var that = this;
-            var promiseArray = [];
+            this.loading = true;
+            $.get("/api/contest/list",function(d){
+                d.data.sort(function(a,b){
+                    return parseInt(b.contest_id) - parseInt(a.contest_id);
+                })
+                that.contest_list = d.data;
+                setTimeout(function(){
+                    $('.multiple.search')
+                .dropdown({
+                    fullTextSearch: true
+            })
+                },1000)
+            });
+            this.getData();
+        },
+        methods:{
+            updatecidArrayFromSelect: function() {
+                var cidArray = this.select2;
+                this.loading = true;
+            if(cidArray && cidArray.length) {
+                cidArray = cidArray.split(",");
+            }
+                this.cidArray = cidArray;
+                var h = "Contest " + cidArray.map(function(el){
+                return "<a target='_blank' href='/contest.php?cid=" + el + "'>" + el + "</a>";
+            }).join(",");
+                this.header = h;
+            },
+            getData: function() {
+                var that = this;
+                var promiseArray = [];
             _.forEach(this.cidArray, function(val){
                 promiseArray.push(new Promise(function(resolve,reject){
                     $.get("../api/scoreboard/" + val + "/line", function(data){
@@ -334,8 +386,7 @@ series.columns.template.adapter.add("fill", function(fill, target) {
                     that.raw_data = val;
                     that.generate(val);
                 });
-        },
-        methods:{
+            },
             sortOrder: function(type) {
                 var target = this.status_data;
                 var order = this.order;
@@ -478,6 +529,12 @@ series.columns.template.adapter.add("fill", function(fill, target) {
                 })
                 .then(function(val){
                     _.forEach(val, function(v){
+                        if(v.line.length === 0) {
+                            v.line = [0]
+                        };
+                        if(v.len.length === 0) {
+                            v.len = [0];
+                        }
                         v.average_line = parseInt(Math.round(v.line.reduce(function(sum, cur){return sum + cur;}) / Math.max(1,v.line.length)));
                         v.average_length = parseInt(Math.round(v.len.reduce(function(sum, cur){return sum + cur;}) / Math.max(1,v.len.length)));
                         v.total_line = v.line.reduce(function(sum, cur){return sum + cur;});
@@ -498,7 +555,12 @@ series.columns.template.adapter.add("fill", function(fill, target) {
                 })
                 .then(function(val){
                     that.status_data = val;
+                    that.loading = false;
                 })
+            },
+            run:function(type){
+                this.updatecidArrayFromSelect();
+                this.getData();
             }
         },
         computed:{}

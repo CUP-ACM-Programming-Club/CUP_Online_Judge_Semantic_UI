@@ -94,7 +94,7 @@
   <i class="dropdown icon"></i>
   <div class="default text">Select Contest Or Input Contest ID</div>
   <div class="menu">
-      <div class="item" :data-value="row.contest_id" v-for="row in contest_list">{{row.title}}</div>
+      <div class="item" :data-value="row.contest_id" v-for="row in contest_list">{{"Contest" + row.contest_id + " " + row.title}}</div>
 </div>
   </div>
                     </div>
@@ -111,7 +111,7 @@
   <i class="dropdown icon"></i>
   <div class="default text">Select Contest Or Input Contest ID</div>
   <div class="menu">
-      <div class="item" :data-value="row.contest_id" v-for="row in contest_list">{{row.title}}</div>
+      <div class="item" :data-value="row.contest_id" v-for="row in contest_list" :title="row.title">{{"Contest" + row.contest_id + " " + row.title}}</div>
 </div>
   </div>
                     </div>
@@ -190,6 +190,7 @@
     });
     $('.multiple.search')
                 .dropdown({
+                    fullTextSearch: true
             })
     }
     window.contest = new Vue({
@@ -211,7 +212,9 @@
                 that.contest_list = d.data;
                 setTimeout(function(){
                     $('.multiple.search')
-                .dropdown()
+                .dropdown({
+                    fullTextSearch: true
+            })
                 },1000)
             });
         },

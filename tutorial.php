@@ -148,6 +148,9 @@
                     language_markdown:d.const_variable.language_common_name
                 }
             },
+            created: function() {
+                $(document).on("click", function() { $(".mermaid").each(function(el, v) { if($(v).is(":visible")) { mermaid.init(undefined, v)}}) });
+            },
             mounted:function(){
                 var that = this;
                 $.get("/api/tutorial/"+source + "/" + id,function(d){

@@ -19,6 +19,7 @@
     <script>
      Vue.use(window["mavon-editor"]);
     </script>
+    <script src="/js/mermaid.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.js"></script>
@@ -33,7 +34,50 @@
         }
     </style>
 </head>
+<script type="text/x-template" id="discussMainContent">
+    <div class="ui grid">
+        <div class="four wide column">
+        <div class="ui link card">
+<div class="image">
+<img v-if="thread_head.avatar === 1" :src="'../avatar/'+thread_head.user_id+'.jpg'" @click="location.href='userinfo.php?user='+thread_head.user_id">
+<img v-else src="../assets/images/wireframe/white-image.png">
+</div>
+<div class="content">
+<div class="header"><a class="black" :href="'userinfo.php?user='+thread_head.user_id" target="_blank">{{thread_head.nick}}</a></div>
+<div class="meta">
+<a :href="'userinfo.php?user='+thread_head.user_id" target="_blank">{{thread_head.user_id}}</a>
+</div>
+<div class="description" v-html="markdownIt.renderRaw(thread_head.biography||'')">
+</div>
+</div>
+<div class="extra content">
+<span class="right floated">
 
+</span>
+<span>
+<i class="user icon"></i>
+Solved {{thread_head.solved}}
+</span>
+</div>
+</div>
+<div class="ui sticky" style="left: 50.1429px;" id="sticky_content">
+    <h3 class="ui header" id="contents" v-show="content">目录</h3>
+    <div id="contentContainer"></div>
+  </div>
+      </div>
+      <div class="twelve wide column">
+         <div class="ui existing full segment" id="main_context">
+             <a v-if="thread_head.user_id + '' === owner" class="ui blue right ribbon label" :href="'discussedit.php?id='+id">Edit</a>
+             <div class="ui info message">
+                 <div class="header">
+                     阅读本文需要大约{{readTime(thread_head.content)}}分钟
+                 </div>
+             </div>
+             <div v-html="thread_head.content"></div>
+         </div>
+      </div>
+</div>
+</script>
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php") ?>
     <!-- Main component for a primary marketing message or call to action -->
@@ -45,48 +89,7 @@
         <div class="active section">Discuss ID:{{id}}</div>
         </div>
         <h1>{{thread_head.title}}</h1>
-        <div class="ui grid">
-                <div class="four wide column">
-                <div class="ui link card">
-    <div class="image">
-      <img v-if="thread_head.avatar === 1" :src="'../avatar/'+thread_head.user_id+'.jpg'" @click="location.href='userinfo.php?user='+thread_head.user_id">
-      <img v-else src="../assets/images/wireframe/white-image.png">
-    </div>
-    <div class="content">
-      <div class="header"><a class="black" :href="'userinfo.php?user='+thread_head.user_id" target="_blank">{{thread_head.nick}}</a></div>
-      <div class="meta">
-        <a :href="'userinfo.php?user='+thread_head.user_id" target="_blank">{{thread_head.user_id}}</a>
-      </div>
-      <div class="description" v-html="markdownIt.renderRaw(thread_head.biography||'')">
-      </div>
-    </div>
-    <div class="extra content">
-      <span class="right floated">
-        
-      </span>
-      <span>
-        <i class="user icon"></i>
-        Solved {{thread_head.solved}}
-      </span>
-    </div>
-  </div>
-  <div class="ui sticky" style="left: 50.1429px;" id="sticky_content">
-            <h3 class="ui header" id="contents" v-show="content">目录</h3>
-            <div id="contentContainer"></div>
-          </div>
-              </div>
-              <div class="twelve wide column">
-                 <div class="ui existing full segment" id="main_context">
-                     <a v-if="thread_head.user_id + '' === owner" class="ui blue right ribbon label" :href="'discussedit.php?id='+id">Edit</a>
-                     <div class="ui info message">
-                         <div class="header">
-                             阅读本文需要大约{{readTime(thread_head.content)}}分钟
-                         </div>
-                     </div>
-                     <div v-html="thread_head.content"></div>
-                 </div>
-              </div>
-      </div>
+        <discuss-main-content :thread_head="thread_head" :content="content" :owner="owner" :id="id"></discuss-main-content>
       <h3 class="ui dividing header">Comments</h3>
       <div class="ui comments">
       <div class="comment" v-for="row in reply">
@@ -126,6 +129,23 @@
   </form>
 </div> <!-- /container -->
 <script>
+Vue.component("discuss-main-content", {
+    template: "#discussMainContent",
+    props: {
+        thread_head: Object,
+        content: Boolean,
+        owner: String,
+        id: String
+    },
+    data: function() {
+        return {};
+    },
+    methods: {
+        readTime: function(content) {
+            return this.$root.readTime(content);
+        }
+    }
+})
     window.discussTable = new Vue({
         el:".ui.container.padding",
         data:function(){
@@ -178,6 +198,10 @@
             }
         },
         created:function(){
+            $(document).on("click", function() { $(".mermaid").each(function(el, v) { if($(v).is(":visible")) { mermaid.init(undefined, v)}}) });
+        },
+        beforeUpdate: function() {
+            //console.time("update use time");
         },
         updated:function(){
                 $content = $(".table-of-contents").html();
@@ -191,7 +215,8 @@
                     context: "#main_context",
                     offset: 50
                 });
-                this.content = $content && $content.length > 0 || ($container && $container.length > 0);
+                this.content = $content && $content.html && $content.html().trim().length > 0 || ($container && $container.html().trim().length > 0);
+                //console.timeEnd("update use time");
         },
         mounted:function(){
             var page = this.page * 20;

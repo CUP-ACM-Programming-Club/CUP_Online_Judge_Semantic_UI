@@ -23,6 +23,10 @@
     <script src="ace-builds/src-min-noconflict/ext-emmet.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds/src-min-noconflict/ext-static_highlight.js"></script>
     <script src="/js/lang_detector.js"></script>
+    <script src="/js/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ theme: "default", startOnLoad: false });
+    </script>
     <style>
         .ui.modal {
             top: 3%;
@@ -831,10 +835,20 @@
                                     height:$("#right-side").height()
                                 });
                             }
+                            if(that.prepend || that.append) {
+                                $('#Submit')
+  .popup({
+    position : 'top center',
+    title    : '本题包含前后置代码',
+    content  : '本题仅需提交代码中需要补充的部分，无需将前后置代码一同填入提交框提交,判题机会自动补充前后置代码到你编写的程序'
+  })
+;
+                            }
                         })
                     },
                     mounted: function () {
                         var that = this;
+                        $(document).on("click", function() { $(".mermaid").each(function(el, v) { if($(v).is(":visible")) { mermaid.init(undefined, v)}}) });
                         var descriptionMarkdownIt = this.descriptionMarkdownIt = markdownIt.newInstance("description", that.original_id);
                         var inputMarkdownIt = this.inputMarkdownIt = markdownIt.newInstance("input", that.original_id);
                         var outputMarkdownIt = this.outputMarkdownIt = markdownIt.newInstance("output", that.original_id);

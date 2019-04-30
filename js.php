@@ -7,13 +7,13 @@ if(result.name === "ie" && result.versionNumber < 10 || (result.name == "chrome"
 </script>
 <?php 
 $PREFIX = "";
-if($_SERVER["HTTP_HOST"] == "oj.cupacm.com") {
+/*if($_SERVER["HTTP_HOST"] == "oj.cupacm.com") {
     $PREFIX = "https://static.cupacm.com";
-}
+}*/
 ?>
 <script src="<?=$PREFIX?>/template/semantic-ui/js/jquery-3.3.1.min.js"></script>
 <script src="<?=$PREFIX?>/semantic-ui/semantic.min.js?ver=1.0.6"></script>
-<script src="<?=$PREFIX?>/js/markdown-it.js?ver=1.0.7"></script>
+<script src="<?=$PREFIX?>/js/markdown-it.js?ver=1.1.0.2"></script>
 <!-- Place this tag in your head or just before your close body tag. -->
 <script src="<?=$PREFIX?>/js/vue.min.js?ver=2.6.10"></script>
 <script src="<?=$PREFIX?>/template/semantic-ui/js/base64.js?type=min&ver=1.0"></script>
