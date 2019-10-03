@@ -173,6 +173,7 @@ $suffix="?my";
                         <a class="item"
                            href="/recent-contest.php"><?= $MSG_RECENT_CONTEST ?></a>
                            <a class="item" href="/acmmanager.php">ACM管理系统</a>
+                           <a class="item" href="https://docs.cupacm.com"><i class="book icon"></i>文档库</a>
                            <a class="item" href="/software.php">常用软件</a>
                            <a class="item" href="/whiteboard.php">白板(β版测试)</a>
                             <a class="item" href="/vjudgeproblemset.php">Virtual
@@ -282,6 +283,7 @@ $suffix="?my";
                         <a class="item"
                            href="/recent-contest.php"><?= $MSG_RECENT_CONTEST ?></a>
                            <a class="item" href="/acmmanager.php">ACM管理系统</a>
+                           <a class="item" href="https://docs.cupacm.com"><i class="book icon"></i>文档库</a>
                            <a class="item" href="/software.php">常用软件</a>
                            <a class="item" href="/whiteboard.php">白板(β版测试)</a>
                             <a class="item" href="/vjudgeindex.php">Virtual
