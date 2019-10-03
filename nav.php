@@ -50,6 +50,7 @@ $suffix="?my";
                            href="/recent-contest.php"><i class="sitemap icon"></i><?= $MSG_RECENT_CONTEST ?></a>
                            <a class="item" href="/acmmanager.php"><i class="road icon"></i>ACM管理系统</a>
                            <a class="item" href="/software.php"><i class="plug icon"></i>常用软件</a>
+                           <a class="item" href="https://docs.cupacm.com"><i class="book icon"></i>文档库</a>
                            <a class="item" href="/whiteboard.php"><i class="calendar outline icon"></i>白板(β版测试)</a>
                            <?php if(!$OJ_CONTEST_MODE||isset($_SESSION['administrator'])){ ?>
                 <a class="item tutorial" target="_blank"><i class="question circle outline icon"></i>C/C++语言参考手册</a>
